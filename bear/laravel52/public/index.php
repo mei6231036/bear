@@ -18,7 +18,7 @@
 | loading any of our classes later on. It feels nice to relax.
 |
 */
-
+header("content-type:text/html;charset=utf8");
 require __DIR__.'/../bootstrap/autoload.php';
 
 /*

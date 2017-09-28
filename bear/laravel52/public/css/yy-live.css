@@ -1,0 +1,240 @@
+/*!
+ * WebSite    : http://live.yy.com
+ * $Author$
+ * Description: yy直播页面样式
+ * $Date$
+ * */
+
+.guild-ranking .box-hd .title,
+.news-ranking .box-hd .title,
+.other-activities .box-hd .title{background-position:0 -289px}
+.anchor-recommend .box-hd .title,
+.hot-anchor-list .box-hd .title{background-position:0 -389px}
+.garden-peas .box-hd .title{background-position:0 -239px}
+.broadcast-news .box-hd .title,
+.wonderful-video .box-hd .title{background-position:0 -339px}
+/*
+ * 幻灯片
+ * style2
+ * */
+.slide-box{border:1px solid #DDD;background:#fff;padding:9px;margin-bottom:10px;}
+.mod-slide-s2{overflow:hidden;position:relative;width:689px;height:298px;}
+.mod-slide-s2 .mod-slide-content{overflow:hidden;width:689px;background:#333;}
+.mod-slide-s2 .mod-slide-content li{float:left;clear:both;position:relative;}
+.mod-slide-s2 .mod-slide-content a,
+.mod-slide-s2 .mod-slide-content img{display:block;width:689px;height:298px;}
+.mod-slide-s2 .mod-slide-content h4{
+	padding:0 200px 0 15px;width:474px;font-weight:400;font-size:14px;position:absolute;bottom:0;left:0;height:32px;line-height:32px;color:#fff;
+	background-color: transparent;
+  	background-color: rgba(0, 0, 0, 0.7);  
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#B2000000,endColorstr=#B2000000); 
+    zoom: 1;
+}
+:root .mod-slide-s2 .mod-slide-content h4{filter:none;}
+.mod-slide-s2 .mod-slide-content h4 a{color:#fff;display:inline;}
+.mod-slide-s2 .mod-slide-trigger{position:absolute;right:-1px;bottom:0;height:32px;line-height:32px;}
+.mod-slide-s2 .mod-slide-trigger li{margin-left:-1px;float:left;cursor:pointer;width:34px;height:32px;text-align:center;color:#aaa;border-left:1px solid #808080;border-right:1px solid #808080}
+.mod-slide-s2 .mod-slide-trigger li.hover{font-weight:bold;color:#fff;background:#3c3634;border-color:#999;position:relative;z-index:2;}
+
+.box .mod-pic{margin:0 -28px -9px 0;}
+.box .mod-pic-txt{margin-top:-20px;}
+.box .mod-art{margin:-8px 0 15px;}
+
+/*-------直播预告------*/
+.forecast{background:url(../images/forecast.jpg) no-repeat;margin:0 0 8px 0;border-bottom:1px solid #ececec}
+.forecast-hd{height:49px;}
+.forecast-hd h3{float:left;height:43px;width:168px;margin:3px 0 0 -3px;text-indent:-99em;background:url(../images/base-sprite.png) 0 -150px}
+.forecast-hd .more{color:#777;float:right;height:23px;width:78px;padding:0 16px 0 0;background:#f5f5f5;line-height:23px;text-align:right;margin:12px 1px 0 0;border-top:1px solid #c4c4c4;border-bottom:1px solid #c4c4c4;}
+.forecast-bd ul{padding:0 5px 9px;}
+.forecast-bd li{vertical-align:middle;padding:0 10px;height:31px;line-height:31px;overflow:hidden;color:#333;margin:0 0 1px 0;border:1px solid #898989;-webkit-border-radius:3px;border-radius:3px;background:#fcfcfc}
+.forecast-bd li strong{font-weight:400;margin-right:8px;color:#C00;}
+.forecast-bd li .watch,
+.forecast-bd li .booked,
+.forecast-bd li .book{color:#fff;width:43px;height:19px;text-indent:-99em;float:right;margin:6px 0 0 8px;background:url(../images/base-sprite.png) -331px 0}
+.forecast-bd li .booked{background-position:-331px -60px;}
+.forecast-bd li .book{background-position:-331px -30px;}
+.forecast-bd li span{display:block;}
+/*------申请主播认证-----*/
+.apply-authentication,
+.apply-forecast{margin:0 0 10px 0}
+.apply-authentication a,
+.apply-forecast a{display:block;height:47px;text-indent:-99em;background:url(../images/apply-authentication.png) no-repeat 0 0px}
+.apply-forecast a{background:url(../images/apply-forecast.png) no-repeat 0 0}
+.apply-forecast a:hover,
+.apply-authentication a:hover{background-position:0 -47px}
+
+/*------视频列表-----*/
+.video-txt-list{padding-bottom:18px;border-top:1px dotted #cecece;}
+.video-txt-list-hd{height:56px;}
+.video-txt-list-hd h4{height:56px;float:left;font:700  18px/56px 'Microsoft Yahei','黑体',Tahoma,Helvetica,arial,sans-serif;color:#333;}
+.video-txt-list-hd h4 a:hover{text-decoration:none;}
+.video-txt-list-hd .time{float:right;margin-top:22px;color:#aaa}
+.video-txt-list-bd .pic{float:left;margin-right:20px;margin-top:4px;position:relative;}
+.video-txt-list-bd .pic img{width: 120px; height: 90px; border: 1px solid #D8D8D8; padding: 2px;}
+.video-txt-list-bd .pic i{cursor:pointer;position:absolute;left:39px;top:23px;width:55px;height:50px;background:url(../images/play_icon.png) no-repeat;_background:url(../images/play_icon_ie6.png) no-repeat;_filter: alpha(opacity=60)}
+.video-txt-list-bd .pic:hover i{background-position:0 -49px;_filter: alpha(opacity=100);_background-position:0 0}
+.video-txt-list-bd p{overflow:hidden;line-height:24px;}
+.video-txt-list-ft{clear:both;padding:15px 0 0 0}
+.video-txt-list-ft .browse,
+.video-txt-list-ft .discuss{margin-right:15px}
+.video-txt-list-ft .browse i,
+.video-txt-list-ft .discuss i{display:inline-block;width:18px;height:18px;background:url(../images/base-sprite.png) -270px -210px;vertical-align:-7px;}
+.video-txt-list-ft .browse i{background-position:-270px -240px}
+
+
+/**----列表页公用------*/
+.wonderful-video .page-nav,
+.hot-anchor-list .page-nav,
+.serch-result .page-nav{border-top:1px dotted #cecece}
+.wonderful-video .box-bd,
+.hot-anchor-list .box-bd{position:relative;zoom:1;overflow:hidden;padding:0}
+.wonderful-video .video-txt-list,
+.hot-anchor-list .anchor-list li{margin-top:-1px;}
+
+
+/**----搜索结果------*/
+.serch-result .box-bd{padding-top:10px;overflow:hidden;position:relative;}
+.serch-result .mod-pic-txt li{width:276px;}
+.serch-result .mod-pic li{margin:0 20px 26px}
+.serch-result .forecast-activity-list{margin:-20px -60px 0 0;zoom:1;overflow:hidden;position:relative;}
+.serch-result .forecast-activity{border-top:1px dotted #CECECE;float:left;margin-top:-1px;width:440px;padding-right:56px;}
+.serch-result .forecast-activity .pic img{width:355px;height:126px;}
+
+/*------申请主播-----*/
+.apply-anchor{border:1px solid #dfdfdf;padding:20px 24px;float: left;min-height: 800px;width:660px;margin:0 auto;background:#fff}
+.apply-anchor .step-tips{padding-top: 15px; color: #000}
+.apply-anchor-hd{background: url(../images/bg-x.png) repeat-x 0 -173px;height:56px;}
+.apply-anchor-hd .crumbs{height:33px;line-height:33px;-webkit-border-radius:4px;border-radius:4px;background:#e4e4e4;overflow:hidden;}
+.apply-anchor-hd .crumbs span{float:left;width:220px;text-align:center;font-size:14px;font-weight:700;color:#333;background:url(../images/crumbs-bg.png) no-repeat right -66px;}
+.apply-anchor-hd .crumbs .last{background-image:none;}
+.apply-anchor-hd .crumbs .current{background-color:#ff9900;background-position:right -33px;color:#fff}
+.apply-anchor-hd .crumbs .pass{background-position:right 0;background-color:#ff9900;color:#fff}
+.apply-anchor-bd .mod-msg{width:330px;margin:40px auto 40px;}
+.apply-anchor-bd .sub-msg{padding:0 100px 40px 190px;font-size:14px;}
+.apply-anchor-bd .sub-msg strong{font-weight:400;color:#cc0000;margin-right:3px;}
+.apply-anchor-bd .sub-msg a{color:#306089;}
+.apply-anchor-bd .ad-img{width:548px;margin:0 auto;}
+.apply-anchor-bd .ad-img img{width:548px;}
+
+/*------- 文章页 -----*/
+.article{padding:20px;border: 1px solid #DDD;background:#fff;}
+.article-hd{border-bottom:1px dotted #cecece;}
+.article-hd h1{margin-bottom:6px;color:#669900;text-align:center;font:bold 22px/26px "微软雅黑","宋体";}
+.article-hd address{text-align:center;color:#cecece;padding:3px 0 10px 0;}
+.article-hd address span{margin: 0 5px;}
+.article-bd{padding:12px 6px;color:#333;}
+.article-bd p{color:#333;line-height:24px;font-size:14px;margin-bottom:20px;text-indent:2em}
+.article-bd h2,
+.article-bd h3,
+.article-bd h4,
+.article-bd h5,
+.article-bd h6{margin-bottom:20px;color:#333;}
+/**-------主播预告 ------------*/
+.live-forecast .forecast-activity-list{margin-top:-20px;zoom:1;overflow:hidden;position:relative;}
+.live-forecast .forecast-activity{border-top:1px dotted #CECECE;margin-top:-1px;border-bottom:1px dotted #CECECE;}
+.live-forecast .share-link{right:0;}
+
+/**------其他活动-----*/
+.other-activities .box-bd{padding-top:10px}
+.other-activities .box-bd img{display:block;width:228px;height:80px;}
+.other-activities .box-bd li{margin-bottom:10px;position:relative;height:80px;}
+.other-activities .box-bd h4{
+	position:absolute;bottom:0;left:0;height:20px;line-height:20px;color:#fff;padding:0 10px;overflow:hidden;font-weight:400;
+	background-color: transparent;
+  	background-color: rgba(0, 0, 0, 0.5); 
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);
+}
+:root .other-activities .box-bd h4{filter:none;}
+.other-activities .box-bd a:hover h4{text-decoration:none;cursor:pointer;}
+/**--------详细内页---------*/
+.detail-page .article{padding-top:0}
+.detail-page .forecast-activity{padding: 0 0 15px 0;}
+
+/*------- 主播申请页 --------*/
+.data-form{padding-top:10px}
+.data-form .sub-tit{color:#cc0000;margin:0 0 20px}
+.data-form form div{margin:0 0 20px}
+.data-form form label{font-size:14px;width:88px;margin:0}
+.data-form .col,
+.data-form .col2{float:left;clear:none;width:272px;}
+.data-form .col{width:305px}
+.data-form .col2{width:355px;}
+.data-form form input{width:176px;}
+.data-form .col2 input{width:176px;}
+.data-form .col2 label{width:85px}
+.data-form .contract,
+.data-form .remove-contract{line-height:26px;float:left;display:inline;margin:0 8px 0 0;}
+.data-form .remove-contract{color:#306089;cursor:pointer}
+.data-form .preson-intro input{width:520px;}
+.data-form form p.tips{color:#aaa;padding:8px 0 0 89px;}
+.data-form .upload-file{clear:both;position:relative;line-height:31px;}
+.data-form .upload-file label{height:31px;line-height:31px;}
+.data-form .upload-file input{opacity:0;width:70px;position:absolute;top:19px;left:81px;height:31px; filter: alpha(opacity=0)}
+/*.data-form .upload-file span{float:left;display:inline;text-align:center;overflow: hidden; width: 69px; line-height:30px;height: 31px; margin: 0 10px 0 0;background: url(../images/base-sprite.png) no-repeat -300px -199px;}*/
+.data-form .upload-file p{display:inline;color:#cc0000;}
+.data-form .upload-file img{display:block;margin:20px 0 10px 88px;width:520px;float:left;}
+.data-form .upload-file .face{width:140px;}
+.data-form .upload-file .tips{padding:6px 0 0 0px;float:left;clear:none;}
+.data-form form div.btns{padding:20px 0 0 88px;border-top:1px dotted #cecece;}
+.data-form .btns .rules input{width:auto;margin-top:3px;*margin-top:5px;background:none;border:0;}
+.data-form .flash-upload-img{overflow:hidden;clear:none;margin:0}
+.data-form .flash-upload-img img{margin:0;width:auto}
+.data-form .flash-upload-img #post_preview{overflow:hidden;clear:none;margin:0}
+.data-form .flash-upload-img #post_preview img{margin:0;width:502px;height: 193px}
+.data-form .hr{padding-top:12px;background:url(../images/bg-x.png) repeat-x 0 -225px} 
+.data-form .col3,
+.data-form .col4{float:left;clear:none;width:272px;}
+.data-form .col4{width:386px;}
+.data-form .col3 input,
+.data-form .col4 input{width:114px;}
+.data-form .col4 .tips{margin:0 8px 0 0;padding:0;clear:none;float:left;line-height:26px;}
+.data-form form textarea {height: 240px; width: 435px; border-color: #DEDEDE; margin: 0 0 20px 88px;line-height: 16px;}
+
+/*--------兼职劳务协议----------*/
+.labor-agreement{padding-top:20px}
+.labor-agreement h4{color:#333;text-align:center;margin-bottom:20px;font-size:14px}
+.labor-agreement .s-text,
+.labor-agreement .s-lb{font-size:14px;float: left;display: inline;height: 26px;line-height: 26px;}
+.labor-agreement form div{margin:0 0 20px}
+.labor-agreement form label,
+.labor-agreement .s-lb{font-size:14px;width:90px;margin:0;text-align: right;}
+.labor-agreement .col,
+.labor-agreement .col2{float:left;clear:none;width:338px;font-size:14px;}
+.labor-agreement .col{width:322px;clear:left;}
+.labor-agreement .col3{width:322px;}
+.labor-agreement form input{width:190px;font-size:12px}
+.labor-agreement form select{float:left;margin:0 8px 0 0;width:202px;}
+.labor-agreement form div.btns{padding:20px 0 0 0;border-top:1px dotted #cecece;text-align:center;}
+.labor-agreement .agreement-text{width:512px;display:inline;float:left;margin:0 0 20px 90px;padding:5px;border: 1px solid #A2A2A2; -webkit-border-radius: 3px; border-radius: 3px;}
+.labor-agreement .agreement-text p{margin-bottom:20px;padding-right:10px}
+.labor-agreement .agreement-text div{width:512px;height:210px;overflow:auto;margin:0}
+.labor-agreement .address input{width:58px}
+.labor-agreement .address .fl{float:left;margin:0 8px 0 0}
+.labor-agreement .date select{width:70px}
+.labor-agreement .date .month,
+.labor-agreement .date .day{width:57px}
+.labor-agreement .agreement-text div::-webkit-scrollbar {width:12px;height:12px}
+.labor-agreement .agreement-text div::-webkit-scrollbar-button:vertical:start:increment,
+.labor-agreement .agreement-text div::-webkit-scrollbar-button:vertical:end:decrement{display:none;}
+.labor-agreement .agreement-text div::-webkit-scrollbar-track{
+	background:#ededed;width:12px;height:12px;-webkit-border-radius:6px;
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(230,230,230,1)), color-stop(100%,rgba(241,241,241,1)));
+}
+.labor-agreement .agreement-text div::-webkit-scrollbar-thumb{
+	-webkit-border-radius:6px;width:10px;height:10px;background:#2da1df;border:1px solid #1f98d9;border-left-color:#2791ca;
+	background: -webkit-gradient(linear, left top, right top, color-stop(30%,rgba(54,166,227,1)), color-stop(100%,rgba(31,152,212,1)));
+	box-shadow:inset 1px 0px 2px #73c2eb;
+}
+
+/**------ 豌豆园 --------**/
+.garden-peas .box-bd{overflow:hidden;margin-right:-20px;zoom:1;*padding-bottom:20px;_padding-bottom:0;}
+.garden-peas .pk{float:left;margin:0 20px 20px 0;display:inline;width:322px;border:1px solid #dfdfdf;-webkit-border-radius:2px;border-radius:2px;background:#f9f9f9;}
+.garden-peas .pk-l{border-right:1px solid #dfdfdf;float:left;padding:20px;}
+.garden-peas .pk-l img{display:block;width:59px;height:59px;margin-bottom:8px;border:1px solid #ddd;}
+.garden-peas .pk-l .vs{margin:22px 10px;width:35px;height:25px;float:left;background:url(../images/base-sprite.png) no-repeat 0 -210px;text-indent:-99em;}
+.garden-peas .pk-l a{float:left;text-align:center;}
+.garden-peas .pk-r{text-align:center;overflow:hidden;zoom:1;}
+.garden-peas .pk-r span{padding:24px 0 8px;display:block;}
+.garden-peas .pk-r em{font-size:14px;padding:0 0 10px 0;display:block;}
+.garden-peas .pk-r strong{font-weight:400;color:#cc0000;}
+.garden-peas .pk-r .btn{background:url(../images/base-sprite.png) no-repeat -300px -120px;margin:0 auto;width:85px;height:31px;display:block;}

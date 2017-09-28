@@ -1,0 +1,39 @@
+<?php 
+namespace backend\controllers;
+use Yii;
+use yii\web\Controller;
+class LoginController extends Controller
+{
+	public $session;
+	public function init()
+	{
+		$this->session=Yii::$app->session;
+	}
+	public function actionIndex()
+	{
+		$a_name=$_GET['a_name'];
+		$a_pwd=$_GET['a_pwd'];
+		$callback=$_GET['callback'];
+		$pwd=md5($a_pwd);
+		$db=Yii::$app->db;
+		$res=$db->createCommand("select * from admin where a_name='$a_name' and a_pwd='$pwd'")->queryOne();
+		if ($res) {
+			$this->session['user']=$res;
+			$msg['error']=1;
+			$msg['msg']="登录成功";
+		}else{
+			$msg['error']=0;
+			$msg['msg']="用户名或密码错误";
+		}
+		echo $callback."(".json_encode($msg).")";
+	}
+}
+
+
+
+
+
+
+
+
+ ?>

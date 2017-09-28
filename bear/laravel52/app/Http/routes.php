@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -12,5 +13,13 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+   
 });
+Route::get('/home',"home\HomeController@index");
+Route::get('/',"IndexController@index");
+Route::get('/add',"IndexController@add");
+Route::get('/list',"IndexController@llist");
+Route::get('/sign',"IndexController@sign");
+Route::get('/login',"IndexController@login");
+Route::get('/register',"IndexController@register");
+Route::resource('home',"home\HomeController");
