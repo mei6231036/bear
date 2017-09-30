@@ -68,8 +68,8 @@ var blogAd= {"area1":{"id":2113,"promotionType":4,"title":"S7\u5168\u7403\u603b\
             </div>
             <div class="duya-header-search clearfix" id="J_duyaHdSearch" >
                 <form method="get" id="searchForm_id" name="navSearchForm" action="http://www.huya.com/search.php" target="_blank">
-                    <input type="text" name="hsk" value="主播、频道、游戏" autocomplete="off">
-                    <button type="submit" class="btn-search clickstat" eid="click/search/searchbutton" eid_desc="点击/搜索/搜索按钮"></button>
+                    <!-- <input type="text" name="hsk" value="主播、频道、游戏" autocomplete="off"> -->
+                    <!-- <button type="submit" class="btn-search clickstat" eid="click/search/searchbutton" eid_desc="点击/搜索/搜索按钮"></button> -->
                 </form>
             </div>
             <div class="duya-header-gg clickstat" id="J_duyaHdGg" eid="click/push/navipic" eid_desc="点击/推荐/顶部导航图片"></div>
@@ -204,6 +204,7 @@ var blogAd= {"area1":{"id":2113,"promotionType":4,"title":"S7\u5168\u7403\u603b\
                                         <a href="http://i.huya.com/" target="_blank" class="new-clickstat" report='{"eid":"click/position","position":"header/usercard/entrance1"}'>                                        
                                             <i></i>
                                             <p>个人中心</p>
+               
                                         </a>
                                     </li>
                                     <li class="links-noble">
