@@ -1,10 +1,15 @@
 <?php 
 namespace App\Http\Controllers;
 use DB;
+use Symfony\Component\HttpFoundation\Session\Session;
 class IndexController extends Controller
 {
 	public function index()
 	{
+		//用户session
+		$session=new Session;
+		$user=$session->get('user');
+
 		$data=DB::table('type')->where('parent_id','!=',0)->get();
 		$arr=[];
 		foreach ($data as $key => $val) {

@@ -280,7 +280,7 @@
 
                 </div>
 
-                <div class="hy-nav-right un-login" style="display:block">
+                <div class="hy-nav-right un-login" style="display:none">
 
                     <div class="hy-nav-title">
 
@@ -300,7 +300,7 @@
 
                 </div>
 
-                <div class="hy-nav-right nav-user success-login">
+                <div class="hy-nav-right nav-user success-login" style="display:block">
 
                     <a class="nav-user-title" href="http://i.huya.com/" target="_blank">
 
