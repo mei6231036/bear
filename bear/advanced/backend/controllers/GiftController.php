@@ -7,7 +7,6 @@ class GiftController extends Controller
 	//添加礼物
 	public function actionAdd()
 	{
-		$money=$_GET['money'];
 		$money=Yii::$app->request->get('money');
 		$name=Yii::$app->request->get('name');
 		$callback=Yii::$app->request->get('callback');
