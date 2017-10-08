@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Login;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Symfony\Component\HttpFoundation\Session\Session;
 class LoginController extends Controller
 {
 	//注册
@@ -17,11 +17,16 @@ class LoginController extends Controller
 	        if($first){
 	        	echo 1;
 	        }else{
+	        	//入用户登录表
 	        	$data['password'] = md5($request->input('password'));
 		        $data['money']	  = '0';
 		        $data['addtime']  = time();
 		        $data['ip'] = ip2long($myip);
 		        $res=DB::table('user')->insert($data);
+		        $user_id = DB::table('user')->insertGetId()
+		       /* //入用户基本信息表
+		        $info['user_id'] = $user_id;//用户主键id
+		        $info['heading'] = */
 	        }
         }
 	}
@@ -36,7 +41,9 @@ class LoginController extends Controller
 	        	echo 1;
 	        }else{
 	        	//登陆成功
-	        	$request->session()->put('user'.$data->email,$data);
+	        	// $request->session()->put('user'.$data->email,$data);
+	        	$session=new Session;
+				$session->set('user',$data);
 	        }
         }
 	}

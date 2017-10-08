@@ -25,4 +25,8 @@ Route::get('/login',"IndexController@login");
 Route::get('/login_do',"login\LoginController@login");//zyk
 Route::get('/regin',"login\LoginController@regin");//zyk
 Route::get('/register',"IndexController@register");
+Route::get('/anchor',"AnchorController@index");
 Route::resource('home',"home\HomeController");
+Route::get('/article',function(){
+    return view('article.index');
+});
