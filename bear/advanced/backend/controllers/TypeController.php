@@ -17,18 +17,22 @@ class TypeController extends Controller
 	public function actionSel()
 	{
 		$arr = Yii::$app->request->get();
-		// var_dump($arr['callback']);die;
 		$db = Yii::$app->db;
-		// $sql = "select * from type where parent_id = 0";
-		// $data =  $db->createCommand($sql)->queryAll();
-		// foreach ($data as $key => $value) {
-		// 	$sqll = "select * from type where parent_id = ".$value['id'];		
-		// 	$data[$key]['child'] = $arr;
-		// }
-		$data=$db->createCommand('select * from type')->queryAll();
+
+		$name = Yii::$app->request->get('name') ? Yii::$app->request->get('name') : '';//搜索的条件
+
+		$page = Yii::$app->request->get('page') ? Yii::$app->request->get('page') : '1';//当前页
+		$num  = 5;//每页显示条数
+		$a    = $db->createCommand("select count(id) from type where typename like '%$name%'")->queryAll();
+		$sum  = $a[0]['count(id)'];//总条数
+		$sum_page = ceil($sum/$num);//最大页
+		$limit =($page-1)*$num;//偏移量
+		$data['arr'] = $db->createCommand("select * from type  where typename like '%$name%' limit $limit,$num ")->queryAll();
+		$data['prev'] = $page-1<0 ? 1 :$page-1;//上一页
+		$data['next'] = $page+1 >= $sum_page ? $sum_page : $page+1;//下一页
+		$data['end'] = $sum_page;//总页数
+		$data['page'] = $page;
 		return $arr['callback'].'('.json_encode($data).')';
-		/*var_dump($data);die;
-		echo json_encode($data);*/
 	}
 	//添加类型
 	public function actionAdd()

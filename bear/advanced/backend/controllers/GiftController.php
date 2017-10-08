@@ -22,14 +22,25 @@ class GiftController extends Controller
 	//展示礼物
 	public function actionShow()
 	{
-		$callback=Yii::$app->request->get('callback');
-		$db=Yii::$app->db;
+		$arr = Yii::$app->request->get();
+		$db = Yii::$app->db;
+		$name = Yii::$app->request->get('name') ? Yii::$app->request->get('name') : '';//搜索的条件
+		$page = Yii::$app->request->get('page') ? Yii::$app->request->get('page') : '1';//当前页
+		$num  = 5;//每页显示条数
+		$a    = $db->createCommand('select count(id) from type')->queryAll();
+		$sum  = $a[0]['count(id)'];//总条数
+		$sum_page = ceil($sum/$num);//最大页
+		$limit =($page-1)*$$num;//偏移量
+		$msg['prev'] = $page-1<0 ? 1 :$page-1;//上一页
+		$msg['next'] = $page+1 > $sum_page ? $sum_page : $page+1;//下一页
+		$msg['page'] = $page;
+		$msg['end'] = $sum_page;//总页数
 		if (isset(Yii::$app->request->get('id'))) {
 			$id=Yii::$app->request->get('id');
-			$res=$db->createCommand("select * from gift where id=$id")->queryOne();
+			$res = $db->createCommand("select * from gift where id=$id and name like '%$name%' limit $limit,$num ")->queryAll();
 		}else
 		{
-			$res=$db->createCommand("select * from gift")->queryAll();
+			$res = $db->createCommand("select * from gift where name like '%$name%' limit $limit,$num ")->queryAll();
 		}
 		if ($res) {
 			$msg['data']=$res;
@@ -37,7 +48,7 @@ class GiftController extends Controller
 		}else{
 			$msg['error']=0;
 		}
-		echo $callback."(".json_encode($msg).")";
+		return $arr['callback'].'('.json_encode($msg).')';
 	}
 
 	public function actionDel()
