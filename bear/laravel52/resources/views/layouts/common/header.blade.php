@@ -200,6 +200,8 @@
 
                 </div>
 
+                <!-- 判断用户是否登录 -->
+                <?php if(!isset($user)) { ?>
                 <div class="hy-nav-right un-login" style="display:block">
 
                     <div class="hy-nav-title">
@@ -208,19 +210,19 @@
 
                         <div class="un-login-btn">
 
-                            <a class="clickstat" id="nav-login" href="#" eid="click/navi/sign" eid_desc="点击/导航/登录">登录</a>
+                            <a class="clickstat" id="nav-login" href="login" eid="click/navi/sign" eid_desc="点击/导航/登录">登录</a>
 
                             <i>|</i>
 
-                            <a class="clickstat" id="nav-regiest" href="#" eid="click/navi/login" eid_desc="点击/导航/注册">注册</a>
+                            <a class="clickstat" id="nav-regiest" href="register" eid="click/navi/login" eid_desc="点击/导航/注册">注册</a>
 
                         </div>
 
                     </div>
 
                 </div>
-
-                <div class="hy-nav-right nav-user success-login">
+            <?php } else { ?>
+                <div class="hy-nav-right nav-user success-login" style="display:block">
 
                     <a class="nav-user-title" href="http://i.huya.com/" target="_blank">
 
@@ -238,7 +240,7 @@
 
                         <div class="tt-user-card">
 
-                            <a class="btn-exit" id="nav-loggout" href="#"><i class="hy-nav-exit-icon"></i><span>退出</span></a>
+                            <a class="btn-exit" id="nav-loggout" href="login_out"><i class="hy-nav-exit-icon"></i><span>退出</span></a>
 
                             <div class="u-info">
 
@@ -369,7 +371,7 @@
                     </div>
 
                 </div>
-
+                <?php } ?>
             </div>
 
             <div class="duya-header-tips">

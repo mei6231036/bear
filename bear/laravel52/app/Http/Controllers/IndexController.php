@@ -29,7 +29,7 @@ class IndexController extends Controller
 				break;
 			}
 		}
-		return view('index/index',['res'=>$res]);
+		return view('index/index',['res'=>$res,'user'=>$user]);
 	}
 	public function add()
 	{
