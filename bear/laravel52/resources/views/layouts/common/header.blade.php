@@ -240,7 +240,7 @@
 
                         <div class="tt-user-card">
 
-                            <a class="btn-exit" id="nav-loggout" href="#"><i class="hy-nav-exit-icon"></i><span>退出</span></a>
+                            <a class="btn-exit" id="nav-loggout" href="login_out"><i class="hy-nav-exit-icon"></i><span>退出</span></a>
 
                             <div class="u-info">
 

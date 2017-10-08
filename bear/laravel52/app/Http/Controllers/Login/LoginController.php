@@ -24,13 +24,13 @@ class LoginController extends Controller
 		        $data['ip'] = ip2long($myip);
 		        $res=DB::table('user')->insert($data);
 		        $user_id = DB::table('user')->insertGetId();
-		       /* //入用户基本信息表
-		        $info['user_id'] = $user_id;//用户主键id
-		        $info['heading'] = */
+		        //入用户基本信息表
+		        // $info['user_id'] = $user_id;//用户主键id
+		        
 	        }
         }
 	}
-
+	//登录
 	public function login(Request $request)
 	{
 		if($request->isMethod('get')){
@@ -46,6 +46,13 @@ class LoginController extends Controller
 				$session->set('user',$data);
 	        }
         }
+	}
+	//退出
+	public function login_out()
+	{
+		$session=new Session;
+		$out = $session->remove('user');//删除
+		return redirect('/');//重定向首页
 	}
 	public function get_client_ip($type = 0,$adv=false) {
 	    $type       =  $type ? 1 : 0;
