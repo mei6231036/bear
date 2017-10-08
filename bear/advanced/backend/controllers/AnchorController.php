@@ -12,8 +12,8 @@ class AnchorController extends Controller
 		$name = Yii::$app->request->get('name') ? Yii::$app->request->get('name') : '';//搜索的条件
 		$page = Yii::$app->request->get('page') ? Yii::$app->request->get('page') : '1';//当前页
 		$num  = 5;//每页显示条数
-		$a    = $db->createCommand("select count(id) from anchor where status=0 and name like '%$name%'")->queryAll();
-		$sum  = $a[0]['count(id)'];//总条数
+		$a    = $db->createCommand("select count(anchor_id) from anchor where status=0 and name like '%$name%'")->queryAll();
+		$sum  = $a[0]['count(anchor_id)'];//总条数
 		$sum_page = ceil($sum/$num);//最大页
 		$limit =($page-1)*$num;//偏移量
 		$data['arr'] = $db->createCommand("select * from anchor where status=0 and name like '%$name%' limit $limit,$num ")->queryAll();
