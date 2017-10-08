@@ -30,12 +30,12 @@ class GiftController extends Controller
 		$a    = $db->createCommand("select count(id) from gift where name like '%$name%'")->queryAll();
 		$sum  = $a[0]['count(id)'];//总条数
 		$sum_page = ceil($sum/$num);//最大页
-		$limit =($page-1)*$$num;//偏移量
+		$limit =($page-1)*$num;//偏移量
 		$msg['prev'] = $page-1<0 ? 1 :$page-1;//上一页
 		$msg['next'] = $page+1 > $sum_page ? $sum_page : $page+1;//下一页
 		$msg['page'] = $page;
 		$msg['end'] = $sum_page;//总页数
-		if (isset(Yii::$app->request->get('id'))) {
+		if (Yii::$app->request->get('id')) {
 			$id=Yii::$app->request->get('id');
 			$res = $db->createCommand("select * from gift where id=$id and name like '%$name%' limit $limit,$num ")->queryAll();
 		}else
@@ -80,7 +80,7 @@ class GiftController extends Controller
 		$name=Yii::$app->request->get('name');
 		$money=Yii::$app->request->get('money');
 		$db=Yii::$app->db;
-		$res=$db->createCommand()->update("update gift set name='$name',money='$money' where id=$id")->execute();
+		$res=$db->createCommand("update gift set name='$name',money='$money' where id=$id")->execute();
 		if ($res) {
 			$msg['error']=1;
 		}else{
