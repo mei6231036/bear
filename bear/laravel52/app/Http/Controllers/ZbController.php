@@ -1,9 +1,9 @@
 <?php 
 namespace App\Http\Controllers;
 use DB;
-class IndexController extends Controller
-{
-	public function index()
+class ZbController extends Controller
+{	
+	public function show()
 	{
 		$data=DB::table('type')->where('parent_id','!=',0)->get();
 		$arr=[];
@@ -24,25 +24,13 @@ class IndexController extends Controller
 				break;
 			}
 		}
-		return view('index/index',['res'=>$res]);
-	}
-	public function add()
-	{
-		return view('index/live_add');
-	}
-	public function sign()
-	{
-		return view('index/live_sign');
-	}
-	public function register()
-	{
-		return view('index/register');
-	}
-	public function login()
-	{
-		return view('index/login');
+		return view('l/live_list',['res'=>$res]);
 	}
 }
+
+
+
+
 
 
  ?>

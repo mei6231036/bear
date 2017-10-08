@@ -1,9 +1,9 @@
 <?php 
 namespace App\Http\Controllers;
 use DB;
-class IndexController extends Controller
+class CateController extends Controller
 {
-	public function index()
+	public function show()
 	{
 		$data=DB::table('type')->where('parent_id','!=',0)->get();
 		$arr=[];
@@ -24,23 +24,16 @@ class IndexController extends Controller
 				break;
 			}
 		}
-		return view('index/index',['res'=>$res]);
-	}
-	public function add()
-	{
-		return view('index/live_add');
-	}
-	public function sign()
-	{
-		return view('index/live_sign');
-	}
-	public function register()
-	{
-		return view('index/register');
-	}
-	public function login()
-	{
-		return view('index/login');
+		$cate=DB::table('type')->where('parent_id','=',0)->get();
+		$data=DB::table('type')->get();
+		foreach ($cate as $key => $val) {
+			foreach ($data as $k => $v) {
+				if ($val->id==$v->parent_id) {
+					$cate[$key]->child[]=$v;
+				}
+			}
+		}
+		return view('cate/cate_list',['res'=>$res,'cate'=>$cate]);
 	}
 }
 
