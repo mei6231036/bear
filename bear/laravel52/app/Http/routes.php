@@ -18,7 +18,8 @@ Route::get('/', function () {
 Route::get('/home',"home\HomeController@index");
 Route::get('/',"IndexController@index");
 Route::get('/add',"IndexController@add");
-Route::get('/list',"IndexController@llist");
+Route::get('/cate',"CateController@show");
+Route::get('/l',"ZbController@show");
 Route::get('/sign',"IndexController@sign");
 Route::get('/login',"IndexController@login");
 Route::get('/register',"IndexController@register");
