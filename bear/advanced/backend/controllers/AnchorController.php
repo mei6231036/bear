@@ -29,7 +29,7 @@ class AnchorController extends Controller
 	{
 		$arr = Yii::$app->request->get();
 		$db  = Yii::$app->db;
-		$data['arr']= $db->createCommand("select * from anchor where id = $arr['id']")->queryOne();
+		$data['arr']= $db->createCommand("select * from anchor where id = {$arr['id']}")->queryOne();
 		return $arr['callback'].'('.json_encode($data).')';
 	}
 	//修改主播状态
