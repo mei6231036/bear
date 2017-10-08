@@ -27,7 +27,7 @@ class GiftController extends Controller
 		$name = Yii::$app->request->get('name') ? Yii::$app->request->get('name') : '';//搜索的条件
 		$page = Yii::$app->request->get('page') ? Yii::$app->request->get('page') : '1';//当前页
 		$num  = 5;//每页显示条数
-		$a    = $db->createCommand('select count(id) from type')->queryAll();
+		$a    = $db->createCommand('select count(id) from gift')->queryAll();
 		$sum  = $a[0]['count(id)'];//总条数
 		$sum_page = ceil($sum/$num);//最大页
 		$limit =($page-1)*$$num;//偏移量
@@ -65,7 +65,14 @@ class GiftController extends Controller
 		echo $callback."(".json_encode($msg).")";
 
 	}
-
+	//修改 首先查询单条
+	public function actionUpone()
+	{
+		$arr = Yii::$app->request->get();
+		$db  = Yii::$app->db;
+		$data['arr']= $db->createCommand("select * from gift where id = $arr['id']")->queryOne();
+		return $arr['callback'].'('.json_encode($data).')';
+	}
 	public function actionUpdate()
 	{
 		$callback=Yii::$app->request->get('callback');
