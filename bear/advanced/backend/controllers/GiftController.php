@@ -24,11 +24,10 @@ class GiftController extends Controller
 	{
 		$callback=$_GET['callback'];
 		$db=Yii::$app->db;
-		if (isset($_GET['id'])) {
+		if ($_GET['id']) {
 			$id=$_GET['id'];
 			$res=$db->createCommand("select * from gift where id=$id")->queryOne();
-		}else
-		{
+		}
 			$res=$db->createCommand("select * from gift")->queryAll();
 		}
 		if ($res) {
