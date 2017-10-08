@@ -23,4 +23,8 @@ Route::get('/l',"ZbController@show");
 Route::get('/sign',"IndexController@sign");
 Route::get('/login',"IndexController@login");
 Route::get('/register',"IndexController@register");
+Route::get('/anchor',"AnchorController@index");
 Route::resource('home',"home\HomeController");
+Route::get('/article',function(){
+    return view('article.index');
+});
