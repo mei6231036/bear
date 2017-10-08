@@ -62,7 +62,7 @@ class GiftController extends Controller
 		$name=$_GET['name'];
 		$money=$_GET['money'];
 		$db=Yii::$app->db;
-		$res=$db->createCommand()->update("update gift set name='$name',money='$money' where id=$id")->execute();
+		$res=$db->createCommand("update gift set name='$name',money='$money' where id=$id")->execute();
 		if ($res) {
 			$msg['error']=1;
 		}else{
