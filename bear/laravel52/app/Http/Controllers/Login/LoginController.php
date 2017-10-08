@@ -13,6 +13,7 @@ class LoginController extends Controller
 		if($request->isMethod('get')){
 	        $data['email'] 	  =	$request->input('email');
 	        $first = DB::table('user')->select(['email'])->where('email',$data['email'])->first();//查询邮箱
+	        var_dump($first);die;
 	        //判断邮箱是否注册过
 	        if($first){
 	        	echo 1;
@@ -23,7 +24,7 @@ class LoginController extends Controller
 		        $data['addtime']  = time();
 		        $data['ip'] = ip2long($myip);
 		        $res=DB::table('user')->insert($data);
-		        $user_id = DB::table('user')->insertGetId();
+		        // $user_id = DB::table('user')->insertGetId();
 		        //入用户基本信息表
 		        // $info['user_id'] = $user_id;//用户主键id
 		        
