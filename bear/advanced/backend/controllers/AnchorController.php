@@ -35,8 +35,11 @@ class AnchorController extends Controller
 		$res=$db->createCommand()->update("update anchor set status='$status' where id=$id")->execute();
 		if ($res) {
 			$time=time();
+			$anchor=$db->createCommand("select * from anchor where anchor_id=$id")->queryOne();
+			$user_id=$anchor['user_id'];
+			$s=$db->createCommand("insert into system value('','$content','$user_id','$time')")->execute();
 			$a=$db->createCommand()->insert("insert into room value('','','$id','$time')")->execute();
-			if ($a) {
+			if ($a && $s) {
 				$msg['error']=1;
 			}
 		}else{
