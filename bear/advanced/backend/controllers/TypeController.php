@@ -24,7 +24,7 @@ class TypeController extends Controller
 		$a    = $db->createCommand('select count(id) from type')->queryAll();
 		$sum  = $a[0]['count(id)'];//总条数
 		$sum_page = ceil($sum/$num);//最大页
-		$limit =($page-1)*5;//偏移量
+		$limit =($page-1)*$num;//偏移量
 		$data['arr'] = $db->createCommand("select * from type limit $limit,$num ")->queryAll();
 		$data['prev'] = $page-1<0 ? 1 :$page-1;//上一页
 		$data['next'] = $page+1 >= $sum_page ? $sum_page : $page+1;//下一页

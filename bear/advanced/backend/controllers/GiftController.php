@@ -30,11 +30,11 @@ class GiftController extends Controller
 		$a    = $db->createCommand('select count(id) from type')->queryAll();
 		$sum  = $a[0]['count(id)'];//总条数
 		$sum_page = ceil($sum/$num);//最大页
-		$limit =($page-1)*$sum_page;//偏移量
-		$msg['top_page'] = $page-1<0 ? 1 :$page-1;//上一页
-		$msg['down_page'] = $page+1 > $sum_page ? $sum_page : $page+1;//下一页
+		$limit =($page-1)*$$num;//偏移量
+		$msg['prev'] = $page-1<0 ? 1 :$page-1;//上一页
+		$msg['next'] = $page+1 > $sum_page ? $sum_page : $page+1;//下一页
 		$msg['page'] = $page;
-		
+		$msg['end'] = $sum_page;//总页数
 		if (isset(Yii::$app->request->get('id'))) {
 			$id=Yii::$app->request->get('id');
 			$res = $db->createCommand("select * from gift  where id=$id limit $limit,$num ")->queryAll();
