@@ -45,6 +45,11 @@ class AnchorController extends Controller
 			$time=time();
 			$anchor=$db->createCommand("select * from anchor where anchor_id=$id")->queryOne();
 			$user_id=$anchor['user_id'];
+			if ($status==1) {
+				$content="您的主播资料审核已通过";
+			}else{
+				$content="您的主播资料因为资料不足审核未通过";
+			}
 			$s=$db->createCommand("insert into system value('','$content','$user_id','$time')")->execute();
 			$a=$db->createCommand()->insert("insert into room value('','','$id','$time')")->execute();
 			if ($a && $s) {
