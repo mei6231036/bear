@@ -12,7 +12,7 @@ class GiftController extends Controller
 		$callback=$_GET['callback'];
 		$db=Yii::$app->db;
 		$res=$db->createCommand()->insert('gift',['name'=>$name,'money'=>$money])->execute();
-		if ($res) {
+		if($res) {
 			$msg['error']=1;
 		}else{
 			$msg['error']=0;
@@ -24,13 +24,14 @@ class GiftController extends Controller
 	{
 		$callback=$_GET['callback'];
 		$db=Yii::$app->db;
-		if ($_GET['id']) {
+		if (isset($_GET['id'])) {
 			$id=$_GET['id'];
 			$res=$db->createCommand("select * from gift where id=$id")->queryOne();
-		}
+		}else
+		{
 			$res=$db->createCommand("select * from gift")->queryAll();
 		}
-		if ($res) {
+		if($res){
 			$msg['data']=$res;
 			$msg['error']=1;
 		}else{
