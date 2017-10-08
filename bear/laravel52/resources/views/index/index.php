@@ -288,11 +288,11 @@
 
                         <div class="un-login-btn">
 
-                            <a class="clickstat" id="nav-login" href="#" eid="click/navi/sign" eid_desc="点击/导航/登录">登录</a>
+                            <a class="clickstat" id="nav-login" href="<?=url('/login')?>" eid="click/navi/sign" eid_desc="点击/导航/登录">登录</a>
 
                             <i>|</i>
 
-                            <a class="clickstat" id="nav-regiest" href="#" eid="click/navi/login" eid_desc="点击/导航/注册">注册</a>
+                            <a class="clickstat" id="nav-regiest" href="<?=url('/register')?>" eid="click/navi/login" eid_desc="点击/导航/注册">注册</a>
 
                         </div>
 
