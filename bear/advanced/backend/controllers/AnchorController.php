@@ -7,12 +7,21 @@ class AnchorController extends Controller
 	//展示所有的主播
 	public function actionShow()
 	{
-		$callback=Yii::$app->request->get('callback');
-		$db=Yii::$app->db;
-		$res=$db->createCommand("select * from anchor where status=0")->queryAll();	
-		$msg['error']=1;
-		$msg['data']=$res;	
-		echo $callback."(".json_encode($msg).")";
+		$arr = Yii::$app->request->get();
+		$db = Yii::$app->db;
+
+		$page = Yii::$app->request->get('page') ? Yii::$app->request->get('page') : '1';//当前页
+		$num  = 5;//每页显示条数
+		$a    = $db->createCommand('select count(id) from anchor where status=0')->queryAll();
+		$sum  = $a[0]['count(id)'];//总条数
+		$sum_page = ceil($sum/$num);//最大页
+		$limit =($page-1)*$sum_page;//偏移量
+		$data['arr'] = $db->createCommand("select * from anchor where status=0 limit $limit,$num ")->queryAll();
+		$data['top_page'] = $page-1<0 ? 1 :$page-1;//上一页
+		$data['down_page'] = $page+1 > $sum_page ? $sum_page : $page+1;//下一页
+		$data['page'] = $page;
+		return $arr['callback'].'('.json_encode($data).')';
+
 	}
 	//修改主播状态
 	public function actionUpdate()
