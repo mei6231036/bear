@@ -24,7 +24,7 @@ class GiftController extends Controller
 	{
 		$arr = Yii::$app->request->get();
 		$db = Yii::$app->db;
-
+		$name = Yii::$app->request->get('name') ? Yii::$app->request->get('name') : '';//搜索的条件
 		$page = Yii::$app->request->get('page') ? Yii::$app->request->get('page') : '1';//当前页
 		$num  = 5;//每页显示条数
 		$a    = $db->createCommand('select count(id) from type')->queryAll();
@@ -37,10 +37,10 @@ class GiftController extends Controller
 		$msg['end'] = $sum_page;//总页数
 		if (isset(Yii::$app->request->get('id'))) {
 			$id=Yii::$app->request->get('id');
-			$res = $db->createCommand("select * from gift  where id=$id limit $limit,$num ")->queryAll();
+			$res = $db->createCommand("select * from gift where id=$id and name like '%$name%' limit $limit,$num ")->queryAll();
 		}else
 		{
-			$res = $db->createCommand("select * from gift limit $limit,$num ")->queryAll();
+			$res = $db->createCommand("select * from gift where name like '%$name%' limit $limit,$num ")->queryAll();
 		}
 		if ($res) {
 			$msg['data']=$res;
