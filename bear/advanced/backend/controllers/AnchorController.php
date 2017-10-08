@@ -7,7 +7,7 @@ class AnchorController extends Controller
 	//展示所有的主播
 	public function actionShow()
 	{
-		$callback=$_GET['callback'];
+		$callback=Yii::$app->request->get('callback');
 		$db=Yii::$app->db;
 		$res=$db->createCommand("select * from anchor where status=0")->queryAll();	
 		$msg['error']=1;
@@ -17,10 +17,10 @@ class AnchorController extends Controller
 	//修改主播状态
 	public function actionUpdate()
 	{
-		$callback=$_GET['callback'];
+		$callback=Yii::$app->request->get('callback');
 		$db=Yii::$app->db;
-		$status=$_GET['status'];
-		$id=$_GET['anchor_id'];
+		$status=Yii::$app->request->get('status');
+		$id=Yii::$app->request->get('anchor_id');
 		$db=Yii::$app->db;
 		$res=$db->createCommand()->update("update anchor set status='$status' where id=$id")->execute();
 		if ($res) {

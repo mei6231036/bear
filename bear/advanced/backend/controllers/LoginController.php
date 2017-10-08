@@ -11,9 +11,9 @@ class LoginController extends Controller
 	}
 	public function actionIndex()
 	{
-		$a_name=$_GET['a_name'];
-		$a_pwd=$_GET['a_pwd'];
-		$callback=$_GET['callback'];
+		$a_name=Yii::$app->request->get('a_name');
+		$a_pwd=Yii::$app->request->get('a_pwd');
+		$callback=Yii::$app->request->get('callback')
 		$pwd=md5($a_pwd);
 		$db=Yii::$app->db;
 		$res=$db->createCommand("select * from admin where a_name='$a_name' and a_pwd='$pwd'")->queryOne();

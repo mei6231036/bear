@@ -1,4 +1,4 @@
-<?php 
+   <?php 
 namespace backend\controllers;
 use Yii;
 use yii\web\Controller;
@@ -8,8 +8,9 @@ class GiftController extends Controller
 	public function actionAdd()
 	{
 		$money=$_GET['money'];
-		$name=$_GET['name'];
-		$callback=$_GET['callback'];
+		$money=Yii::$app->request->get('money');
+		$name=Yii::$app->request->get('name');
+		$callback=Yii::$app->request->get('callback');
 		$db=Yii::$app->db;
 		$res=$db->createCommand()->insert('gift',['name'=>$name,'money'=>$money])->execute();
 		if ($res) {
@@ -22,12 +23,13 @@ class GiftController extends Controller
 	//展示礼物
 	public function actionShow()
 	{
-		$callback=$_GET['callback'];
+		$callback=Yii::$app->request->get('callback');
 		$db=Yii::$app->db;
-		if ($_GET['id']) {
-			$id=$_GET['id'];
+		if (isset(Yii::$app->request->get('id'))) {
+			$id=Yii::$app->request->get('id');
 			$res=$db->createCommand("select * from gift where id=$id")->queryOne();
-		}
+		}else
+		{
 			$res=$db->createCommand("select * from gift")->queryAll();
 		}
 		if ($res) {
@@ -41,8 +43,8 @@ class GiftController extends Controller
 
 	public function actionDel()
 	{
-		$callback=$_GET['callback'];
-		$id=$_GET['id'];
+		$callback=Yii::$app->request->get('callback');
+		$id=Yii::$app->request->get('id');
 		$db=Yii::$app->db;
 		$res=$db->createCommand("delete from gift where id=$id")->execute();
 		if ($res) {
@@ -56,10 +58,10 @@ class GiftController extends Controller
 
 	public function actionUpdate()
 	{
-		$callback=$_GET['callback'];
-		$id=$_GET['id'];
-		$name=$_GET['name'];
-		$money=$_GET['money'];
+		$callback=Yii::$app->request->get('callback');
+		$id=Yii::$app->request->get('id');
+		$name=Yii::$app->request->get('name');
+		$money=Yii::$app->request->get('money');
 		$db=Yii::$app->db;
 		$res=$db->createCommand()->update("update gift set name='$name',money='$money' where id=$id")->execute();
 		if ($res) {
