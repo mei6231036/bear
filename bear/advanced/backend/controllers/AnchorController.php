@@ -41,7 +41,6 @@ class AnchorController extends Controller
 		$id=Yii::$app->request->get('anchor_id');
 		$db=Yii::$app->db;
 		$res=$db->createCommand("update anchor set status='$status' where anchor_id=$id")->execute();
-		var_dump($res);die;
 		if ($res) {
 			$time=time();
 			$anchor=$db->createCommand("select * from anchor where anchor_id=$id")->queryOne();
