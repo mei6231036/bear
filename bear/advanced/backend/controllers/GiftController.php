@@ -29,6 +29,7 @@ class GiftController extends Controller
 			$res=$db->createCommand("select * from gift where id=$id")->queryOne();
 		}
 			$res=$db->createCommand("select * from gift")->queryAll();
+		}
 		if ($res) {
 			$msg['data']=$res;
 			$msg['error']=1;

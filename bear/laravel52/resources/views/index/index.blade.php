@@ -81,7 +81,6 @@
   
 	{{-- 包含页头 --}}
 	@include('layouts.common.header')   
-
     <!-- E 通用头部 -->
 
 

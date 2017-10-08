@@ -19,12 +19,13 @@ class TypeController extends Controller
 		$arr = Yii::$app->request->get();
 		// var_dump($arr['callback']);die;
 		$db = Yii::$app->db;
-		$sql = "select * from type where parent_id = 0";
-		$data =  $db->createCommand($sql)->queryAll();
-		foreach ($data as $key => $value) {
-			$sqll = "select * from type where parent_id = ".$value['id'];		
-			$data[$key]['child'] = $arr;
-		}
+		// $sql = "select * from type where parent_id = 0";
+		// $data =  $db->createCommand($sql)->queryAll();
+		// foreach ($data as $key => $value) {
+		// 	$sqll = "select * from type where parent_id = ".$value['id'];		
+		// 	$data[$key]['child'] = $arr;
+		// }
+		$data=$db->createCommand('select * from type')->queryAll();
 		return $arr['callback'].'('.json_encode($data).')';
 		/*var_dump($data);die;
 		echo json_encode($data);*/
@@ -35,12 +36,16 @@ class TypeController extends Controller
 		$arr = Yii::$app->request->get();
 		$db  = Yii::$app->db;
 		//判断是子集还是父级
-		$db->createCommand()->insert('type',['typename'=>$arr['typename'],'parent_id'=>$arr['id']])->execute();
+		$res=$db->createCommand()->insert('type',['typename'=>$arr['typename'],'parent_id'=>$arr['id']])->execute();
 		/*$path_id = Yii::$app->db->getLastInsertId();
 		$path = $arr['id'].'-'.$path_id;
 		Yii::$app->db->createCommand()->update('type', ['path' => $path], 'id ='.$path_id)->execute();*/
-		$data['code'] = '200';
-		$data['message'] = 'ok';
+		if($res)
+		{
+			$data['code'] = '200';
+			$data['message'] = 'ok';
+		}
+		
 		return $arr['callback'].'('.json_encode($data).')';
 	}
 	/*删除类型	

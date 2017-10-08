@@ -7,7 +7,7 @@ class LoginController extends Controller
 	public $session;
 	public function init()
 	{
-		$this->session=Yii::$app->session;
+		// $this->session=Yii::$app->session;
 	}
 	public function actionIndex()
 	{

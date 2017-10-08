@@ -22,6 +22,8 @@ Route::get('/cate',"CateController@show");
 Route::get('/l',"ZbController@show");
 Route::get('/sign',"IndexController@sign");
 Route::get('/login',"IndexController@login");
+Route::get('/login_do',"login\LoginController@login");//zyk
+Route::get('/regin',"login\LoginController@regin");//zyk
 Route::get('/register',"IndexController@register");
 Route::get('/anchor',"AnchorController@index");
 Route::resource('home',"home\HomeController");
