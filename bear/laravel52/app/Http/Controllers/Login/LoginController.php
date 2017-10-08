@@ -23,7 +23,7 @@ class LoginController extends Controller
 		        $data['addtime']  = time();
 		        $data['ip'] = ip2long($myip);
 		        $res=DB::table('user')->insert($data);
-		        $user_id = DB::table('user')->insertGetId()
+		        $user_id = DB::table('user')->insertGetId();
 		       /* //入用户基本信息表
 		        $info['user_id'] = $user_id;//用户主键id
 		        $info['heading'] = */
