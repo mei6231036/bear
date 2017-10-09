@@ -12,12 +12,9 @@
 |
 */
 
-Route::any('/', function () {
-   
-});
+
 Route::any('/home',"home\HomeController@index");
 // 个人中心
-
 Route::any('/myuser',"MyuserController@index");
 Route::any('/myauth',"MyuserController@myauth");
 Route::any('/myaccount',"MyuserController@myaccount");
