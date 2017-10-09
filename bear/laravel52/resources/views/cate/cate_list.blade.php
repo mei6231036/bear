@@ -107,9 +107,9 @@ var APP_URL = "http://www.huya.com/";
 <div class="filter">
 <dl>
 <dd bussType="0" ><a class="clickstat" href="#" eid="click/list/allgame/all"   eid_desc="点击/列表页/全部游戏/全部">全部</a></dd>
-<?php foreach ($cate as $key => $val) { ?>
-<dd bussType="0"><a class="clickstat" href="#" eid="click/list/allgame/all"   eid_desc="点击/列表页/全部游戏/全部"><?php echo $val->typename ?></a></dd>
-<?php } ?>
+@foreach($cate as $val)
+<dd bussType="0"><a class="clickstat" href="#" eid="click/list/allgame/all"   eid_desc="点击/列表页/全部游戏/全部">{{ $val->typename }}</a></dd>
+@endforeach
 </dl>
 </div>
 </div>
