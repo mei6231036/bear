@@ -205,6 +205,8 @@
     
 
 	<script src="mylevel_files/header.js"></script>
+        @include('layouts.common.header')
+
 	<div style="height:50px;"></div>
     <div class="admin-wrap">
         <style type="text/css">

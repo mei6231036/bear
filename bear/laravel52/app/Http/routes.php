@@ -23,7 +23,6 @@ Route::get('/myaccount',"MyuserController@myaccount");
 Route::get('/mylevel',"MyuserController@mylevel");
 Route::get('/mylist',"MyuserController@mylist");
 Route::get('/mysubscribe',"MyuserController@mysubscribe");
-
 Route::get('/',"IndexController@index");
 Route::get('/add',"IndexController@add");
 Route::get('/cate',"CateController@show");
@@ -34,7 +33,6 @@ Route::get('/login_do',"login\LoginController@login");//zyk
 Route::get('/login_out',"login\LoginController@login_out");//zyk
 Route::get('/regin',"login\LoginController@regin");//zyk
 Route::get('/register',"IndexController@register");
-Route::get('/anchor',"AnchorController@index");
 Route::resource('home',"home\HomeController");
 Route::resource('/yy',"YyController@index");
 Route::get('/article',function(){

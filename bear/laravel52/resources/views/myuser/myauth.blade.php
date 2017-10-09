@@ -100,7 +100,7 @@
                     <h3 class="header">&nbsp;个人中心</h3>
                     <ul class="icon-filter">
                         <li>
-                            <a menu="home" href="http://i.huya.com/">
+                            <a menu="home" href="myuser" class="selected">
                                 <span class="icon icon-home"></span>
                                 <span class="title">
                                     我的信息
@@ -108,7 +108,7 @@
                             </a>
                         </li>
                         <li>
-                            <a menu="userlevel" href="http://i.huya.com/index.php?m=UserLevel">
+                            <a menu="userlevel" href="mylevel">
                                 <span class="icon icon-userlevel"></span>
                                 <span class="title">
                                     等级成长
@@ -116,7 +116,7 @@
                             </a>
                         </li>
                         <li>
-                            <a menu="subscribe" href="http://i.huya.com/index.php?m=Subscribe">
+                            <a menu="subscribe" href="mysubscribe">
                                 <span class="icon icon-subscribe"></span>
                                 <span class="title">
                                     订阅
@@ -124,24 +124,26 @@
                             </a>
                         </li>
                         <li id="msg-li">
-                            <a menu="msg" href="http://i.huya.com/index.php?m=Msg&do=listMsg">
+                            <a menu="msg" href="mylist">
                                 <span class="icon icon-msg"></span>
                                 <span class="title">
                                     我的消息
                                 </span>
                             </a>
                         </li>
+                        
                         <li>
-                            <a menu="money" href="http://i.huya.com/index.php?m=MyAccount&do=myAccount">
+                            <a menu="money" href="myaccount">
                                 <span class="icon icon-money"></span>
                                 <span class="title">
                                     我的财产
                                 </span>
                             </a>
                         </li>
-                      
+                        
+                       
                         <li>
-                            <a menu="auth" href="http://i.huya.com/index.php?m=ProfileAuth">
+                            <a menu="auth" href="myauth">
                                 <span class="icon icon-auth"></span>
                                 <span class="title">
                                     虎牙认证
@@ -149,11 +151,13 @@
                             </a>
                         </li>
                     </ul>
-                </div>                                 
-           
+                </div>
+                           
+                    <div class="to-be-anchor">
+                        <p>想成为万人敬仰的主播？</p>
+                        <a href="zhubo" target="_blank" class="btn btn-to-anchor">成为主播</a>
+                    </div>
             </div>
-
-
         </div>
 
     </div>

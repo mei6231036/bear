@@ -13,7 +13,22 @@ class MyuserController extends Controller
 	}   
 	 	function myauth()
 	{
-		return  view('myuser.myauth');
+
+		$cate=DB::table('type')->where('parent_id','=',0)->get();
+		$session=new Session;
+		$user=$session->get('user');
+		if ($user) {
+		$user_id=$user->user_id;
+		$res=DB::table('anchor')->where("user_id","=",$user_id)->get();
+		if ($res) {
+			$status=1;
+		}else{
+			$status=0;
+		}
+		}else{
+			$status=0;
+		}
+		return  view('myuser.myauth',['cate'=>$cate]);
 	}   
 	 	function myaccount()
 	{
