@@ -10,10 +10,12 @@ class OfficialController extends Controller
 	//发布通告接口
 	public function actionIndex()
 	{
-		$content=Yii::$app->request()->get('content');
-		$callback=Yii::$app->request()->get('callback');
+
+		$content=Yii::$app->request->get('content');
+		$callback=Yii::$app->request->get('callback');
+		$time=time();
 		$db=Yii::$app->db;
-		$res=$db->createCommand("insert into official value ('','$content')")->execute();
+		$res=$db->createCommand("insert into official values ('','$content',$time)")->execute();
 		if ($res) {
 			$msg['error']=1;
 			$msg['content']="添加成功";

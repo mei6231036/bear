@@ -96,7 +96,7 @@
 					<ul class="nav nav-list">
 						<li>
 
-								<router-link to="/" class="dropdown-toggle">
+								<router-link to="/mess" class="dropdown-toggle">
 								<i class="icon-calendar"></i>
 								<span class="menu-text"> 消息管理 </span>
 
@@ -105,9 +105,9 @@
 
 							<ul class="submenu">
 								<li>
-									<router-link to="/anchor" >
+									<router-link to="/messadd" >
 										<i class="icon-double-angle-right"></i>
-										
+										消息发布
 									</router-link>
 								</li>
 							</ul>
