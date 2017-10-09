@@ -4,6 +4,7 @@ use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Session\Session;
+
 class LoginController extends Controller
 {
 	//注册
@@ -13,7 +14,6 @@ class LoginController extends Controller
 		if($request->isMethod('get')){
 	        $data['email'] 	  =	$request->input('email');
 	        $first = DB::table('user')->select(['email'])->where('email',$data['email'])->first();//查询邮箱
-	        var_dump($first);die;
 	        //判断邮箱是否注册过
 	        if($first){
 	        	echo 1;
@@ -24,10 +24,15 @@ class LoginController extends Controller
 		        $data['addtime']  = time();
 		        $data['ip'] = ip2long($myip);
 		        $res=DB::table('user')->insert($data);
-		        // $user_id = DB::table('user')->insertGetId();
+		        $arr=DB::table('user')->orderBy('user_id', 'desc')->first();
 		        //入用户基本信息表
-		        // $info['user_id'] = $user_id;//用户主键id
-		        
+		        $info['user_id'] = $arr->user_id;//用户主键id
+		        $info['nickname'] = $arr->email;
+		        $ree=DB::table('user_info')->insert($info);
+		        if($ree)
+		        {
+		        	echo 2;
+		        }
 	        }
         }
 	}
