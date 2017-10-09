@@ -25,11 +25,11 @@
                         <i class="arrow"></i>
 							<!-- 111111111111 -->
 						<dl class="clearfix"><dt>系统推荐</dt>
-						<?php foreach ($res as $key => $val) { ?>
+						@foreach($res as $val)
 						<dd>
-						<a class="clickstat" eid="click/navi/game/game1" eid_desc="点击/导航/游戏/游戏1" title="<?=$val['typename']?>" href="<?=url('/cate')?>?id=<?=$val['id']?>" target="_blank"><?=$val['typename']?></a>
+						<a class="clickstat" eid="click/navi/game/game1" eid_desc="点击/导航/游戏/游戏1" title="<?=$val['typename']?>" href="<?=url('/cate')?>?id=<?=$val['id']?>" target="_blank">{{ $val['typename'] }}</a>
 						</dd>
-						<?php } ?>
+						@endforeach
 						</dl>
 						<a href="<?=url('cate/index')?>" class="nav-expand-game-more" target="_blank">更多 <span>&gt;</span></a>
 						<!-- 111111111111 -->
@@ -86,13 +86,8 @@
 
                 <div class="hy-nav-right">
 
-                    <a class="hy-nav-title clickstat" href="http://www.huya.com/download/" eid="click/navi/download" eid_desc="点击/导航/下载" target="_blank">
+                        <span class="title"></span>
 
-                        <i class="hy-nav-icon hy-nav-download-icon"></i>
-
-                        <span class="title">下载</span>
-
-                    </a>
 
                     <div class="nav-expand-list nav-expand-download">
 
@@ -166,13 +161,8 @@
 
                 <div class="hy-nav-right hy-nav-history">
 
-                    <a class="hy-nav-title nav-history new-clickstat" id="nav-history" href="http://i.huya.com/index.php?m=Subscribe&watch=1" target="_blank" report='{"eid":"click/position","position":"click/navi/lishi"}'>
+                        <span class="title"></span>
 
-                        <i class="hy-nav-icon hy-nav-history-icon"></i>
-
-                        <span class="title">历史</span>
-
-                    </a>
 
                     <div class="nav-expand-list nav-expand-history">
 
@@ -186,7 +176,7 @@
 
                                     <i class="icon-loading"></i>
 
-                                    <em>正在加载您的历史...</em>
+                                    <em></em>
 
                                 </div>
 
