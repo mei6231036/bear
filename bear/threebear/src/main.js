@@ -12,6 +12,8 @@ import typeadd from './typeadd.vue';
 import giftadd from './giftadd.vue';
 import anchoradd from './anchoradd.vue';
 import login from './login.vue';
+import giftrem from './giftrem.vue';
+import typerem from './typerem.vue';
 
 Vue.use(VueRouter);
 Vue.use(VueResource);
@@ -48,6 +50,16 @@ var router = new VueRouter({
 	    path: '/anchoradd',
 	    component: anchoradd,
 	  },
+	  {
+	    path: '/giftrem/:id',
+	    name:'grem',
+	    component: giftrem,
+	  },
+	  {
+	    path: '/typerem/:id',
+	    name:'trem',
+	    component: typerem,
+	  }
 	
 	 
 	]	

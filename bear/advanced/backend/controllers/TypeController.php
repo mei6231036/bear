@@ -90,6 +90,10 @@ class TypeController extends Controller
 		{
 			$data['code'] = '200';
 			$data['message'] = 'type update is ok';
+		}else
+		{
+			$data['code'] = '201';
+			$data['message'] = 'type update is fail';
 		}
 		return $arr['callback'].'('.json_encode($data).')';
 	}

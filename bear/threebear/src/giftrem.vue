@@ -2,27 +2,26 @@
 	<div class="col-xs-12">
 		<form class="form-horizontal" role="form">
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 分类名称</label>
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 礼物名称</label>
 
 										<div class="col-sm-9">
-											<input id="form-field-1" placeholder="typename" class="col-xs-10 col-sm-5" type="text" v-model="val.typename">
+											<input id="form-field-1" placeholder="gift" class="col-xs-10 col-sm-5" type="text" v-model="data.name">
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="form-field-1">上级分类</label>
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 礼物价值</label>
 
 										<div class="col-sm-9">
-											<select name="" id="" v-model="val.id" >
-												<option value="0" selected="true">顶级分类</option>
-												<option :value="v.id" v-for="v in data">{{v.typename}}</option>
-											</select>
+											<input id="form-field-1" placeholder="gift" class="col-xs-10 col-sm-5" type="text" v-model="data.money">
+											<input type="hidden" name="" v-model="data.id"/>
 										</div>
 									</div>
+									
 								
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" @click="aaa(val)">
+											<button class="btn btn-info" type="button" @click="aaa(data)">
 												<i class="icon-ok bigger-110"></i>
 												Submit
 											</button>
@@ -40,8 +39,6 @@
 									
 	 </form>
 	</div>
-										
-									
 	
 </template>
 
@@ -49,24 +46,19 @@
 	export default {
 
  data(){return{
- 	
- 	val:{typename:'',id:''},
- 	data:[]
-
+ 	data:[],
 
  }},
- mounted: function() {
+ 	mounted: function() {
 
-			this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=type/sel',{}, {
-	        headers: {
-	 
-	        },
-	        emulateJSON: true
-	    }).then(function(response) { 
+			this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=gift/upone',{params:{id:this.$route.params.id}},
+			 {
+		        emulateJSON: true
+		     }).then(function(response) { 
 	    	//链式调用执行
 	      // 这里是处理正确的回调
+
 	        console.log(response)
-	      
 	 		this.data=response.body.arr
 	 
 	    }, function(response) {
@@ -76,13 +68,12 @@
 
 	    
 	},
-
 	methods: {
-    aaa: function (val) {
+		aaa: function (val) {
 
 
 
-		 this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=type/add',
+		 this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=gift/update',
 		 {params:val},
 		 {
 	        emulateJSON: true
@@ -92,9 +83,9 @@
 	        //这里是处理正确的回调
 
 	        console.log(response.bodyText)
-	       if(response.body.code==200)
+	      if(response.body.error==1)
 	      {
-			this.$router.push('/type')
+			this.$router.push('/gift')
 	      }
 
 	 
@@ -106,9 +97,9 @@
 
 	    
 	},
-
-    }
+   
   
+  }
 	
 	
 	 
@@ -118,4 +109,5 @@
 </script>
 
 <style>
+	
 </style>

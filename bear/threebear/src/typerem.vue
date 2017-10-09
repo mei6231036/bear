@@ -12,7 +12,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="form-field-1">上级分类</label>
 
 										<div class="col-sm-9">
-											<select name="" id="" v-model="val.id" >
+											<select name="" id="" v-model="val.parent_id" >
 												<option value="0" selected="true">顶级分类</option>
 												<option :value="v.id" v-for="v in data">{{v.typename}}</option>
 											</select>
@@ -40,34 +40,47 @@
 									
 	 </form>
 	</div>
-										
-									
-	
 </template>
 
 <script>
 	export default {
 
  data(){return{
- 	
- 	val:{typename:'',id:''},
- 	data:[]
-
+ 	data:[],
+ 	val:{typename:'',id:'',parent_id:''},
 
  }},
- mounted: function() {
-
+ 	mounted: function() {
 			this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=type/sel',{}, {
-	        headers: {
-	 
-	        },
-	        emulateJSON: true
-	    }).then(function(response) { 
+			        headers: {
+			 
+			        },
+			        emulateJSON: true
+			    }).then(function(response) { 
+			    	//链式调用执行
+			      // 这里是处理正确的回调
+			        console.log(response)
+			      
+			 		this.data=response.body.arr
+			 
+			    }, function(response) {
+			        // 这里是处理错误的回调
+			        console.log(response)
+			    });
+			
+			
+			
+			
+			this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=type/upone',{params:{id:this.$route.params.id}},
+			 {
+		        emulateJSON: true
+		     }).then(function(response) { 
 	    	//链式调用执行
 	      // 这里是处理正确的回调
+
 	        console.log(response)
-	      
-	 		this.data=response.body.arr
+	 		this.val=response.body.arr
+
 	 
 	    }, function(response) {
 	        // 这里是处理错误的回调
@@ -76,13 +89,12 @@
 
 	    
 	},
-
 	methods: {
-    aaa: function (val) {
+		aaa: function (val) {
 
 
 
-		 this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=type/add',
+		 this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=type/up',
 		 {params:val},
 		 {
 	        emulateJSON: true
@@ -92,7 +104,7 @@
 	        //这里是处理正确的回调
 
 	        console.log(response.bodyText)
-	       if(response.body.code==200)
+	      if(response.body.code==200)
 	      {
 			this.$router.push('/type')
 	      }
@@ -106,9 +118,9 @@
 
 	    
 	},
-
-    }
+   
   
+  }
 	
 	
 	 
@@ -118,4 +130,5 @@
 </script>
 
 <style>
+	
 </style>

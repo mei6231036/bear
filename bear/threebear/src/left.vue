@@ -83,15 +83,38 @@
 
 							<ul class="submenu">
 								<li>
-									<router-link to="/anchoradd" >
+									<router-link to="/anchor" >
 										<i class="icon-double-angle-right"></i>
-										添加主播
+										主播
 									</router-link>
 								</li>
 							</ul>
 						</li>
 						
 					</ul><!-- /.nav-list -->
+					
+					<ul class="nav nav-list">
+						<li>
+
+								<router-link to="/" class="dropdown-toggle">
+								<i class="icon-calendar"></i>
+								<span class="menu-text"> 消息管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+								</router-link>
+
+							<ul class="submenu">
+								<li>
+									<router-link to="/anchor" >
+										<i class="icon-double-angle-right"></i>
+										
+									</router-link>
+								</li>
+							</ul>
+						</li>
+						
+					</ul><!-- /.nav-list -->
+				
 
 
 
