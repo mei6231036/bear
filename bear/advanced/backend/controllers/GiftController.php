@@ -2,9 +2,12 @@
 namespace backend\controllers;
 use Yii;
 use yii\web\Controller;
+/*
+ *礼物管理接口
+ */
 class GiftController extends Controller
 {
-	//添加礼物
+	//添加礼物接口
 	public function actionAdd()
 	{
 		$money=Yii::$app->request->get('money');
@@ -19,7 +22,7 @@ class GiftController extends Controller
 		}
 		echo $callback."(".json_encode($msg).")";
 	}
-	//展示礼物
+	//礼物列表接口
 	public function actionShow()
 	{
 		$arr = Yii::$app->request->get();
@@ -50,7 +53,7 @@ class GiftController extends Controller
 		}
 		return $arr['callback'].'('.json_encode($msg).')';
 	}
-
+	//礼物删除接口
 	public function actionDel()
 	{
 		$callback=Yii::$app->request->get('callback');
@@ -65,6 +68,8 @@ class GiftController extends Controller
 		echo $callback."(".json_encode($msg).")";
 
 	}
+
+	//礼物修改接口
 	//修改 首先查询单条
 	public function actionUpone()
 	{
@@ -73,6 +78,7 @@ class GiftController extends Controller
 		$data['arr']= $db->createCommand("select * from gift where id = {$arr['id']}")->queryOne();
 		return $arr['callback'].'('.json_encode($data).')';
 	}
+	
 	public function actionUpdate()
 	{
 		$callback=Yii::$app->request->get('callback');

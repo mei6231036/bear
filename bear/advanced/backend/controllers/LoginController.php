@@ -2,6 +2,9 @@
 namespace backend\controllers;
 use Yii;
 use yii\web\Controller;
+/*
+ *后台登录接口
+ */
 class LoginController extends Controller
 {
 	public $session;
@@ -9,6 +12,8 @@ class LoginController extends Controller
 	{
 		// $this->session=Yii::$app->session;
 	}
+	
+	//登录接口
 	public function actionIndex()
 	{
 		$a_name=Yii::$app->request->get('a_name');
