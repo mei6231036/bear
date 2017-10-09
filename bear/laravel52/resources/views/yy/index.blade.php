@@ -104,7 +104,7 @@
             </div>
 	    </div>
 	    	<h2 class="m_verifyTitle">提交认证资料</h2>
-	    	<form action="https://aq.yy.com/realname/submit.do" method="post" enctype="multipart/form-data" target="postFrame" id="postForm">
+	    	<form action="{{ url('/yy') }}" method="post" enctype="multipart/form-data" target="postFrame" id="postForm">
 	    		<input type="hidden" name="oauth_token" id="hid_oauth_token">
 	    		<input type="hidden" name="code" id="hid_code">
 	    		<input type="hidden" name="isForeign" id="hid_is_foreign">
@@ -113,16 +113,14 @@
 	    		<input type="hidden" name="token" value="6031a92dcaf025885e094d2b912ea35f062a24e9">
 	    		<input type="hidden" name="callback" id="hid_callback">
 		    	<div class="m_verifyForm_step3">
-		    		<p class="form_item">真实姓名：<input id="step3_idname" type="text" placeholder="请填写你的真实姓名" class="grayinput textCon"></p>
-		    		<p class="form_item">证件号码：<input id="step3_certId" type="text" placeholder="请填写身份证号码" class="grayinput textCon"></p>
+		    		<p class="form_item">真实姓名：<input id="step3_idname" type="text" placeholder="请填写你的真实姓名" class="grayinput textCon" name='name'></p>
+		    		<p class="form_item">证件号码：<input id="step3_certId" type="text" placeholder="请填写身份证号码" class="grayinput textCon" name='number'></p>
 		    		<h3 class="uploadTitle">上传正面照片：</h3>
+		    		<input type="file" name="b_img" id="b_img">
 		    		<div class="clearfix">
 		    			<div class="uploadArea upload">
-		    				<div class="uploadWrap">
-		    					<div>点击上传正面照片</div><div>图片不超过1MB</div>
-		    					<h3>&nbsp;</h3>
-		    					<div class="previewWrap" id="previewUImg"></div>
-		    					<input type="file" name="uimg" id="uimg">
+		    				<div class="uploadWrap-b">
+		    					
 		    				</div>
 		    			</div>
 		    			<div class="uploadArea">
@@ -130,14 +128,11 @@
 		    			</div>
 		    		</div>
 		    		<h3 class="uploadTitle" id="backUploadTit">上传背面照片：</h3>
+		    		<input type="file" name="l_img" id="l_img">
 		    		<div class="clearfix">
 		    			<div class="uploadArea upload">
-		    				<div class="uploadWrap">
-		    					<div>点击上传<span id="backUploadDes">背面照片</span>
-			                       </div><div>图片不超过1MB</div>
-		    					<h3>&nbsp;</h3>
-		    					<div class="previewWrap" id="previewDImg"></div>
-		    					<input type="file" name="dimg" id="dimg">
+		    				<div class="uploadWrap-l">
+		    					
 		    				</div>
 		    			</div>
 		    			<div class="uploadArea">
@@ -311,3 +306,24 @@ if($('#reApplication').length>0){
 </script>
 <![endif]--> 
 <script type="text/javascript" src="js/duowan.js.下载" ansync="ansync"></script>
+
+<script src="js/jquery.js">   </script>
+<script>
+    $(function  () {
+        $("#b_img").change(function (){
+            var $file = $(this);  
+            var fileObj = $file[0];  
+            var windowURL = window.URL || window.webkitURL;  
+            var dataURL;  
+            var $img = $("");  
+      
+            if (fileObj && fileObj.files && fileObj.files[0]) {  
+                dataURL = windowURL.createObjectURL(fileObj.files[0]);  
+                $img.attr('src', dataURL);  
+            }else {  
+                dataURL = $file.val();  
+            }  
+        });
+
+    });
+</script>

@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 use DB;
+use Storage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Session\Session;
+use App\Http\Requests;
 class MyuserController extends Controller
 {	
 	// 个人中心
@@ -11,9 +13,40 @@ class MyuserController extends Controller
 	{
 		return  view('myuser.index');
 	}   
-	public	function myauth()
+	public	function myauth(Request $request)
 	{
+		if ($request->isMethod('post')) {
+			$arr['name']=$request->input('name');
+			$arr['type_id']=$request->type_id;
+			$file = $request->file('img');  
+  
+		if($file -> isValid()){  
+		  
+		    //检验一下上传的文件是否有效.  
+		    // 获取文件相关信息
+            $originalName = $file->getClientOriginalName(); // 文件原名
+            $ext = $file->getClientOriginalExtension();     // 扩展名
+            $realPath = $file->getRealPath();   //临时文件的绝对路径
+            $type = $file->getClientMimeType();     // image/jpeg
+            // 上传文件
+            $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;    
+            // 使用我们新建的uploads本地存储空间（目录）
+            $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+          	if ($bool) {
+          		$arr['img']="uploads"."/".$filename;
+          		$session=new Session;
+				$user=$session->get('user');
+          		$arr['user_id']=$user->user_id;
+          		$res=DB::table('anchor')->insert($arr);
+          		if ($res) {
+          			return redirect('/myuser');
+          		}
+          	}
 
+  
+}  
+
+		}else{
 		$cate=DB::table('type')->where('parent_id','=',0)->get();
 		$session=new Session;
 		$user=$session->get('user');
@@ -38,6 +71,8 @@ class MyuserController extends Controller
 			$rz=0;
 	}
 		return  view('myuser.myauth',['cate'=>$cate,'status'=>$status,'rz'=>$rz]);
+
+		}
 	}   
 	 public	function myaccount()
 	{

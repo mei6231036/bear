@@ -217,17 +217,16 @@
               </div>
                              <!-- <p class="real_auth_tips">（主播头像可到主播设置中修改，其他资料一经提交不得修改，请谨慎填写）</p> -->
                 @if($status==0)
-        <form action="/" method="POST" enctype="multipart/form-data">  
+        <form action="<?=url('/myauth')?>" method="POST" enctype="multipart/form-data">  
                <table cellpadding="0" cellspacing="0" border="0" class="info_set">
                 <tr>
                   <td class="td_1">主播昵称：</td>
                   <td class="td_2">
                     <div>
-                      <input type="text" class="phone_num" id="anchor_nick" placeholder="控制在6个汉字以内最佳" />
+                      <input type="text" class="phone_num" id="anchor_nick" placeholder="控制在6个汉字以内最佳" name="name"/>
                       <!-- <span>（限10个汉字或20个字符以内）</span> -->
                       <span id="checkNickWord" style="display:none;">
                         <i style="background-image:url(../main/statics/img/icon_notive.png);display: inline-block;width: 16px;height: 16px;vertical-align: middle;margin-top: -3px;"></i>
-                        <span style="color:#FF6D0D;">你的昵称过长或含有非法字符</span>
                       </span>
                     </div>
                   </td>
@@ -241,7 +240,7 @@
                 <tr>
                   <td class="td_1">直播品类：</td>
                   <td class="td_2">
-                    <select class="live_type" id="liveType" name='type_ids'>
+                    <select class="live_type" id="liveType" name='type_id'>
                       @foreach($cate as $val)
                       <option value="{{ $val->id }}">{{ $val->typename }}</option>
                       @endforeach
@@ -256,6 +255,7 @@
                     <!-- 上传头像 e -->
                     <div class="img_wrap" id="imgWrap">
                       <input type="file" name='img' id='img'>
+                      <input type="hidden" name="_token" value="<?=csrf_token()?>">
                       <img src="images/c8e7132cd73f1dd8a34d738f29a1d3_180_135.jpg" class='image'/>
                     </div>
                     <!-- <a href="javascript:void(0);" class="upload_btn" title="上传图片" id="avatar_upload_file">上传图片</a> -->
@@ -265,7 +265,7 @@
                 <tr>
                   <td class="td_1">&nbsp;</td>
                   <td class="td_2">
-                    <a href="javascript:void(0);" title="提交" class="sub_info" id="subInfo">提交</a>
+                   <input type="submit" value="提交" class="sub_info">
                   </td>
                 </tr>
                </table>
