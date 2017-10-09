@@ -2,9 +2,12 @@
 namespace backend\controllers;
 use Yii;
 use yii\web\Controller;
+/*
+ *主播管理的接口
+ */
 class AnchorController extends Controller
 {
-	//展示所有的主播
+	//主播列表接口
 	public function actionShow()
 	{
 		$arr = Yii::$app->request->get();
@@ -24,7 +27,7 @@ class AnchorController extends Controller
 		return $arr['callback'].'('.json_encode($data).')';
 
 	}
-	//修改主播状态
+	//修改主播状态接口
 	public function actionUpdate()
 	{
 		$callback=Yii::$app->request->get('callback');

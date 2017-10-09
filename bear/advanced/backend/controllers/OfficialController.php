@@ -2,8 +2,12 @@
 namespace backend\controllers;
 use Yii;
 use yii\web\Controller;
+/*
+ *官方通告管理
+ */
 class OfficialController extends Controller
 {
+	//发布通告接口
 	public function actionIndex()
 	{
 		$content=Yii::$app->request()->get('content');
@@ -19,7 +23,7 @@ class OfficialController extends Controller
 		}
 		echo $callback."(".json_encode($msg).")";
 	}
-	
+	//通告列表接口
 	public function actionShow()
 	{
 		$callback=Yii::$app->request()->get('callback');
