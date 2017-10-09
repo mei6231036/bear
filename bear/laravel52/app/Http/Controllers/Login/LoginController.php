@@ -8,6 +8,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class LoginController extends Controller
 {
 	//注册
+	
+
+
+
 	public function regin(Request $request)
 	{
 		$myip =$this-> get_client_ip();//获取ip
@@ -39,10 +43,11 @@ class LoginController extends Controller
 	public function login(Request $request)
 	{
 		if($request->isMethod('get')){
+			echo 0;die;
 	        $where['email']=$request->input('email');
 	        $data = DB::table('user')->where($where)->first();
 	        // $info = DB::table('user_info')->select('*')->where('user_id',$data->user_id)->first();
-	        if($data->password!=md5($request->input('password')))
+	        if($data->password!=$request->input('password'))
 	        {
 	        	echo 1;
 	        }else{

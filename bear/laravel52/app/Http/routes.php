@@ -23,11 +23,19 @@ Route::any('/myaccount',"MyuserController@myaccount");
 Route::any('/mylevel',"MyuserController@mylevel");
 Route::any('/mylist',"MyuserController@mylist");
 Route::any('/mysubscribe',"MyuserController@mysubscribe");
+<<<<<<< HEAD
 Route::any('/myren',"MyuserController@myren");//资料修改
 Route::any('/myren_do',"MyuserController@myren_do");//修改保存
 Route::any('/',"IndexController@index");
 Route::any('/add',"IndexController@add");
 Route::any('/cate',"CateController@show");
+=======
+Route::any('/',"IndexController@index");
+Route::any('/add',"IndexController@add");
+Route::any('/cate',"CateController@show");
+Route::any('/listcate',"CateController@listcate");
+Route::any('/childcate',"CateController@childcate");
+>>>>>>> d1e3fb7869b4e79001e9fe215592fc5d531157e5
 Route::any('/l',"ZbController@show");
 Route::any('/sign',"IndexController@sign");
 Route::any('/login',"IndexController@login");
