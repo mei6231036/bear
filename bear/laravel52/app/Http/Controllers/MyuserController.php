@@ -15,7 +15,7 @@ class MyuserController extends Controller
 	}   
 	public	function myauth(Request $request)
 	{
-<<<<<<< HEAD
+
 		if ($request->isMethod('post')) {
 			$arr['name']=$request->input('name');
 			$arr['type_id']=$request->type_id;
@@ -48,9 +48,7 @@ class MyuserController extends Controller
 }  
 
 		}else{
-=======
-		
->>>>>>> 9b8a7411f8569d93e67fbf2ad13761b8bc4c18f6
+
 		$cate=DB::table('type')->where('parent_id','=',0)->get();
 		$session=new Session;
 		$user=$session->get('user');
@@ -76,10 +74,9 @@ class MyuserController extends Controller
 		}
 		return  view('myuser.myauth',['cate'=>$cate,'status'=>$status,'rz'=>$rz]);
 
-<<<<<<< HEAD
+
 		}
-=======
->>>>>>> 9b8a7411f8569d93e67fbf2ad13761b8bc4c18f6
+
 	}   
 	 public	function myaccount()
 	{
