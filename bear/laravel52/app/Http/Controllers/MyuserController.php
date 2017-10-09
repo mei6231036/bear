@@ -11,7 +11,7 @@ class MyuserController extends Controller
 	{
 		return  view('myuser.index');
 	}   
-	 	function myauth()
+	public	function myauth()
 	{
 
 		$cate=DB::table('type')->where('parent_id','=',0)->get();
