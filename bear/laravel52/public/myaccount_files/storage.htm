@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>storage</title>
+</head>
+<body>
+<script>
+(function(){
+    if ( !('postMessage' in window) || !('localStorage' in window) ) return;
+
+    var sign = 'CROSS_STORAGE'
+
+    if ( 'addEventListener' in document ) {
+        window.addEventListener('message', handler, false);
+    }
+    else if ( 'attachEvent' in document ) {
+        window.attachEvent('onmessage', handler);
+    }
+
+    function handler (msg) {
+        if ( !(/\.huya\.com$/.test(msg.origin)) ) return;
+
+        var data = null
+
+        try {
+            data = JSON.parse(msg.data)
+        } catch (e) {}
+
+        // 拆包
+        if (data && data.sign === sign) {
+            action[data.type](data.data, data.token)
+        }
+    }
+
+    var action = {
+        set: function (data) {
+            for (var key in data) {
+                if ( data.hasOwnProperty(key) ) {
+                    var val = data[key]
+
+                    try {
+                        val = JSON.stringify(val)
+                    } catch(e) {}
+
+                    localStorage.setItem(key, val)
+                }
+            }
+        },
+        get: function (key, token) {
+            var val = localStorage.getItem(key)
+
+            try {
+                val = JSON.parse(val)
+            } catch(e) {}
+         
+            send(token, val)
+        },
+        del: function (key) {
+            key ? localStorage.removeItem(key) : localStorage.clear()
+        }
+    }
+
+    if (window.addEventListener) {
+        window.addEventListener('storage', function(e){
+            var oldValue = e.oldValue
+            var newValue = e.newValue
+
+            try {
+                oldValue = JSON.parse(oldValue)
+            } catch(e) {}
+            
+            try {
+                newValue = JSON.parse(newValue)
+            } catch(e) {}
+
+            send('STORE_CHANGE', {
+                key: e.key,
+                oldValue: oldValue,
+                newValue: newValue
+            })
+        })
+    }
+
+    function send (token, data) {
+        var msg = ''
+
+        try {
+            msg = JSON.stringify({
+                sign: sign,
+                token: token,
+                data: data
+            })
+        } catch (e) {}
+
+        if (msg) {
+            parent.postMessage(msg, '*')
+        }
+    }
+})()
+</script>
+
+</body></html>

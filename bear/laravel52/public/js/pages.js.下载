@@ -1,0 +1,3088 @@
+// 每个页面定义一个函数处理具体业务
+LIB.pages = {
+	'welcome': function(opts) {
+		LIB.components.helpTip('welcome');
+		LIB.components.setLoginStatus('webdb', opts, 'welcome');
+		LIB.components.setLoginStatus('secLevel', opts, 'welcome');
+		if(!!opts.mbAvailableExam && opts.mbAvailableExam == "true"){
+			$("#hasChange, #canUse").on("click", function(){
+				var post = {
+					device: "pc"
+				};
+				if(this.id == "hasChange"){
+					post.available = "0";
+					//不需要任何处理
+					$.ajax({
+						url: "/p/mb/mob/m/mbAvailableSubmit.do",
+						method: "post",
+						data: post,
+						success:function(){
+							location.href = "/mb/mob/index.do";
+						},
+						error: function(){
+							location.href = "/mb/mob/index.do";
+						}
+					});
+				}else {
+					post.available = "1";
+					$.ajax({
+						url: "/p/mb/mob/m/mbAvailableSubmit.do",
+						method: "post",
+						data: post
+					});
+					$("#mbA_step1").hide();
+					$("#mbA_step2").show();
+				}
+			});
+		}
+		//安全学堂 点击上报
+		var m_link3 = $("#m_link3");
+		if(m_link3.length != 0){
+			m_link3.bind("click", function() {
+				//LIB.components.hiidoStatistics
+				var ui = LIB.components.cookie.get("hiido_ui");
+				ui = ui == '' ? Math.random() : ui;
+				var uid = LIB.components.cookie.get("yyuid");
+				var username = LIB.components.cookie.get("username");
+				var query = {
+					"act": "webevent",
+					"time": Math.floor(new Date().getTime() / 1000), 
+					"ui": ui,
+					"eventid": "10008529",
+					"value": "1",
+					"class1": "udb",
+					"class2": "school",
+					"eventype": "1",
+					"uid": uid,
+					"username": username,
+					"bak1": "",
+					"bak2": "",
+					"bak3": "",
+					"parm1": "",
+					"parm2": "",
+					"parm3": ""
+				}
+				LIB.components.hiidoStatistics.send(query,function(code){
+					
+				});
+			});	
+		} 
+	},
+	'yysec': function(opts) {
+		LIB.components.helpTip('yysec');
+		LIB.components.setLoginStatus('webdb', opts, 'yysec');
+	},
+	"mibaoQA": function(opts) {
+		LIB.components.helpTip('qa');
+		LIB.components.setLoginStatus('webdb', opts, 'mibaoQA');
+	},
+	'realname': function(opts) {
+		if(!opts.type){
+			//防止页面中没有type
+			opts.type = "1";
+		}
+
+		// 春节禁用普通认证/或者其它原因暂停使用
+		if(opts.ifCanSimpleRealname == "0"){
+			$("#btn_opra").parent().find("h3").html("普通认证<span>&nbsp;&nbsp;(暂停使用，请使用快速认证)</span>");
+ 			$("#btn_opra").addClass("buleBtn_disabled");
+		}
+		
+		var secureBase = LIB.dialog.secureBase;
+		var base64 = new Base64();
+
+		LIB.components.helpTip("realname");
+		LIB.components.setLoginStatus('webdb', opts, 'realname');
+
+		$("#btn_viewExample").click(function() {
+			var dialog = LIB.dialog.alert('<div style="width: 420px;height:400px;overflow-y:scroll;">\
+			  <p>第一步，准备好身份证，摆好正确的拍照姿势。</p>\
+			  <p><img src="' + opts.res + '/images/view01.jpg" width="100%" /></p>\
+			  <p>第二步，对焦，触摸手机屏幕，将焦点对准身份证。</p>\
+			  <p><img src="' + opts.res + '/images/view02.jpg" width="100%" /></p>\
+			  <p>第三步，拍照，提交实名认证资料。请记得还要拍一张身份证的背面照片。</p>\
+			  <p><img src="' + opts.res + '/images/view03.jpg" width="100%" /></p>\
+			  </div>');
+			dialog.setTextCenter(false)
+			dialog.setTitle("拍照教程");
+			dialog.setOKText("关闭");
+			dialog.show();
+		});
+
+		$("#btn_viewExampleEx").click(function() {
+			var dialog = LIB.dialog.alert('<div style="width: 600px;height:378px;">\
+			  <embed src="https://player.youku.com/player.php/sid/XMzAwMjc0NTYzNg==/v.swf" allowFullScreen="true" quality="high" width="600" height="378" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>\
+			  </div>');
+			dialog.setTextCenter(false)
+			dialog.setTitle("拍照教程");
+			dialog.setOKText("关闭");
+			dialog.show();
+		});
+
+		if (opts.status == "not_submit" || opts.status == "convertToEntre") { // 未绑定状态
+			var oauth_token = null;
+			var certIdVerifyCode = null;
+			var mibaoStatus = 1;
+
+			$("#btn_opra0").bind("click", function() {
+				var showDialog = LIB.dialog.showQuickRealname();
+
+				showDialog.show();	
+			});
+
+			$("#btn_opra2").bind("click", function() {
+
+				if (opts.ifCanSubmitRealname != "true") {
+					var newBind2 = LIB.dialog.alert(opts.submitRealnameTips);
+					newBind2.setTitle("提醒");
+					newBind2.show();
+					return;
+				} else {
+					location.href = "/realnameEnhance/index.do?token=" + opts.token;
+				}
+			});
+
+			if(opts.isFail != "true" && opts.startEnhanced == "1"){
+				$("#btn_opra2").trigger("click");
+			}
+			var isForeign = false;
+			var isUnderAge = false;
+			//点击台湾实名，设置一下图片、文案和参数，然后触发普通实名
+			$("#btn_opra3").bind("click", function() {
+				isForeign = true;
+				$("#frontUploadImg").attr("src", "https://res.udb.duowan.com/aq/images/verify03Ex.jpg");
+				$("#backUploadTit").html("带有个人姓名的银行存折照片"); 
+				$("#backUploadDes").html("带有个人姓名的银行存折照片"); 
+				$("#backUploadImg").attr("src", "https://res.udb.duowan.com/aq/images/verify04Ex.jpg"); 
+                
+				$("#btn_opra").trigger("click");		
+			});
+
+			$("#btn_opra4").bind("click", function() {
+				isUnderAge = true;
+				$("#btn_opra").trigger("click");		
+			});
+
+			$("#btn_opra").bind("click", function() {
+
+				if (LIB.locked) {
+					return;
+				}
+				
+				//春节期间禁用简单认证
+				if (opts.ifCanSimpleRealname == "0" && !isForeign) {
+					return;
+				}
+				if (opts.ifCanSubmitRealname != "true") {
+					var newBind = LIB.dialog.alert(opts.submitRealnameTips);
+					newBind.setTitle("提醒");
+					newBind.show();
+					return;
+				}
+
+				var showNoBindMobileDialog = function(mustJump) {
+					var noBindMobileDialog = LIB.dialog.alert("提交实名认证，必须要绑定密保手机，请先绑定密保手机！");
+					noBindMobileDialog.setBText("认证失败！");
+					noBindMobileDialog.setOKText("立即绑定");
+					noBindMobileDialog.setTitle("实名认证");
+					noBindMobileDialog.show();
+					noBindMobileDialog.bind("hide", function(evt) {
+						if (evt.data.type == "ok") {
+							location.href = "/mb/mob/index.do";
+						} else if (mustJump) {
+							location.href = location.href;
+						}
+					});
+				}
+
+				LIB.lock();
+
+				$.ajax({
+					url: '/realname/chkMibao.do',
+					data: {
+						token: opts.token
+					},
+					dataType: "json",
+					type: "POST",
+					success: function(res) {
+						LIB.unlock();
+						// DEBUG
+						// var res = {code: 1, obj: {status: 0}};
+						if (res.code != 1) {
+							var dialog = LIB.dialog.alert(res.msg);
+							dialog.show();
+
+							dialog.bind("hide", function() {
+								location.href = location.href;
+							});
+
+							return;
+						}
+
+						mibaoStatus = res.obj.status;
+
+						if (mibaoStatus == "1") {
+							showNoBindMobileDialog();
+							return;
+						}
+
+						secureBase.init(opts.acct, opts.servcode, function(result, data) {
+							if (!result) {
+								var dialog = LIB.dialog.alert(data);
+								dialog.show();
+								return;
+							}
+							
+							var method = data.methods[0];
+
+							if (data.methods == null || data.methods.length == 0) {
+								showNoBindMobileDialog();
+								return;
+							}
+
+							if (method.remains < 1) {
+								var dialog = LIB.dialog.alert("今天免费验证短信已经用完，请明天再进行实名认证。");
+								dialog.setBText("认证失败！");
+								dialog.setOKText("关闭");
+								dialog.setTitle("实名认证");
+								dialog.show();
+								
+								return;
+							}
+
+							showStep1();
+
+							var verifyDialog = secureBase.build({
+								type: method.method_name,
+								acct: opts.acct,
+								servcode: opts.servcode,
+								title: "实名认证",
+								buttonText: ["下一步", "下一步"],
+								extra: method,
+								token: data.token
+							});
+
+							verifyDialog.bind("hide", function(evt) {
+								if (evt.data.type != "ok") {
+									location.href = location.href;
+									return;
+								}
+
+								oauth_token = evt.data.extra.oauth_token;
+
+
+								if (mibaoStatus == "0") {
+									if(!isUnderAge){
+										showStep3(res.obj.code, opts.type);	
+									} else {
+										showStep3Ex(res.obj.code, opts.type);
+									}
+									
+								} else if (mibaoStatus == "2") {
+									showStep2(res.obj.certId);
+								}
+							});
+
+							verifyDialog.show();
+						});
+						
+					},
+					error: function(req) {
+						LIB.unlock();
+
+						var dialog = LIB.dialog.alert(LIB.errLog(req));
+						dialog.show();
+					}
+				});
+			});
+			
+			var showStep1 = function() {
+				$("#step_noBind").hide();
+				$("#step_1").show();
+			}
+
+			var showStep2 = function(certId) {
+				$("#step_1").hide();
+				$("#step_2").show();
+				$("#step2_certIdShadow").text(certId);
+
+				$("#step_2_next").bind("click", function() {
+					if (LIB.locked) {
+						return;
+					}
+
+					$("#step2_err").html("&nbsp;");
+
+					var certId = $.trim($("#step2_certId").val());
+
+					if (certId.length <=0 || certId.length >100) {
+						$("#step2_err").text("证件号码错误，无法通过验证码");
+						return;
+					}
+
+					LIB.lock();
+
+					$.ajax({
+						url: '/realname/chkCert.do',
+						data: {
+							certId: base64.encode(certId),
+							token: opts.token,
+							oauth_token: oauth_token
+						},
+						type: "POST",
+						success: function(res) {
+							LIB.unlock();
+
+							if (res.code != 1) {
+								$("#step2_err").text(res.msg);
+								return;
+							}
+
+							if(!isUnderAge){
+								showStep3(res.obj.code, opts.type);	
+							} else {
+								showStep3Ex(res.obj.code, opts.type);
+							}
+									
+						},
+						error: function(req) {
+							LIB.unlock();
+							
+							$("#step2_err").text(LIB.errLog(req));
+							return;
+						}
+					});
+				});
+			}
+
+			var showStep3 = function(verifyCode, type) {
+				$("#step_1").hide();
+				$("#step_2").hide();
+
+				if(type != "1"){
+					var submitBtn = $("#step3x_send");
+					var err = $("#step3x_err");	
+					var postForm = $("#postForm2");
+					if(type =="2"){
+						var cAuthNameErrTxt = "请输入法定代表人姓名";
+						var cAuthIdErrTxt = "请输入正确人法定代表人身份证号";
+					} else {
+						var cAuthNameErrTxt = "请输入投资人姓名";
+						var cAuthIdErrTxt = "请输入正确的投资人身份证号";
+						
+					}
+
+					$("#step_3x").show();
+				}else{
+
+					//个人实名
+					var submitBtn = $("#step3_send");
+					var err = $("#step3_err");
+					var postForm = $("#postForm");
+					$("#step_3").show();
+					
+					
+				}
+				
+
+				var suffixError = function() {
+					var dialog = LIB.dialog.alert("上传的照片仅支持.jpg .jpeg .bmp .png");
+					dialog.show();
+				}
+
+				var sizeError = function() {
+					var dialog = LIB.dialog.alert("上传的照片大小不得超过1MB");
+					dialog.show();
+				}
+
+				if (LIB.components.uploadPreview.isOK()) { // 如果支持该组件
+					
+					if(type != "1"){
+						var optsUImgObj = [];
+						for(var i = 0; i < 4; i++){
+							optsUImgObj[i] = {
+								file: $("#uimg" + (i + 1)),
+								wrap: $("#previewUImg" + (i + 1)),
+								suffix: "jpg|gif|bmp|png|jpeg",
+								maxSize: 1024 * 1024 // 1MB	
+							}
+						}
+
+						var previewUImg1 = LIB.components.uploadPreview(optsUImgObj[0]);
+						previewUImg1.bind("suffixError", suffixError);
+						previewUImg1.bind("sizeError", sizeError);
+
+						var previewUImg2 = LIB.components.uploadPreview(optsUImgObj[1]);
+						previewUImg2.bind("suffixError", suffixError);
+						previewUImg2.bind("sizeError", sizeError);
+
+						var previewUImg3 = LIB.components.uploadPreview(optsUImgObj[2]);
+						previewUImg3.bind("suffixError", suffixError);
+						previewUImg3.bind("sizeError", sizeError);
+
+						var previewUImg4 = LIB.components.uploadPreview(optsUImgObj[3]);
+						previewUImg4.bind("suffixError", suffixError);
+						previewUImg4.bind("sizeError", sizeError);		
+					} else {
+
+					var optsUImg = {
+						file: $("#uimg"),
+						wrap: $("#previewUImg"),
+						suffix: "jpg|gif|bmp|png|jpeg",
+						maxSize: 1024 * 1024 // 1MB
+					}
+
+					var optsDImg = {
+						file: $("#dimg"),
+						wrap: $("#previewDImg"),
+						suffix: "jpg|gif|bmp|png|jpeg",
+						maxSize: 1024 * 1024 // 1MB
+						}	
+					var previewUImg = LIB.components.uploadPreview(optsUImg);
+					previewUImg.bind("suffixError", suffixError);
+					previewUImg.bind("sizeError", sizeError);
+
+					var previewDImg = LIB.components.uploadPreview(optsDImg);
+					previewDImg.bind("suffixError", suffixError);
+						previewDImg.bind("sizeError", sizeError);	
+					}
+					
+				} else {
+					var fileChange = function() {
+						var path = this.value.substr(this.value.lastIndexOf("\\") + 1);
+						var suffix = this.value.substr(this.value.lastIndexOf(".") + 1);
+						var reg = new RegExp("^" + "jpg|gif|bmp|png|jpeg" + "$", "i");
+
+						this.blur();
+
+						if (!reg.test(suffix)) {
+							LIB.components.uploadPreview.resetFile(this);
+							suffixError();
+							return;
+						}
+
+						$(this).parent().find("h3").text(path);
+					}
+
+					if(type != "1"){
+						var uimg1 = $("#uimg1");
+						var uimg2 = $("#uimg2");
+						var uimg3 = $("#uimg3");
+						var uimg4 = $("#uimg4");
+
+						uimg1.bind("change", fileChange);
+						uimg2.bind("change", fileChange);
+						uimg3.bind("change", fileChange);
+						uimg4.bind("change", fileChange);
+
+					} else {
+					var uimg = $("#uimg");
+					var dimg = $("#dimg");
+
+					uimg.bind("change", fileChange);
+					dimg.bind("change", fileChange);
+				}
+				}
+
+				submitBtn.click(function() {
+					var ts = new Date().getTime();
+					var timeId = 0;
+					if ($(this).hasClass("buleBtn_disabled")) {
+						return;
+					}
+					
+					err.html("&nbsp;");
+
+					window["callback" + ts] = function(res) {
+						clearTimeout(timeId);
+						window["callback" + ts] = null;
+						submitBtn.removeClass("buleBtn_disabled");
+						submitBtn.text("提交认证申请");
+
+						if(res.code == "-2") {
+							var dialog = LIB.dialog.alert("您未满16周岁，请前往未成年人实名认证！");
+							dialog.show();
+							dialog.bind("hide", function(evt) {
+								if (evt.data.type == "ok") {
+									location.href = location.href + (location.href.indexOf("?") ? "&" : "?") +"directEntry=underage";
+								}
+							});
+							return;
+						}
+						if (res.code != "1") {
+							err.text(res.msg);
+							return;
+						}
+
+						//把type传到下一步，下一步还要根据type做操作
+						showStep4(type);
+					}
+
+					if(type != "1"){
+						var cName = $.trim($("#step3x_cName").val());
+						var cId = $.trim($("#step3x_cId").val());
+						var cAuthName = $.trim($("#step3x_cAuthName").val());
+						var cAuthId = $.trim($("#step3x_cAuthId").val());
+						var cRegFound = $.trim($("#step3x_cRegFound").val());
+						var cAddress = $.trim($("#step3x_cAddress").val());
+					 
+					 	if (cName.length == 0) {
+							err.text("请输入企业名称");
+							return;
+						}
+
+						if (!/^.{3,50}$/.test(cId)) {
+							err.text("请输入正解的营业执照编号");
+							return;
+						}
+
+						if (cAuthName.length == 0) {
+							err.text(cAuthNameErrTxt);
+							return;
+						}
+
+
+						if (!/^.{3,50}$/.test(cAuthId)) {
+							// TODO 对应不同类型需要不同的文案
+							err.text(cAuthIdErrTxt);
+							return;
+						}
+
+						if (cRegFound.length == 0) {
+							err.text("请输入注册资金");
+							return;
+						}		
+						
+						if (cAddress.length == 0) {
+							err.text("请输入企业地址");
+							return;
+						}
+
+						$("#hid_oauth_token2").val(oauth_token);
+						$("#hid_callback2").val(ts);
+						$("#hid_certId2").val(base64.encode(cId));
+						$("#hid_idname2").val(base64.encode(cName));
+						$("#hid_ownerName").val(cAuthName);
+						$("#hid_ownerId").val(cAuthId);
+						$("#hid_money").val(cRegFound);
+						$("#hid_address").val(cAddress);
+						$("#hid_code2").val(verifyCode == null ? "" : verifyCode);
+						
+						var dialogPop = LIB.dialog.confirm("请确保您填写的资料真实详细，否则将影响审核！");
+					} else {
+						var idname = $.trim($("#step3_idname").val());
+						var certId = $.trim($("#step3_certId").val());
+						var dimg = $.trim($("#dimg").val());
+						var uimg = $.trim($("#uimg").val());
+
+
+						if (idname.length == 0) {
+						err.text("请输入真实姓名");
+						return;
+					}
+
+						if (!/^.{3,50}$/.test(certId)) {
+							err.text("请输入正确的身份证号码");
+						return;
+					}
+
+					if (uimg.length == 0) {
+						err.text("请上传正面身份证照片");
+						return;
+					}
+
+					if (dimg.length == 0) {
+						err.text("请上传反面身份证照片");
+						return;
+					}
+
+					$("#hid_is_foreign").val(isForeign);
+					$("#hid_oauth_token").val(oauth_token);
+					$("#hid_callback").val(ts);
+					$("#hid_certId").val(base64.encode(certId));
+					$("#hid_idname").val(base64.encode(idname));
+					$("#hid_code").val(verifyCode == null ? "" : verifyCode);
+                    var dialogPop = LIB.dialog.confirm("请确保上传手持清晰的照片，否则将影响审核！");
+						
+					}
+
+                    
+					dialogPop.setTitle("实名认证");
+					dialogPop.setBText("小贴士");
+					dialogPop.setOKText("确认提交");
+					dialogPop.setCancelText("返回检查");
+					dialogPop.show();
+
+					dialogPop.bind("hide", function(evt){
+					    if (evt.data.type == "ok") {
+							postForm.submit();
+							submitBtn.addClass("buleBtn_disabled");
+							submitBtn.text("提交认证申请(提交中)");
+						}
+					});
+
+					timeId = setTimeout(function() {
+						window["callback" + ts] = function() {};
+						submitBtn.removeClass("buleBtn_disabled");
+						submitBtn.text("提交认证申请");
+						err.text("上传图片超时，请重试（建议使用截屏等方式将图片到300kb以下）！");
+					}, 80000);
+				});
+			}
+			var showStep3Ex = function(verifyCode, type) {
+				$("#step_1").hide();
+				$("#step_2").hide();
+
+				var submitBtn = $("#step3Ex_send");
+				var err = $("#step3Ex_err");
+				var postForm = $("#postFormEx");
+				$("#step_3Ex").show();
+
+				var confrimBtnValue1 = false;
+				var confrimBtnValue2 = false;
+				var confirmItemValue1 = false;
+				var confirmItemValue2 = false;
+				var confirmItemValue3 = false;
+
+				$("#step3Ex_jhExp").on("click", function(){
+					var dialog = LIB.dialog.alert('<p style="width:320px; padding: 0 50px; line-height:1.5; text-align: left; font-size: 12px;">'+ $("#pTxt").html() +'</p>');
+						dialog.setOKText("我知道了");
+						dialog.setTitle("什么是监护人？");
+						dialog.show();
+				});
+
+				$(".confirmValue").on("click", function(){
+					var value = $(this).data("value");
+					switch(value) {
+						case 1:
+							if(confrimBtnValue1){
+								$(this).removeClass("on");	
+							} else {
+								$(this).addClass("on");
+							}
+							confrimBtnValue1 = !confrimBtnValue1; 
+							break;	
+						case 2:
+							if(confrimBtnValue2){
+								$(this).removeClass("on");	
+							} else {
+								$(this).addClass("on");
+							}
+							confrimBtnValue2 = !confrimBtnValue2; 
+							break;
+					}
+				});
+
+				var suffixError = function() {
+					var dialog = LIB.dialog.alert("上传的照片仅支持.jpg .jpeg .bmp .png");
+					dialog.show();
+				}
+
+				var sizeError = function() {
+					var dialog = LIB.dialog.alert("上传的照片大小不得超过1MB");
+					dialog.show();
+				}
+
+				if (LIB.components.uploadPreview.isOK()) { // 如果支持该组件
+					var optsUImgEx = {
+						file: $("#uimgEx"),
+						wrap: $("#previewUImgEx"),
+						suffix: "jpg|gif|bmp|png|jpeg",
+						maxSize: 1024 * 1024 // 1MB
+					}
+
+					var optsDImgEx = {
+						file: $("#dimgEx"),
+						wrap: $("#previewDImgEx"),
+						suffix: "jpg|gif|bmp|png|jpeg",
+						maxSize: 1024 * 1024 // 1MB
+					}
+					var optsUImgEx2 = {
+						file: $("#uimgEx2"),
+						wrap: $("#previewUImgEx2"),
+						suffix: "jpg|gif|bmp|png|jpeg",
+						maxSize: 1024 * 1024 // 1MB
+					}
+					var optsDImgEx2 = {
+						file: $("#dimgEx2"),
+						wrap: $("#previewDImgEx2"),
+						suffix: "jpg|gif|bmp|png|jpeg",
+						maxSize: 1024 * 1024 // 1MB
+					}
+					var previewUImgEx = LIB.components.uploadPreview(optsUImgEx);
+					previewUImgEx.bind("suffixError", suffixError);
+					previewUImgEx.bind("sizeError", sizeError);
+
+					var previewDImgEx = LIB.components.uploadPreview(optsDImgEx);
+					previewDImgEx.bind("suffixError", suffixError);
+					previewDImgEx.bind("sizeError", sizeError);	
+
+					var previewUImgEx2 = LIB.components.uploadPreview(optsUImgEx2);
+					previewUImgEx.bind("suffixError", suffixError);
+					previewUImgEx.bind("sizeError", sizeError);
+
+					var previewDImgEx2 = LIB.components.uploadPreview(optsDImgEx2);
+					previewDImgEx2.bind("suffixError", suffixError);
+					previewDImgEx2.bind("sizeError", sizeError);	
+
+					
+				} else {
+					var fileChange = function() {
+						var path = this.value.substr(this.value.lastIndexOf("\\") + 1);
+						var suffix = this.value.substr(this.value.lastIndexOf(".") + 1);
+						var reg = new RegExp("^" + "jpg|gif|bmp|png|jpeg" + "$", "i");
+
+						this.blur();
+
+						if (!reg.test(suffix)) {
+							LIB.components.uploadPreview.resetFile(this);
+							suffixError();
+							return;
+						}
+
+						$(this).parent().find("h3").text(path);
+					}
+
+					var uimg = $("#uimgEx");
+					var dimg = $("#dimgEx");
+
+					var puimg = $("#uimgEx2");
+					var pdimg = $("#dimgEx2");
+
+					uimg.bind("change", fileChange);
+					dimg.bind("change", fileChange);
+					puimg.bind("change", fileChange);
+					pdimg.bind("change", fileChange);
+				}
+
+				submitBtn.click(function() {
+					var ts = new Date().getTime();
+					var timeId = 0;
+					if ($(this).hasClass("buleBtn_disabled")) {
+						return;
+					}
+					
+					err.html("&nbsp;");
+
+					window["callback" + ts] = function(res) {
+						clearTimeout(timeId);
+						window["callback" + ts] = null;
+						submitBtn.removeClass("buleBtn_disabled");
+						submitBtn.text("提交认证申请");
+
+						if (res.code != "1") {
+							err.text(res.msg);
+							return;
+						}
+
+						//把type传到下一步，下一步还要根据type做操作
+						showStep4(type);
+					}
+
+					var idname = $.trim($("#step3Ex_idname").val());
+					var certId = $.trim($("#step3Ex_certId").val());
+					var pidname = $.trim($("#step3Ex_idname2").val());
+					var pcertId = $.trim($("#step3Ex_certId2").val());
+					var dimg = $.trim($("#dimgEx").val());
+					var uimg = $.trim($("#uimgEx").val());
+					var pdimg = $.trim($("#dimgEx2").val());
+					var puimg = $.trim($("#uimgEx2").val());
+
+
+					if (idname.length == 0) {
+						err.text("请输入你的真实姓名");
+						return;
+					}
+
+					if (!/^.{3,50}$/.test(certId)) {
+						err.text("请输入你的正确身份证号码");
+						return;
+					}
+
+					if (uimg.length == 0) {
+						err.text("请上传你的手持正面身份证照片");
+						return;
+					}
+
+					if (dimg.length == 0) {
+						err.text("请上传你的反面身份证照片");
+						return;
+					}
+					
+					
+					if (pidname.length == 0) {
+						err.text("请输入正确的监护人真实姓名");
+						return;
+					}
+
+					if (!/^.{3,50}$/.test(pcertId)) {
+						err.text("请输入正确的监护人身份证号码");
+						return;
+					}
+				
+					if (puimg.length == 0) {
+						err.text("请上传监护人的正面身份证照片");
+						return;
+					}
+
+					if (pdimg.length == 0) {
+						err.text("请上传监护人的反面身份证照片");
+						return;
+					}
+
+					if (!confrimBtnValue1) {
+						err.text("请发送监护人手持本人身份证件和被监护人主播视频资料到指定邮箱！");
+						return;
+					}
+					if (!confrimBtnValue2) {
+						err.text("请确保将监护人与被监护人邮寄到官方地址！");
+						return;
+					}
+
+					$("#hid_is_foreignEx").val(isForeign);
+					$("#hid_oauth_tokenEx").val(oauth_token);
+					$("#hid_callbackEx").val(ts);
+					$("#hid_certIdEx").val(base64.encode(certId));
+					$("#hid_idnameEx").val(base64.encode(idname));
+					$("#hid_certIdEx2").val(base64.encode(pcertId));
+					$("#hid_idnameEx2").val(base64.encode(pidname));
+					$("#hid_codeEx").val(verifyCode == null ? "" : verifyCode);
+                    var dialogPop = LIB.dialog.confirm("请确保上传手持清晰的照片，否则将影响审核！");
+                    
+					dialogPop.setTitle("实名认证");
+					dialogPop.setBText("小贴士");
+					dialogPop.setOKText("确认提交");
+					dialogPop.setCancelText("返回检查");
+					dialogPop.show();
+
+					dialogPop.bind("hide", function(evt){
+					    if (evt.data.type == "ok") {
+							postForm.submit();
+							submitBtn.addClass("buleBtn_disabled");
+							submitBtn.text("提交认证申请(提交中)");
+						}
+					});
+
+					timeId = setTimeout(function() {
+						window["callback" + ts] = function() {};
+						submitBtn.removeClass("buleBtn_disabled");
+						submitBtn.text("提交认证申请");
+						err.text("上传图片超时，请重试（建议使用截屏等方式将图片到300kb以下）！");
+					}, 60000);
+				});
+			}
+			var showStep4 = function(type) {
+				if(type != "1"){
+					$("#step_3x").hide();
+				} else if(isUnderAge){
+					$("#step_3Ex").hide();	
+				} else {
+					$("#step_3").hide();	
+				}
+				$("#step_4").show();
+			}
+
+			if(opts.directEntry == "underage"){
+				$("#btn_opra4").trigger("click");
+			}
+
+			if(opts.directEntry == "underage_toast"){
+				$("#step_noBind").hide();
+				var underAgeDialog = LIB.dialog.alert("您还未满16周岁，请先完善未成年人实名认证资料！");
+				underAgeDialog.show();
+
+				underAgeDialog.bind("hide", function(evt) {
+					if (evt.data.type == "ok") {
+						$("#btn_opra4").trigger("click");
+						return;
+					}
+					location.href = location.href;
+				});	
+				$("#btn_opra4").trigger("click");
+			}
+			
+		} else if(opts.status == "success" && opts.isEnhanced == "0"){
+			if($("#btn_opra3").length != 0){
+				$("#btn_opra3").bind("click", function() {
+					location.href = "/realnameUpgrade/index.do";
+					return false;
+				});
+			}
+		} else if(opts.status == "success" && opts.upgrade == "1"){
+			
+			if($("#btn_underAgeUpgrade").length != 0){
+				$("#btn_underAgeUpgrade").bind("click", function() {
+					
+					LIB.lock();
+
+					$.ajax({
+						url: '/realname/upgrade.do',
+						data: {},
+						type: "POST",
+						success: function(res) {
+							LIB.unlock();
+
+							if (res.code != 1) {
+								var dialog = LIB.dialog.alert(res.msg);
+								dialog.show();
+								return;
+							}
+
+							location.href = location.href;
+							
+									
+						},
+						error: function(req) {
+							LIB.unlock();
+							var dialog = LIB.dialog.alert(LIB.errLog(req));
+							dialog.show();
+						}
+					});
+				});
+			}
+		}
+	},
+	'companyInfo': function(opts) {
+		var secureBase = LIB.dialog.secureBase;
+		var base64 = new Base64();
+
+		LIB.components.setLoginStatus('webdb', opts, 'companyInfo');
+
+		$("#btn_viewExample").click(function() {
+			var dialog = LIB.dialog.alert('<div style="width: 420px;height:400px;overflow-y:scroll;">\
+			  <p>第一步，准备好身份证，摆好正确的拍照姿势。</p>\
+			  <p><img src="' + opts.res + '/images/view01.jpg" width="100%" /></p>\
+			  <p>第二步，对焦，触摸手机屏幕，将焦点对准身份证。</p>\
+			  <p><img src="' + opts.res + '/images/view02.jpg" width="100%" /></p>\
+			  <p>第三步，拍照，提交实名认证资料。请记得还要拍一张身份证的背面照片。</p>\
+			  <p><img src="' + opts.res + '/images/view03.jpg" width="100%" /></p>\
+			  </div>');
+			dialog.setTextCenter(false)
+			dialog.setTitle("拍照教程");
+			dialog.setOKText("关闭");
+			dialog.show();
+		});
+
+		if(opts.msg != ""){
+			var errInfoDialog = LIB.dialog.alert(opts.msg);
+			errInfoDialog.show();
+
+			errInfoDialog.bind("hide", function() {
+
+			});	
+			
+			return;
+		}
+
+
+
+		$("#btn_opra, #reApplication").on("click", function(){
+			showStep3();	
+		});
+
+		var showStep3 = function() {
+			$("#step_noBind").hide();
+			$("#step_3").show();
+
+			var suffixError = function() {
+				var dialog = LIB.dialog.alert("上传的照片仅支持.jpg .jpeg .bmp .png");
+				dialog.show();
+			}
+
+			var sizeError = function() {
+				var dialog = LIB.dialog.alert("上传的照片大小不得超过1MB");
+				dialog.show();
+			}
+
+			if (LIB.components.uploadPreview.isOK()) { // 如果支持该组件
+				var optsUImg = {
+					file: $("#uimg"),
+					wrap: $("#previewUImg"),
+					suffix: "jpg|gif|bmp|png|jpeg",
+					maxSize: 1024 * 1024 // 1MB
+				}
+
+				var optsDImg = {
+					file: $("#dimg"),
+					wrap: $("#previewDImg"),
+					suffix: "jpg|gif|bmp|png|jpeg",
+					maxSize: 1024 * 1024 // 1MB
+				}
+
+				var previewUImg = LIB.components.uploadPreview(optsUImg);
+				previewUImg.bind("suffixError", suffixError);
+				previewUImg.bind("sizeError", sizeError);
+
+				var previewDImg = LIB.components.uploadPreview(optsDImg);
+				previewDImg.bind("suffixError", suffixError);
+				previewDImg.bind("sizeError", sizeError);
+			} else {
+				var fileChange = function() {
+					var path = this.value.substr(this.value.lastIndexOf("\\") + 1);
+					var suffix = this.value.substr(this.value.lastIndexOf(".") + 1);
+					var reg = new RegExp("^" + "jpg|gif|bmp|png|jpeg" + "$", "i");
+
+					this.blur();
+
+					if (!reg.test(suffix)) {
+						LIB.components.uploadPreview.resetFile(this);
+						suffixError();
+						return;
+					}
+
+					$(this).parent().find("h3").text(path);
+				}
+
+				var uimg = $("#uimg");
+				var dimg = $("#dimg");
+
+				uimg.bind("change", fileChange);
+				dimg.bind("change", fileChange);
+			}
+
+			$("#step3_send").click(function() {
+				var btn_send = this;
+
+				if ($(this).hasClass("buleBtn_disabled")) {
+					return;
+				}
+
+				var address = $.trim($("#step3_address").val());
+				var dimg = $.trim($("#dimg").val());
+				var uimg = $.trim($("#uimg").val());
+				var err = $("#step3_err");
+				var ts = new Date().getTime();
+				var timeId = 0;
+				$("#step3_err").html("&nbsp;");
+
+				window["callback" + ts] = function(res) {
+					clearTimeout(timeId);
+					window["callback" + ts] = null;
+					$("#step3_send").removeClass("buleBtn_disabled");
+					$("#step3_send").text("提交认证申请");
+					
+					if (res.code != "0") {
+						$("#step3_err").text(res.msg);
+						return;
+					}
+
+					showStep6();
+				}
+
+				err.html("&nbsp;");
+
+				if (address.length == "0") {
+					err.text("请输入您的联系地址");
+					return;
+				}
+				if (uimg.length == 0) {
+					err.text("请上传身份证正面照片");
+					return;
+				}
+
+				if (dimg.length == 0) {
+					err.text("请上传身份证背面照片");
+					return;
+				}
+
+				$("#hid_callback").val(ts);
+				$("#hid_address").val(address);
+                var dialogPop = LIB.dialog.confirm("请确保上传清晰的身份证照片，否则将影响审核。");
+				dialogPop.setTitle("合伙企业报名");
+				dialogPop.setBText("小贴士");
+				dialogPop.setOKText("确认提交");
+				dialogPop.setCancelText("返回检查");
+				dialogPop.show();
+
+				dialogPop.bind("hide", function(evt){
+				    if (evt.data.type == "ok") {
+						$("#postForm").submit();
+						$(btn_send).addClass("buleBtn_disabled");
+						$(btn_send).text("提交报名申请(提交中)");
+						//window["callback" + ts]({code: 1,paramToken: "23432423", name: "312****1312", certId: "23432423**423432", msg: ""});
+					}
+				});
+
+				timeId = setTimeout(function() {
+					window["callback" + ts] = function() {};
+					$("#step3_send").removeClass("buleBtn_disabled");
+					$("#step3_send").text("提交报名申请");
+					err.text("上传图片超时，请重试（建议使用截屏等方式将图片到300kb以下）！");
+				}, 80000);
+				
+			});
+		}
+
+
+		var showStep6 = function(){
+			$("#step_3").hide();
+			$("#step_6").show();
+		}
+		
+	},
+
+	'bindMobile': function() { // 邮箱绑定手机
+		var m_downloadMobileApp = $("#m_downloadMobileApp");
+		var btn_bindMobile = $("#btn_bindMobile");
+
+		btn_bindMobile.click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			LIB.pages.extra.bindMobile();
+		});
+	},
+	'bindEmail': function() { // 手机绑定邮箱
+		var btn_bindEmail = $("#btn_bindEmail");
+
+		btn_bindEmail.click(function() {
+		    if (LIB.locked) {
+				return;
+			}
+
+			LIB.pages.extra.bindEmail();
+		});
+	},
+	bindLoginAcct: function(opts) {
+		var btn_bindMbl = $("#btn_bindMbl");
+		var btn_bindEml = $("#btn_bindEml");
+		var btn_bindYY = $("#btn_bindYY");
+
+		LIB.components.helpTip("acct");
+		LIB.components.setLoginStatus('webdb', opts, 'bindLoginAcct');
+		btn_bindMbl.click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/acct/lgmob/getMbStatus.do',
+				data: {},
+				type: "POST",
+				success: function(res) {
+					
+					LIB.unlock();
+
+					if (res.code != 1) {
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						return;
+					}
+
+					if (res.obj.mbstatus == "0") {
+						var dialog = LIB.dialog.loginMobileNoBind();
+						dialog.show();
+					} else {
+						var dialog = LIB.dialog.loginMobileBind({
+							mobile: res.obj.mbmobile
+						});
+
+						dialog.show();
+					}
+				},
+				error: function(req) {
+					LIB.unlock();
+					var dialog = LIB.dialog.alert(LIB.errLog(req));
+					dialog.show();
+				}
+			});
+		});
+
+		btn_bindYY.click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/acct/yyidlgn/bind.do',
+				data: {},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+
+						return;
+					}
+
+					if (res.obj.rescode == 1) {
+						var dialog = LIB.dialog.alert("开通YY号登录需要先绑定密保手机。");
+						dialog.setTitle("&nbsp;");
+						dialog.setBText("开通失败！");
+						dialog.setOKText("立即绑定");
+
+						dialog.bind("hide", function(evt) {
+							if (evt.data.type == "ok") {
+								location.href = "https://aq.yy.com/mb/mob/index.do";
+							}
+						});
+
+						dialog.show();
+					} else {
+						var dialog = LIB.dialog.alert("您的YY号：" + res.obj.yyid);
+						dialog.setTitle("&nbsp;");
+						dialog.setBText("开通成功！");
+
+						dialog.bind("hide", function(evt) {
+							location.href = location.href;
+						});
+
+						dialog.show();
+					}
+				},
+				error: function(req) {
+					LIB.unlock();
+
+					var dialog = LIB.dialog.alert(LIB.errLog(req));
+					dialog.show();
+				}
+			});
+		});
+	},
+	mibaoEmail: function(opts) {
+		var btn_opra = $("#btn_opra");
+		var secureBase = LIB.dialog.secureBase;
+
+		LIB.components.helpTip("email");
+		LIB.components.setLoginStatus('webdb', opts, 'mibaoEmail');
+		btn_opra.click(function() {
+			var el = $(this);
+			var opraType = el.attr("btn-type");
+
+			switch(opraType) {
+				case "0":
+					bindEmail(false);
+					break;
+				case "1":
+					bindEmail(true);
+					break;
+			}
+		});
+
+		// 只会出现PWD/QA/Mobile
+		var bindEmail = function(isChange) {
+			if(opts.isNeedBindMob == "true"){
+				var dialog = LIB.dialog.alert("请绑定密保手机后操作");
+				dialog.setTitle("提醒");
+				dialog.setOKText("绑定密保手机");
+				dialog.show();
+				dialog.bind("hide", function(evt) {
+					if (evt.data.type != "ok") {
+						return;
+					}
+					
+					//跳转到绑定手机
+					location.href = "/mb/mob/index.do";
+				});
+				return;		
+			}
+
+			secureBase.init(opts.acct, opts.servcode, function(result, data) {
+				if (!result) {
+					var dialog = LIB.dialog.alert(data);
+					dialog.show();
+					return;
+				}
+
+				if (data.methods == null || data.methods.length == 0) {
+					var dialog = LIB.dialog.alert("没有返回验证方式");
+					dialog.show();
+					return;
+				}
+
+				var methodHash = {};
+
+				var showDialog = function(method) {
+					var verifyDialog = secureBase.build({
+						type: method.method_name,
+						acct: opts.acct,
+						servcode: opts.servcode,
+						title: isChange ? "修改密保邮箱" : "绑定密保邮箱",
+						buttonText: ["下一步", "下一步"],
+						extra: method,
+						token: data.token
+					});
+					
+					verifyDialog.bind("hide", function(evt) {
+						if (evt.data.type == "show") {
+							if(methodHash["mobile_u_verify"]){
+								showDialog(methodHash["mobile_u_verify"]);
+							} else {
+								var dialog = LIB.dialog.alert(evt.data.extra.msg);
+								dialog.show();
+							}
+							return;
+						}
+
+						if (evt.data.type != "ok") {
+							return;
+						}
+						var oauth_token = evt.data.extra.oauth_token;
+						var bindDialog = LIB.dialog.bindEmail({
+							servcode: opts.servcode,
+							oauth_token: oauth_token,
+							token: opts.token2,
+							isChange: isChange,
+							isPWD:opts.isPWD,
+							maskEmail: $("#maskEmail").val()
+						});
+
+						bindDialog.show();
+					});
+
+					verifyDialog.show();
+				}
+
+				if (data.methods.length == 1) {
+					var method = data.methods[0];
+					showDialog(method);
+				} else {
+					$("#bindPanel").hide();
+					$("#changeMbl").show();
+
+					$.each(data.methods, function(idx, method) {
+						methodHash[method.method_name] = method;
+
+						switch(method.method_name) {
+							case "pwd":
+								$("#changeMbl .E_byPwd").show();
+								$("#btn_changeByPwd").click(function() {
+									showDialog(methodHash["pwd"]);
+								});
+								break;
+							case "email_login":
+								$("#changeMbl .E_byEml").show();
+								$("#btn_changeByEml").click(function() {
+									showDialog(methodHash["email_login"]);
+								});
+								break;
+							case "mobile_d_login":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_d_login"]);
+								});
+								break;
+							case "mobile_d":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_d"]);
+								});
+								break;
+							case "mobile_u_verify":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_u_verify"]);
+								});
+								break;
+							case "mobile_unmask":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_unmask"]);
+								});
+								break;
+							case "bakmobile_d_login":
+								$("#changeMbl .E_byByBakMbl").show();
+								$("#btn_changeByBakMbl").click(function() {
+									showDialog(methodHash["bakmobile_d_login"]);
+								});
+								break;
+							case "swtoken":
+								$("#changeMbl .E_bySwToken").show();
+								$("#btn_changeBySwToken").click(function() {
+									showDialog(methodHash["swtoken"]);
+								});
+								break;
+						}
+					});
+				}
+			});
+		}
+	},
+	mibaoMobile: function(opts) {
+		var btn_opra = $("#btn_opra");
+		var secureBase = LIB.dialog.secureBase;
+
+		LIB.components.helpTip("mobile");
+		LIB.components.setLoginStatus('webdb', opts, 'mibaoMobile');
+		btn_opra.click(function() {
+			var el = $(this);
+			var opraType = el.attr("btn-type");
+
+			switch(opraType) {
+				case "0":
+					bindMobile();
+					break;
+				case "1":
+					changeMobile();
+					break;
+				case "2":
+					changeOrBindMobile();
+					break;
+			}
+		});
+
+		var changeMobile = function() {
+			secureBase.init(opts.acct, opts.servcode, function(result, data) {
+				if (!result) {
+					var dialog = LIB.dialog.alert(data);
+					dialog.show();
+					return;
+				}
+
+				if (data.methods == null || data.methods.length == 0) {
+					var dialog = LIB.dialog.alert("没有返回验证方式");
+					dialog.show();
+					return;
+				}
+
+				var methodHash = {};
+
+				var showDialog = function(method) {
+					var verifyDialog = secureBase.build({
+						type: method.method_name,
+						acct: opts.acct,
+						servcode: opts.servcode,
+						title: "修改密保手机",
+						msgContent: "修改密保手机",
+							buttonText: ["下一步", "下一步"],
+						extra: method,
+						token: data.token
+					});
+
+					verifyDialog.bind("hide", function(evt) {
+						if (evt.data.type == "show") {
+							if(methodHash["mobile_u_verify"]){
+								showDialog(methodHash["mobile_u_verify"]);
+							} else {
+								var dialog = LIB.dialog.alert(evt.data.extra.msg);
+								dialog.show();
+							}
+							// var dialog = LIB.dialog.alert("发送短信次数过多，请稍候再试");
+							// dialog.show();
+							return;
+						}
+
+						if (evt.data.type != "ok") {
+							return;
+						}
+
+						var oauth_token = evt.data.extra.oauth_token;
+						var bindDialog = LIB.dialog.changeBindMobile({
+							servcode: opts.servcode,
+							oauth_token: oauth_token,
+							token: opts.token2
+						});
+
+						bindDialog.show();
+					});
+
+					verifyDialog.show();
+				}
+
+				if (data.methods.length == 1) {
+					var method = data.methods[0];
+					showDialog(method);
+				} else {
+					$("#bindPanel").hide();
+					$("#changeMbl").show();
+
+					$.each(data.methods, function(idx, method) {
+						methodHash[method.method_name] = method;
+
+						switch(method.method_name) {
+							case "pwd":
+								$("#changeMbl .E_byPwd").show();
+								$("#btn_changeByPwd").click(function() {
+									showDialog(methodHash["pwd"]);
+								});
+								break;
+							case "email_login":
+								$("#changeMbl .E_byEml").show();
+								$("#btn_changeByEml").click(function() {
+									showDialog(methodHash["email_login"]);
+								});
+								break;
+							case "mobile_d_login":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_d_login"]);
+								});
+								break;
+							case "mobile_d":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_d"]);
+								});
+								break;
+							case "mobile_u_verify":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_u_verify"]);
+								});
+								break;
+							case "mobile_unmask":
+								$("#changeMbl .E_byMbl").show();
+								$("#btn_changeByMbl").click(function() {
+									showDialog(methodHash["mobile_unmask"]);
+								});
+								break;
+							case "bakmobile_d_login":
+								$("#changeMbl .E_byByBakMbl").show();
+								$("#btn_changeByBakMbl").click(function() {
+									showDialog(methodHash["bakmobile_d_login"]);
+								});
+								break;
+							case "swtoken":
+								$("#changeMbl .E_bySwToken").show();
+								$("#btn_changeBySwToken").click(function() {
+									showDialog(methodHash["swtoken"]);
+								});
+								break;
+						}
+					});
+				}
+			});
+		}
+
+		// 只会出现PWD/QA/Email
+		var bindMobile = function() {
+			secureBase.init(opts.acct, opts.servcode, function(result, data) {
+				if (!result) {
+					var dialog = LIB.dialog.alert(data);
+					dialog.show();
+					return;
+				}
+
+				var method = data.methods[0];
+
+				if (data.methods == null || data.methods.length == 0) {
+					return;
+				}
+
+				var verifyDialog = secureBase.build({
+					type: method.method_name,
+					acct: opts.acct,
+					servcode: opts.servcode,
+					title: "绑定密保手机",
+					buttonText: ["下一步", "下一步"],
+					extra: method,
+					token: data.token
+				});
+
+				verifyDialog.bind("hide", function(evt) {
+
+					if (evt.data.type != "ok") {
+						return;
+					}
+
+					var oauth_token = evt.data.extra.oauth_token;
+					var bindDialog = LIB.dialog.bindMobile({
+						servcode: opts.servcode,
+						oauth_token: oauth_token,
+						token: opts.token2
+					});
+
+					bindDialog.show();
+				});
+
+				verifyDialog.show();
+			});
+		}
+
+		var changeOrBindMobile = function() {
+			secureBase.init(opts.acct, opts.servcode, function(result, data) {
+				if (!result) {
+					var dialog = LIB.dialog.alert(data);
+					dialog.show();
+					return;
+				}
+
+				var method = data.methods[0];
+
+				if (data.methods == null || data.methods.length == 0) {
+					return;
+				}
+
+				var verifyDialog = secureBase.build({
+					type: method.method_name,
+					acct: opts.acct,
+					servcode: opts.servcode,
+					title: "取消更换密保手机",
+					buttonText: ["确定"],
+					extra: method,
+					token: data.token
+				});
+
+				verifyDialog.bind("hide", function() {
+					location.reload(true);
+				});
+
+				verifyDialog.show();
+			});
+		}
+	},
+
+	bakMobile: function(opts){
+		var btn_bakOpra = $("#btn_bakOpra");
+
+		// 如果页面不需要绑/改备用手机
+		if(btn_bakOpra.length == 0){
+			return;
+		}
+		var secureBase = LIB.dialog.secureBase;
+
+		LIB.components.helpTip("mobile");
+		LIB.components.setLoginStatus('webdb', opts, 'mibaoMobile');
+		btn_bakOpra.click(function() {
+			var el = $(this);
+			var opraType = el.attr("btn-type");
+			switch(opraType) {
+				case "0":
+					var dialog = LIB.dialog.alert("您的帐号还没绑定密保手机，请先绑定密保手机，再进一步绑定备用手机。");
+					dialog.setOKText("绑定密保手机");
+					dialog.show();
+					dialog.bind("hide", function(evt) {
+						if (evt.data.type != "ok") {
+							return;
+						}
+
+						//触发绑定手机
+						$("#btn_opra").click();
+					});
+					break;
+				case "1":
+					bindBakMobile();
+					break;
+				case "2":
+					changeBakMobile();
+					break;
+			}
+		});	
+
+		var bindBakMobile = function(change){
+
+			var bakIdxUrl = change == true ? "/mb/mob/bak/changeIdx.do" : "/mb/mob/bak/bindIdx.do";
+
+			$.ajax({
+				url: bakIdxUrl,
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+					//res = {code: 1,obj:{token:"1212321", servcode: "234234234"}};
+					if (res.code != 1) {
+
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						return;
+					}
+
+
+					secureBase.init(opts.acct, res.obj.servcode, function(result, data) {
+						if (!result) {
+							var dialog = LIB.dialog.alert(data);
+							dialog.show();
+							return;
+						}
+
+						var method = data.methods[0];
+
+						if (data.methods == null || data.methods.length == 0) {
+							return;
+						}
+
+						var verifyDialog = secureBase.build({
+							type: method.method_name,
+							acct: opts.acct,
+							servcode: res.obj.servcode,
+							title: change == true ? "改绑备用手机" : "绑定备用手机",
+							buttonText: ["下一步", "下一步"],
+							extra: method,
+							token: data.token
+						});
+
+						verifyDialog.bind("hide", function(evt) {
+							if (evt.data.type == "show") {
+								var dialog = LIB.dialog.alert("发送短信次数过多，请稍候再试");
+								dialog.show();
+								return;
+							}
+							if (evt.data.type != "ok") {
+								return;
+							}
+
+							var oauth_token = evt.data.extra.oauth_token;
+							
+							var bakMobileHandler = change == true ? LIB.dialog.changeBakMobile : LIB.dialog.bindBakMobile;
+							var bindDialog = bakMobileHandler({
+								servcode: res.obj.servcode,
+								change: change == true ? true : false,
+								oauth_token: oauth_token,
+								token: res.obj.token
+							});
+
+							bindDialog.show();
+						});
+
+						verifyDialog.show();
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					var dialog = LIB.dialog.alert(LIB.errLog(req));
+					dialog.show();
+				}
+			});
+		}
+
+		var changeBakMobile = function(){
+			bindBakMobile(true);
+		}
+	},
+	forgotPassword: function(acct, servcode, token2, sbnm) {
+		var btn_findPasswordByEmail = $("#btn_findPasswordByEmail");
+		var btn_findPasswordByMobile = $("#btn_findPasswordByMobile");
+		var btn_findPasswordByQA = $("#btn_findPasswordByQA");
+		var secureBase = LIB.dialog.secureBase;
+		var methodHash = {};
+
+		if (sbnm == "1") {
+			var dialog = LIB.dialog.alert("您的帐号存在安全风险，请用“申诉系统”找回密码");
+			dialog.show();
+
+			dialog.bind("hide", function() {
+				location.href = "https://complaint.duowan.com/yy/complaint.action?complaintType=0&passport=" + encodeURIComponent(acct);
+			});
+			
+			return;
+		}
+
+		secureBase.init(acct, servcode, function(result, data) {
+			var verify = function(type) {
+				var extra = null;
+
+				for (var i = 0; i < data.methods.length; i++) {
+					if (data.methods[i].method_name == type) {
+						extra = data.methods[i];
+						break;
+					}
+				}
+				var verifyDialog = secureBase.build({
+					type: type,
+				acct: acct,
+					servcode: servcode,
+					title: "找回密码",
+					buttonText: type == "mobile_u" ? ["确定"] : ["下一步", "下一步"],
+					extra: extra,
+					token: data.token
+				});
+
+				verifyDialog.bind("hide", function(evt) {
+					if (evt.data.type == "show") {
+						verify(evt.data.extra.type);
+						return;
+					}
+
+					if (evt.data.type != "ok" || type == "mobile_u") {
+						return;
+					}
+
+					var oauth_token = evt.data.extra.oauth_token;
+					
+					if(type == "QA"){
+						var bindDialog = LIB.dialog.bindMobileForQA({
+							acct: acct,
+							servcode: servcode,
+							oauth_token: oauth_token,
+							token: token2
+						});
+
+						bindDialog.bind("hide", function(evt) {
+							if (evt.data.type == "show") {
+								var dialog = LIB.dialog.findPassword({
+									acct: acct,
+									servcode: servcode,
+									token: token2,
+									oauth_token: oauth_token
+								});
+								dialog.setTitle('绑定密保手机<br/><span style="color: red;display: inline-block;margin-top: 13px;padding-left: 28px;font-size: 14px;font-weight: bold;">绑定密保手机成功！请修改密码！</span>');
+								dialog.show();
+							}
+						});
+
+						bindDialog.show();
+
+
+					} else {
+						var dialog = LIB.dialog.findPassword({
+							acct: acct,
+							servcode: servcode,
+							token: token2,
+							oauth_token: oauth_token,
+							type:type,
+							isEmail:evt.data.extra.isEmail
+						});
+					
+					dialog.show();
+					}
+				});
+
+				verifyDialog.show();
+			}
+
+			if (!result) {
+				var dialog = LIB.dialog.alert(data);
+				dialog.show();
+				return;
+			}
+
+			var methods = data.methods;
+
+			if (methods == null || methods.length == 0) {
+				return;
+			}
+
+			$("#m_findTip").hide();
+			$("#m_findList").show();
+
+			$.each(methods, function(idx, item) {
+				methodHash[item.method_name] = item;
+			});
+				
+			if (methodHash['QA']) {
+							$("#m_findList .E_qaItem").show();
+							
+							btn_findPasswordByQA.click(function() {
+							verify("QA");
+		});
+							}
+
+			if (methodHash['email']) {
+							$("#m_findList .E_emlItem").show();
+
+							btn_findPasswordByEmail.click(function() {
+								verify("email");
+							});
+							}
+
+			if (methodHash['email_login']) {
+						$("#m_findList .E_emlItem").show();
+
+						btn_findPasswordByEmail.click(function() {
+							verify("email_login");
+						});
+			}
+
+			if (methodHash['pwd']) {
+				$("#m_findList .E_passwdItem").show();
+
+				btn_findPasswordByPasswd.click(function() {
+					verify("pwd");
+				});
+						}
+
+			if (methodHash['mobile_u']) {
+							$("#m_findList .E_mblItem").show();
+
+							btn_findPasswordByMobile.click(function() {
+							verify("mobile_u");
+		});
+							}
+
+			// if (methods.length) {
+			// 	verify(methods[0].method_name);
+			// 			}
+				});
+	},
+	findPasswordIndex: function() {
+		var account = $("#account");
+		var account_def = "帐号\\邮箱\\手机号\\YY号";
+
+		$("#btn_send").click(function() {
+
+			if ($.trim(account.val()).length == 0 || $.trim(account.val()) == account_def) {
+				return;
+			}
+
+			$("#form").submit();
+		});
+
+		$("#btn_changeVCode_img, #btn_changeVCode").click(function() {
+			$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SFP&_ts=' + (new Date().valueOf()));
+		});
+
+		LIB.bindDefaultText($("#account"), "帐号\\邮箱\\手机号\\YY号");
+		LIB.bindDefaultText($("#imgvcode"), "输入下图的验证码");
+	},
+	changePassword: function(opts) {
+		var btn_changePasswordByEmail = $("#btn_changePasswordByEmail");
+		var btn_changePasswordByMobile = $("#btn_changePasswordByMobile");
+		var btn_changePasswordByQA = $("#btn_changePasswordByQA");
+		var btn_changePasswordByPasswd = $("#btn_changePasswordByPasswd");
+		var secureBase = LIB.dialog.secureBase;
+		var methodHash = {};
+
+		LIB.components.helpTip("passwd");
+		LIB.components.setLoginStatus('webdb', opts, 'changePassword');
+
+		secureBase.init(opts.acct, opts.servcode, function(result, data) {
+			var verify = function(type) {
+				var extra = null;
+
+				for (var i = 0; i < data.methods.length; i++) {
+					if (data.methods[i].method_name == type) {
+						extra = data.methods[i];
+						break;
+					}
+				}
+
+				var verifyDialog = secureBase.build({
+					type: type,
+					acct: opts.acct,
+					servcode: opts.servcode,
+					title: "修改密码",
+					buttonText: type == "mobile_u" ? ["确定"] : ["下一步", "下一步"],
+					extra: extra,
+					token: data.token
+				});
+
+				verifyDialog.bind("hide", function(evt) {
+					if (evt.data.type == "show") {
+						if(methodHash["mobile_u"]){
+							verify("mobile_u");
+						} else if(methodHash["mobile_u_verify"]){
+							verify("mobile_u_verify");
+						} else {
+							var dialog = LIB.dialog.alert(evt.data.extra.msg);
+							dialog.show();
+						}
+						return;
+					}
+
+					if (evt.data.type != "ok" || type == "mobile_u") {
+						return;
+					}
+
+					var oauth_token = evt.data.extra.oauth_token;
+					var dialog = LIB.dialog.changePassword({
+						acct: opts.acct,
+						oauth_token: oauth_token,
+						token: opts.token2
+					});
+
+					dialog.show();
+				});
+
+				verifyDialog.show();
+			}
+
+			if (!result) {
+				var dialog = LIB.dialog.alert(data);
+				dialog.show();
+				return;
+			}
+
+			var methods = data.methods;
+
+			if (methods == null || methods.length == 0) {
+				$("#m_findList .E_noMblItem").show();
+				return;
+			}
+
+			$("#m_findTip").hide();
+			$("#m_findList").show();
+
+			$.each(methods, function(idx, item) {
+				methodHash[item.method_name] = item;
+			});
+			
+			if ($("#m_findList .E_noMblItem")[0]) { // 新老兼容
+				if (methodHash['mobile_d_login'] == null 
+					&& methodHash['mobile_u'] == null 
+					&& methodHash['mobile_u_verify'] == null) {
+					
+					$("#m_findList .E_noMblItem").show();
+					return;
+				}
+			}
+
+			if (methodHash['QA']) {
+				$("#m_findList .E_qaItem").show();
+				
+				btn_changePasswordByQA.click(function() {
+					verify("QA");
+				});
+			}
+
+			if (methodHash['email']) {
+				$("#m_findList .E_emlItem").show();
+
+				btn_changePasswordByEmail.click(function() {
+					verify("email");
+				});
+			}
+
+			if (methodHash['email_login']) {
+				$("#m_findList .E_emlItem").show();
+
+				btn_changePasswordByEmail.click(function() {
+					verify("email_login");
+				});
+			}
+
+			if (methodHash['pwd']) {
+				$("#m_findList .E_passwdItem").show();
+
+				btn_changePasswordByPasswd.click(function() {
+					verify("pwd");
+				});
+			}
+
+			if (methodHash['mobile_d_login'] && methodHash['mobile_d_login']['remains'] != 0) {
+				$("#m_findList .E_mblItem").show();
+				btn_changePasswordByMobile.click(function() {
+					verify("mobile_d_login");
+				});
+			} else if (methodHash['mobile_u']) {
+				$("#m_findList .E_mblItem").show();
+				btn_changePasswordByMobile.click(function() {
+					verify("mobile_u");
+				});
+			} else if(methodHash['mobile_u_verify']){
+				$("#m_findList .E_mblItem").show();
+				btn_changePasswordByMobile.click(function() {
+					verify("mobile_u_verify");
+				});
+			}
+
+			// if (methods.length) {
+			// 	verify(methods[0].method_name);
+			// 		}
+		});
+	},
+	unban: function() {
+		var account = $("#account");
+		var vcode = $("#vcode");
+		var errTip = $("#err-tip");
+		var account_def = "帐号/邮箱/YY号/手机号";
+		var m_step1 = $("#m_step1");
+		var m_step2 = $("#m_step2");
+		var goback = $("#goback");
+		var save_token = null;
+		var save_acct = null;
+		var sendMsg_delay = 0;
+
+		var sendMsgStart = function() {
+			sendMsg_delay = 10;
+
+			var tid = setInterval(function() {
+				sendMsg_delay--;
+
+				if (sendMsg_delay == 0) {
+					clearInterval(tid);
+				}
+			}, 1000);
+		}
+
+		var updateStep2Button = function() {
+			var btn = m_step2.find(".E_sendMsg");
+
+			if (btn[0] == null) {
+				return;
+			}
+
+			if (sendMsg_delay == 0) {
+				btn.removeClass("btn_blue_v3_disabled");
+				btn.find("span").text("发送短信解封");
+			} else {
+				if (!btn.hasClass("btn_blue_v3_disabled")) {
+					btn.addClass("btn_blue_v3_disabled");
+				}
+
+				btn.find("span").text("发送短信解封(" + sendMsg_delay + "秒)");
+			}
+		}
+
+		var updateStep2ButtonListen = function() {
+			if (sendMsg_delay != 0) {
+				var tid = setInterval(function() {
+					updateStep2Button();
+
+					if (sendMsg_delay == 0) {
+						clearInterval(tid);
+					}
+				}, 200);
+			}
+		}
+
+		var updateStep1Button = function() {
+			// 肥羊说不置灰
+			// if ($.trim(account.val()).length == 0 || $.trim(account.val()) == account_def) { 
+			// 	$("#btn_send").addClass("buleBtn_disabled");
+			// } else {
+			// 	$("#btn_send").removeClass("buleBtn_disabled");
+			// }
+		}
+
+		$("#vcode").bind("keyup", function(evt) {
+			if (evt.keyCode == 13) {
+				$("#btn_send")[0].click();
+			}
+		});
+
+		$("#btn_send").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			if ($.trim(account.val()).length == 0 || $.trim(account.val()) == account_def) {
+				$("#err-tip").text("请输入帐号");
+				return;
+			}
+
+			save_token = null;
+			save_acct = null;
+
+			var post = {
+				vcode: $.trim(vcode.val()),
+				acct: $.trim(account.val())
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/p/unban/look.do",
+				data: post,
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					switch(res.code) {
+						case "200":
+							m_step1.hide();
+							m_step2.show();
+							m_step2.find(".E_lDate, .E_lDes, .E_lHt").hide();
+							m_step2.find(".E_stat").html("正常");
+						break;
+						case "400":
+							m_step1.hide();
+							m_step2.show();
+							m_step2.find(".E_lDate, .E_lDes").show();
+							m_step2.find(".E_lHt").hide();
+							m_step2.find(".E_stat").html("<strong style='color:red'>封禁</strong>");
+							m_step2.find(".E_date").text(res.obj.banDate);
+							m_step2.find(".E_des").html(res.obj.note);
+							// m_step2.find(".E_howto").text(res.obj.unbanDate + " 自动解封");
+							// m_step2.find(".E_howto").addClass("red");
+							// m_step2.find(".E_howto").removeClass("howto");
+						break;
+						case "401":
+							m_step1.hide();
+							m_step2.show();
+							m_step2.find(".E_lDate, .E_lDes, .E_lHt").show();
+							m_step2.find(".E_stat").html("<strong style='color:red'>封禁</strong>");
+							m_step2.find(".E_date").text(res.obj.banDate);
+							m_step2.find(".E_des").html(res.obj.note);
+							m_step2.find(".E_howto").html('<span class="htList clearfix">使用任意手机编辑解封短信发送到指定号码解除封禁<a href="javascript:void(0);" onclick="return false;" class="btn_blue_v3 E_sendMsg"><span>发送短信解封</span></a></span>');
+							m_step2.find(".E_howto").addClass("howto");
+							m_step2.find(".E_howto").removeClass("red");
+							save_token = res.msg;
+							save_acct = post.acct;
+
+							updateStep2Button();
+
+							if (sendMsg_delay != 0) {
+								updateStep2ButtonListen();
+							}
+						break;
+						default:
+							errTip.html(LIB.encodeHTML(res.msg));
+							$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SUNBAN&_ts=' + (new Date().valueOf()));
+						break;
+					}
+				},
+				error: function(req) {
+					LIB.unlock();
+					errTip.text(LIB.errLog(req));
+				}
+			});
+		});
+
+		$("#m_step2 .E_sendMsg").live("click", function() {
+			if (LIB.locked || sendMsg_delay != 0) {
+				return;
+			}
+
+			LIB.lock();
+
+			var post = {
+				acct: save_acct,
+				token: save_token
+			}
+
+			sendMsgStart();
+			updateStep2Button();
+			updateStep2ButtonListen();
+
+			$.ajax({
+				url: "/p/unban/reqmsgunban.do",
+				data: post,
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != "200") {
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+					} else {
+						var dialog = LIB.dialog.unBanByMobile({
+							token: save_token,
+							msg: res.obj.msg,
+							acct: save_acct,
+							gateway: res.obj.gateway
+						});
+
+						dialog.show();
+
+						dialog.bind("hide", function(evt) {
+							if (evt.data.type == "ok") {
+								m_step1.hide();
+								m_step2.show();
+								m_step2.find(".E_lDate, .E_lDes, .E_lHt").hide();
+								m_step2.find(".E_stat").html("正常");
+							}
+						});
+					}
+				},
+				error: function(req) {
+					LIB.unlock();
+					var dialog = LIB.dialog.alert(LIB.errLog(req));
+					dialog.show();
+				}
+			});
+		});
+
+		$("#btn_changeVCode_img, #btn_changeVCode").click(function() {
+			$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SUNBAN&_ts=' + (new Date().valueOf()));
+		});
+
+		goback.click(function() {
+			m_step2.hide();
+			m_step1.show();
+			account.val("帐号/邮箱/YY号/手机号");
+			vcode.val("输入下图所示验证码");
+			account.addClass("default_text");
+			vcode.addClass("default_text");
+			updateStep1Button();
+			$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SUNBAN&_ts=' + (new Date().valueOf()));
+			errTip.text("");
+		});
+
+		account.bind("blur", updateStep1Button);
+		account.bind("keyup", updateStep1Button);
+
+		LIB.bindDefaultText(account, "帐号/邮箱/YY号/手机号");
+		LIB.bindDefaultText(vcode, "输入下图所示验证码");
+		updateStep1Button();
+	},
+	unbanGuide: function(opts){
+		var account_def = "帐号\\邮箱\\手机号\\YY号";
+		var imgvcode_def = "请输入下图的验证码";
+		$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SUNIUNBAN&_ts=' + (new Date().valueOf()));
+
+		$("#btn_changeVCode_img, #btn_changeVCode").click(function() {
+			$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SUNIUNBAN&_ts=' + (new Date().valueOf()));
+		});
+
+		LIB.bindDefaultText($("#account"), "帐号\\邮箱\\手机号\\YY号");
+		LIB.bindDefaultText($("#imgvcode"), "请输入下图的验证码");
+
+		function getBanUrl(callback){
+			var acct = $("#account").val();
+			var vcode = $("#imgvcode").val();
+
+			if(acct == "" || $.trim(acct) == account_def){
+				$("#m_tips").html("请输入需要申请解封的帐号");
+				return;
+	}
+			if(vcode  == "" || $.trim(vcode ) == imgvcode_def){
+				$("#m_tips").html("请输入下图的验证码");
+				return;
+			}
+
+			$.ajax({
+				url: "/p/uni/unban/dpch.do",
+				data: {
+					appid: opts.appid,
+					account: acct,
+					imgvcode: vcode
+				},
+				type: "POST",
+				success: function(res) {
+
+					if (res.code != "1") {
+						$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SUNIUNBAN&_ts=' + (new Date().valueOf()));
+						$("#m_mainForm").show();
+						$("#m_tips").html(res.msg);
+						return;	
+					} 
+					callback(res.obj.unbanUrl);
+				},
+				error: function(req) {
+					$("#btn_changeVCode_img img").attr("src", '/p/vcode/create.do?type=SUNIUNBAN&_ts=' + (new Date().valueOf()));
+					$("#m_mainForm").show();
+					$("#m_tips").html(LIB.errLog(req));
+				}
+			});
+		}
+
+		if(opts.unbanUrl == ""){
+			$("#m_mainForm").show();
+			$("#btn_next").on("click", function(){
+				getBanUrl(function(unbanUrl){
+					$("#m_mainForm").hide();
+					$("#m_guideFormUrl").attr("src", unbanUrl);
+					$("#m_guideForm").show();
+				});	
+			});
+		} else {
+			$("#m_mainForm").hide();
+			$("#m_guideFormUrl").attr("src", opts.unbanUrl);
+			$("#m_guideForm").show();
+		}
+	}
+}
+
+// 扩展函数，允许页面直接调用
+LIB.pages.extra = {
+	bindMobile: function() {
+		if (LIB.locked) {
+			return;
+		}
+
+		var url = "/mb/mbl/vbindzig.do";
+
+		LIB.lock();
+
+		$.post(url, {}, function(res) {
+			LIB.unlock();
+
+			if (res.code != 1) {
+				var dialog = LIB.dialog.alert(res.msg);
+				dialog.setTitle(res.code == 1 ? "提示" : "错误");
+				dialog.show();
+
+				if (res.code == 2) {
+					dialog.bind("hide", function() {
+						location.href = "https://udb.yy.com/security/index.do#tab=4";
+					});
+				}
+
+				return;
+			}
+
+			var dialog = LIB.dialog.bindMobileByEmail({
+		        email: res.obj
+		    });
+
+		    dialog.show();
+
+		    dialog.bind("hide", function(evt) {
+		    	if (evt.data.type == "ok") {
+		    		location.reload(true);
+		    	}
+		    });
+		});
+	},
+	bindEmail: function() {
+	    if (LIB.locked) {
+			return;
+		}
+
+		var url = "/mb/eml/mbl/idx.do";
+
+		LIB.lock();
+
+		$.post(url, {}, function(res) {
+			LIB.unlock();
+
+			if (res.code != 0) {
+				var dialog = LIB.dialog.alert(res.msg);
+				dialog.setTitle(res.code == 1 ? "提示" : "错误");
+				dialog.show();
+
+				if (res.code == 1) {
+					dialog.bind("hide", function() {
+						location.href = "https://udb.yy.com/security/index.do#tab=2";
+					});
+				}
+
+				return;
+			}
+
+			var dialog = LIB.dialog.bindEmailByMobile({
+		        mobile: res.obj
+		    });
+
+		    dialog.show();
+
+		    dialog.bind("hide", function(evt) {
+		    	if (evt.data.type == "ok") {
+		    		location.reload(true);
+		    	}
+		    });
+		});
+	},
+	findPasswordByMobile: function(acct, mark, gateway) {
+		var dialog = LIB.dialog.findPasswordByMobile({
+	        acct: acct,
+	        mark: mark,
+	        gateway: gateway
+	    });
+
+	    dialog.show();
+	},
+	findPasswordByEmail: function(acct, mark, token, servcode, token2) {
+		var dialog = LIB.dialog.findPasswordByEmail({
+			acct: acct,
+	        mark: mark,
+	        token: token,
+	        servcode: servcode,
+	        token2: token2
+	    });
+
+	    dialog.show();
+
+	    dialog.bind("hide", function(evt) {
+	    	if (evt.data.type == "ok") {
+	    		setTimeout(function() {
+	    			location.href = "/p/pwd/fgt/index.do";
+	    		}, 10);
+	    	}
+	    });
+	},
+	findPasswordByQA: function(acct, q1, q2, q3, token, servcode, token2) {
+		var dialog = LIB.dialog.findPasswordByQA({
+			acct: acct,
+	        q1: q1,
+	        q2: q2,
+	        q3: q3,
+	        token: token,
+	        servcode: servcode,
+	        token2: token2
+	    });
+
+	    dialog.show();
+
+	    dialog.bind("hide", function(evt) {
+	    	if (evt.data.type == "ok") {
+	    		setTimeout(function() {
+	    			location.href = "/p/pwd/fgt/index.do";
+	    		}, 10);
+	    	}
+	    });
+	},
+	changePasswordByMobile: function(mobile, mark, gateway) {
+		var dialog = LIB.dialog.changePasswordByMobile({
+	        mobile: mobile,
+	        mark: mark,
+	        gateway: gateway
+	    });
+
+	    dialog.show();
+	},
+	changePasswordByEmail: function(email) {
+		var dialog = LIB.dialog.changePasswordByEmail({
+	        email: email
+	    });
+
+	    dialog.show();
+	}
+}
+
+LIB.components.uploadPreview = (function() {
+	var fun = function(opts) {
+		var that = LIB.components.base();
+		var file = opts.file[0];
+		var wrap = opts.wrap[0];
+
+		opts.file.bind("change", function() {
+			if (!checkFile()) {
+				return;
+			}
+
+			if (window.URL) {
+				var img = $('<img />');
+
+				img.bind("error", function() {
+					that.resetFile();
+					that.fire("imageError")
+				});
+
+				img.width(opts.wrap.width());
+				img.height(opts.wrap.height());
+				img.attr("src", window.URL.createObjectURL(file.files[0]));
+				opts.wrap.html("");
+				img.appendTo(wrap);
+
+			} else if (wrap.filters) {
+				file.select();
+				
+				try {
+					var path = document.selection.createRange().text;	
+					document.selection.empty();
+					file.blur();
+				}catch(ex) {
+					that.fire("componentError");
+					return;
+				}
+				
+				wrap.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src='" + path + "')";
+			}
+		});
+
+		var checkFile = function() {
+			var suffix = file.value.substr(file.value.lastIndexOf(".") + 1);
+			var reg = new RegExp("^" + opts.suffix + "$", "i");
+
+			if (!reg.test(suffix)) {
+				that.resetFile();
+				that.fire("suffixError");
+				return false;
+			}
+
+			if (file.files) {
+				if (file.files[0].size > opts.maxSize) {
+					that.resetFile();
+					that.fire("sizeError");
+					return false;
+				}
+
+				return true;
+			} else {
+				try { // 仅支持IE6，IE7-9全挂，必须通过flash，放弃
+					var img = document.createElement("IMG");
+					img.dynsrc = file.value;
+					if (img.fileSize < opts.maxSize) {
+						return true;
+					} else {
+						that.resetFile();
+						that.fire("sizeError");
+						return false;
+					}
+				}catch(ex) {
+					return true;
+				}
+			}
+		}
+
+		that.resetFile = function() {
+			fun.resetFile(file);
+		}
+
+		return that;
+	}
+
+	fun.resetFile = function(file) {
+		try {
+			file.value = "";
+		} catch(ex) {
+			var form = document.createElement('form');
+			var previousSibling = file.previousSibling;
+			form.appendChild(file);
+			form.reset();
+			previousSibling.parentNode.insertAfter(file);
+		}
+	}
+
+	fun.isOK = function() {
+		return !/MSIE 9.0/.test(navigator.userAgent);
+	}
+
+	return fun;
+})();
+
+/*
+接口：  https://aq.yy.com/navi/bottom.do  
+入参：  leftmenu  （welcome 欢迎页， yysec 手机安全中心  mobile 密保手机 email 密保邮箱  qa 密保问题  passwd 修改密码  acct 帐号管理 realname 实名认证）  这些入参应该之前已经定义好了 
+出参:    {code:0, msg: succ , obj : [{"id":1,"naviname":"test1" , "naviurl": "testurl1" } , {"id":2,"naviname":"test2" , "naviurl": "testurl2" }  ]  }  */
+
+LIB.components.helpTip = function(tag, offsetNode) {
+	offsetNode = offsetNode || $("#m_partRight");
+
+	if (offsetNode[0] == null) {
+		return;
+	}
+
+	var tmpl = '<div class="m_helpTip clearfix">\
+					<span class="icon_q"></span> <strong>使用帮助</strong>{links}\
+				</div>';
+
+	$.ajax({
+		url: '/navi/bottom.do',
+		data: { leftmenu: tag },
+		type: "post",
+		success: function(res) {
+			if (res.code != "0") {
+				return;
+			}
+
+			if (LIB.getType(res.obj) != "array" || res.obj.length == 0) {
+				return;
+			}
+
+			var html = [];
+
+			$.each(res.obj, function(index, item) {
+				html.push('<a href="' + item.naviurl + '" target="_blank" helpid="' + item.id + '" class="' + (index == (res.obj.length - 1) ? 'more' : 'helpLink') + '">' + LIB.encodeHTML(item.naviname) + '</a>');
+			});
+			
+
+			var node = $(tmpl.replace(/\{links\}/ig, html.join("")));
+			var left = null;
+			var top = 10;
+
+			function updateLeft() {
+				left = offsetNode.offset().left;
+				node.css("left", left + "px");
+			}
+
+			$(document.body).append(node);
+
+			node.find("a").bind("click", function() {
+				//LIB.components.hiidoStatistics
+				var element = $(this);
+				var query = {
+					act: "webudbhits",
+					time: Math.floor(new Date().getTime() / 1000),
+					key: "",
+					uid: 0,
+					busiid: "aqhelptip",
+					busidesc: "安全中心客服帮助条",
+					busitype: tag,
+					linkid: element.attr("helpid"),
+					linkdesc: element.text(),
+					browser: LIB.components.browser.type,
+					bak1: "",
+					bak2: "",
+					bak3: "",
+					bak4: "",
+					bak5: ""
+				}
+
+				LIB.components.hiidoStatistics.send(query, null, 30000)
+			});
+			
+			updateLeft();
+
+			var pft = $(".pft");
+
+			function updateView() {
+				var maxTop = (pft.offset().top - node.height() - 15) + "px";
+
+				if (($(window).scrollTop() + $(window).height()) > ($(document).height() - 90)) {
+					node.css("position", "absolute");
+					node.css("bottom", "auto");
+					node.css("top", maxTop);
+				} else {
+					node.css("position", "fixed");
+					node.css("top", "auto");
+					node.css("bottom", "5px");
+				}
+			}
+
+			if(!($.browser.msie && ($.browser.version == "6.0"))) {
+				updateView();
+
+				$(window).scroll(updateView);
+			}
+
+			$(window).resize(updateLeft);
+		},
+		error: function(req) {
+			LIB.log("获取帮助信息失败，请求状态码为：" + req.status);
+		}
+	});
+}
+LIB.components.setLoginStatus = function(tag, opts, page) {
+	var headNickName = $("#header_nickName");
+	var nickName = $("#m_nickName");
+	var yyId = $("#m_yyId");
+	var userlogo = $("#m_logo");
+	var lvls = $("#m_lvl span");
+	var lvlicon = $("#lvl_icon");
+	var mbSuggestWrap = $("#m_mbSuggest");
+	if(page != "welcome"){
+		if(opts.nickName != ""){
+			headNickName.html(opts.nickName);
+			return;	
+		}
+		$.ajax({
+			url: '/initUserInfo.do',
+			data: {
+				type: tag
+			},
+			type: "POST",
+			success: function(res) {
+				headNickName.html(res.code == 0 ? res.obj.nickName : '<span style="color:red;">获取失败</span>');
+			},
+			error: function(req){
+				headNickName.html('<span style="color:red;">获取失败</span>');	
+			}
+		});
+		return;
+	}
+
+	if((tag == "webdb" && (opts.nickName == "" || opts.yyid == "" || opts.headPhotoUrl == "")) || (tag == "secLevel" && (opts.securityLevel == "" || opts.yyid == "" || opts.mbSuggest == ""))){
+		$.ajax({
+			url: '/initUserInfo.do',
+			data: {
+				type: tag
+			},
+			type: "POST",
+			success: function(res) {
+				if(tag == "webdb"){
+					if(res.code != 0){
+						headNickName.html(opts.nickName);
+						nickName.html(nickName.html() + (opts.nickName != "" ? opts.nickName : '<span style="color:red;">获取失败</span>'));
+						yyId.html(yyId.html() + (opts.yyid != "" ? opts.yyid : '<span style="color:red;">获取失败</span>'));
+						if(opts.headPhotoUrl != ""){
+							userlogo.attr("src", opts.headPhotoUrl);		
+						}
+						
+					} else {
+						headNickName.html(res.obj.nickName);
+						nickName.html(nickName.html() + res.obj.nickName);
+						yyId.html(yyId.html() + res.obj.yyid);
+						userlogo.attr("src", res.obj.headPhotoUrl);		
+					}	
+				}else{
+					if(res.code != 0){
+						mbSuggestWrap.html('<h3 class="mhd">获取数据失败，请<span style="color:blue">刷新</span>页面重试。</h3>');
+					} else {
+						setSecLevel(res.obj.mbSuggest.toString(), res.obj.securityLevel.toString());	
+					}	
+				}
+				
+			},
+			error: function(req) {
+				if(tag == "webdb"){
+					headNickName.html(opts.nickName);
+					nickName.html(nickName.html() + (opts.nickName != "" ? opts.nickName : '<span style="color:red;">获取失败</span>'));
+					yyId.html(yyId.html() + (opts.yyid != "" ? opts.yyid : '<span style="color:red;">获取失败</span>'));
+					if(opts.headPhotoUrl != ""){
+						userlogo.attr("src", opts.headPhotoUrl);		
+					}
+				}else{		
+					mbSuggestWrap.html('<h3 class="mhd">获取数据失败，请<span style="color:blue">刷新</span>页面重试。</h3>');	
+				}
+			}
+		});
+	} else {
+		if(tag == "webdb"){
+			headNickName.html(opts.nickName);
+			nickName.html(nickName.html() + opts.nickName);
+			yyId.html(yyId.html() + opts.yyid);	
+			userlogo.attr("src", opts.headPhotoUrl);		
+		}else{
+			setSecLevel(opts.mbSuggest, opts.securityLevel);
+		}
+
+	}
+
+	function setSecLevel(mbSuggest, securityLevel){
+		var html = "";
+		if( securityLevel != "0" && securityLevel != ""){
+			switch (securityLevel) {
+				case "1":
+					lvlicon.addClass("icon3");
+					break;
+				case "2":
+				case "3":
+					lvlicon.addClass("icon1");
+					break;
+				case "4":
+				case "5":
+					lvlicon.addClass("icon0");
+					// statements_1
+					break;
+			}
+			for(var i = 0; i< securityLevel; i++){
+				lvls.eq(i).addClass("lvl2");	
+			}	
+		} else {
+			lvlicon.addClass("icon2");
+		}
+		if(mbSuggest == "3" || mbSuggest == ""){
+			html = "";
+		}else if(mbSuggest == "0" ){
+			html = '<div class="m_welOpra">';
+			html += 	'<h3 class="mhd">增加以下保密措施可保护您的帐号：</h3>';
+			html += 	'<div class="mbd">';
+			html +=			'<p class="opra">';
+			html +=				'<span class="icon_alert"></span> 未绑定密保手机！';
+			html +=			'</p>';
+			html +=			'<p class="notice">绑定手机后，可使用手机快速修改密码，确保帐号安全。</p>';
+			html +=				'<a href="/mb/mob/index.do" class="btn_blue_v4">绑定密保手机</a>';
+			html +=		'</div>';
+			html +=	'</div>';	
+		} else {
+			html = '<div class="m_welOpra">';
+			html += 	'<h3 class="mhd">增加以下保密措施可保护您的帐号：</h3>';
+			html +=		'<div class="mbd">';
+			html +=			'<p class="opra">';
+			html +=				'<span class="icon_alert"></span> 未绑定手机安全中心！';
+			html +=			'</p>';
+			html +=			'<p class="notice">绑定安全中心手机版，随时随地掌握帐号信息。</p>';
+			html +=				'<a href="/acct/tcard/index.do" class="btn_blue_v4">绑定手机安全中心</a>';
+			html +=		'</div>';
+			html +=	'</div>';
+		}
+		mbSuggestWrap.html(html);
+	}
+};
+LIB.components.imageLoader = function(url, callback) {
+	var img = new Image();
+	img.src = url;
+
+	if (img.complete) {
+		callback(img);
+	} else {
+		img.onload = function() {
+			img.onload = null;
+			img.onerror = null;
+			callback(img);
+		}
+
+		img.onerror = function() {
+			img.onload = null;
+			img.onerror = null;
+			callback(null);
+		}
+	}
+}
+
+LIB.components.hiidoStatistics = (function() {
+	var acceptURL = (location.protocol == "https:" ? "https:" : "http:") + "//ylog.hiido.com/j.gif";
+	var that = {};
+	var defTimeout = 2000;
+	var imageLoader = LIB.components.imageLoader;
+
+	// 0: 成功 -1: 服务失败 1: 超时
+	that.send = function(query, callback, timeout) {
+		var queryString = [];
+		var tid = 0;
+		var isTimeout = false;
+		timeout = timeout || defTimeout;
+
+		// 因为第一个查询参数一定要是act，否则会被抛弃掉，所以…
+		for (var p in query) {
+			if (p != "act") {
+				queryString.push(p + "=" + encodeURIComponent(query[p]));
+			}
+		}
+
+		queryString = "act=" + query["act"] + "&" + queryString.join("&");
+
+		imageLoader(acceptURL + "?" + queryString, function(element) {
+			if (isTimeout) {
+				// 超时，不管了
+				return;
+			}
+
+			clearTimeout(tid);
+			callback(element == null ? -1 : 0);
+		});
+
+		var tid = setTimeout(function() {
+			isTimeout = true;
+			callback(1);
+		}, timeout);
+	}
+
+	return that;
+})();
+
+LIB.components.cookie = (function() {
+	var that = {
+		set: function(sKey, sValue, oOpts){
+			var arr = [];
+			var d, t;
+			var cfg = {
+				'expire': null,
+				'path': '/',
+				'domain': null,
+				'secure': null,
+				'encode': true
+			};
+
+			for (var p in cfg) {
+				if (p in oOpts) {
+					cfg[p] = oOpts[p];
+				}
+			}
+			
+			if (cfg.encode == true) {
+				sValue = escape(sValue);
+			}
+			arr.push(sKey + '=' + sValue);
+
+			if (cfg.path != null) {
+				arr.push('path=' + cfg.path);
+			}
+			if (cfg.domain != null) {
+				arr.push('domain=' + cfg.domain);
+			}
+			if (cfg.secure != null) {
+				arr.push(cfg.secure);
+			}
+			if (cfg.expire != null) {
+				d = new Date();
+				t = d.getTime() + cfg.expire * 3600000;
+				d.setTime(t);
+				arr.push('expires=' + d.toGMTString());
+			}
+			document.cookie = arr.join(';');
+		},
+		get: function(sKey){
+			sKey = sKey.replace(/([\.\[\]\$])/g, '\\\$1');
+			var rep = new RegExp(sKey + '=([^;]*)?;', 'i');
+			var co = document.cookie + ';';
+			var res = co.match(rep);
+			if (res) {
+				return res[1] || "";
+			}
+			else {
+				return '';
+			}
+		},
+		remove: function(sKey, oOpts){
+			oOpts = oOpts || {};
+			oOpts.expire = -10;
+			that.set(sKey, '', oOpts);
+		}
+	};
+	return that;
+})();
+LIB.components.browser = (function() {
+	var ua = navigator.userAgent.toLowerCase();
+	var external = "";
+	var core, m, extra, version, os;
+
+	var isMobile = function() {
+        var mobile_agents = ["240x320","acer","acoon","acs-","abacho","ahong","airness","alcatel","amoi","android","anywhereyougo.com","applewebkit/525","applewebkit/532","asus","audio","au-mic","avantogo","becker","benq","bilbo","bird","blackberry","blazer","bleu","cdm-","compal","coolpad","danger","dbtel","dopod","elaine","eric","etouch","fly ","fly_","fly-","go.web","goodaccess","gradiente","grundig","haier","hedy","hitachi","htc","huawei","hutchison","inno","ipad","ipaq","ipod","jbrowser","kddi","kgt","kwc","lenovo","lg ","lg2","lg3","lg4","lg5","lg7","lg8","lg9","lg-","lge-","lge9","longcos","maemo","mercator","meridian","micromax","midp","mini","mitsu","mmm","mmp","mobi","mot-","moto","nec-","netfront","newgen","nexian","nf-browser","nintendo","nitro","nokia","nook","novarra","obigo","palm","panasonic","pantech","philips","phone","pg-","playstation","pocket","pt-","qc-","qtek","rover","sagem","sama","samu","sanyo","samsung","sch-","scooter","sec-","sendo","sgh-","sharp","siemens","sie-","softbank","sony","spice","sprint","spv","symbian","tablet","talkabout","tcl-","teleca","telit","tianyu","tim-","toshiba","tsm","up.browser","utec","utstar","verykool","virgin","vk-","voda","voxtel","vx","wap","wellco","wig browser","wii","windows ce","wireless","xda","xde","zte"];
+
+        for (var i = 0; i < mobile_agents.length; i++) {
+            if (ua.indexOf(mobile_agents[i]) != -1) {
+                return true;
+            }
+        }
+        
+        return false;
+	}
+
+	try {
+		external = window["external"] || '';
+	}catch(ex) {
+		external = "";
+	}
+
+	var numberify = function(s) {
+		var c = 0;
+		return parseFloat(s.replace(/\./g, function() {
+			return (c++ == 1) ? '' : '.';
+		}));
+	};
+
+	try{
+        if ((/windows|win32/i).test(ua)) {
+            os = 'windows';
+        } else if ((/macintosh/i).test(ua)) {
+            os = 'macintosh';
+        } else if ((/rhino/i).test(ua)) {
+            os = 'rhino';
+        }
+
+		if((m = ua.match(/applewebkit\/([^\s]*)/)) && m[1]){
+			core = 'webkit';
+			version = numberify(m[1]);
+		}else if((m = ua.match(/presto\/([\d.]*)/)) && m[1]){
+			core = 'presto';
+			version = numberify(m[1]);
+		}else if(m = ua.match(/msie\s([^;]*)/)){
+			core = 'trident';
+			version = 1.0;
+			if ((m = ua.match(/trident\/([\d.]*)/)) && m[1]) {
+				version = numberify(m[1]);
+			}
+		} else if (m = ua.match(/trident/)){ // TODO: IE11待测试
+			core = 'trident';
+			version = 1.0;
+			if ((m = ua.match(/trident\.*rv:(\d+)/)) && m[1]) {
+				version = numberify(m[1]);
+			}
+		}else if(/gecko/.test(ua)){
+			core = 'gecko';
+			version = 1.0;
+			if((m = ua.match(/rv:([\d.]*)/)) && m[1]){
+				version = numberify(m[1]);
+			}
+		}
+
+		if(/world/.test(ua)){
+			extra = 'world';
+		}else if(/360se/.test(ua)){
+			extra = '360';
+		}else if((/maxthon/.test(ua)) || typeof external.max_version == 'number'){
+			extra = 'maxthon';
+		}else if(/tencenttraveler\s([\d.]*)/.test(ua)){
+			extra = 'tt';
+		}else if(/se\s([\d.]*)/.test(ua)){
+			extra = 'sogou';
+		}
+	}catch(e){}
+	
+	var ret = {
+		'OS':os,
+		'CORE':core,
+		'Version':version,
+		'EXTRA':(extra?extra:false),
+		'IE': /msie/.test(ua) || /trident/.test(ua),
+		'OPERA': /opera/.test(ua),
+		'MOZ': /gecko/.test(ua) && !/(compatible|webkit|trident)/.test(ua),
+		'IE5': /msie 5 /.test(ua),
+		'IE55': /msie 5.5/.test(ua),
+		'IE6': /msie 6/.test(ua),
+		'IE7': /msie 7/.test(ua),
+		'IE8': /msie 8/.test(ua),
+		'IE9': /msie 9/.test(ua),
+		'IE10': /msie 10/.test(ua),
+		'IE11': /trident.*rv:11/.test(ua),
+		'SAFARI': !/chrome\/([\d.]*)/.test(ua) && /\/([\da-f.]*) safari/.test(ua),
+		'CHROME': /chrome\/([\d.]*)/.test(ua),
+		'IPAD':/\(ipad/i.test(ua),
+		'IPHONE':/\(iphone/i.test(ua),
+		'ITOUCH':/\(itouch/i.test(ua),
+		'MOBILE':isMobile()
+	};
+
+	var arr = ["IE5", "IE55", "IE6", "IE7", "IE8", "IE9", "IE10", "IE11", "SAFARI", "OPERA", "MOZ", "CHROME"];
+	var type = "OTHER";
+
+	for (var i = 0; i < arr.length; i++) {
+		if (ret[arr[i]]) {
+			type = arr[i];
+			break;
+		}
+	}
+
+	ret.type = type;
+
+	return ret;
+})();

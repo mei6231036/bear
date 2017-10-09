@@ -16,6 +16,14 @@ Route::get('/', function () {
    
 });
 Route::get('/home',"home\HomeController@index");
+// 个人中心
+Route::get('/myuser',"MyuserController@index");
+Route::get('/myauth',"MyuserController@myauth");
+Route::get('/myaccount',"MyuserController@myaccount");
+Route::get('/mylevel',"MyuserController@mylevel");
+Route::get('/mylist',"MyuserController@mylist");
+Route::get('/mysubscribe',"MyuserController@mysubscribe");
+
 Route::get('/',"IndexController@index");
 Route::get('/add',"IndexController@add");
 Route::get('/cate',"CateController@show");
@@ -28,6 +36,7 @@ Route::get('/regin',"login\LoginController@regin");//zyk
 Route::get('/register',"IndexController@register");
 Route::get('/anchor',"AnchorController@index");
 Route::resource('home',"home\HomeController");
+Route::resource('/yy',"YyController@index");
 Route::get('/article',function(){
     return view('article.index');
 });

@@ -1,0 +1,3652 @@
+(function() {
+	var errTMPL = '<div class="form_item" style="width: 360px; height: 147px; text-align: center; padding-top:100px; color: red; font-size: 16px;">{err}</div>';
+	
+	LIB.dialog.secureBase = function() {
+		var that = LIB.dialog.base();
+
+		that.showError = function(wrap, msg) {
+			wrap.find(".E_error").css("visibility", "visible");
+			wrap.find(".E_error span").html(msg);
+		}
+
+		that.clearError = function(wrap) {
+			wrap.find(".E_error").css("visibility", "hidden");
+			wrap.find(".E_error span").html("&nbsp;");
+		}
+
+		that.countDown = function(opts) {
+			default_opts = {
+				'wrap': null,
+				'text': '重新发送',
+				'countDownText': '重新发送({num})',
+				'disabledClass': 'btn_blue_v3_disabled'
+			}
+
+			var newOpts = {};
+
+			for (var p in default_opts) {
+				newOpts[p] = opts[p] || default_opts[p];
+			}
+
+			opts = newOpts;
+
+			var countdown = 60;
+			opts.wrap.find(".E_resend").addClass(opts.disabledClass);
+			opts.wrap.find(".E_resend span").html(opts.countDownText.replace(/\{num\}/g, countdown));
+
+			var tid = setInterval(function() {
+				countdown--;
+
+				if (countdown == 0) {
+					opts.wrap.find(".E_resend span").html(opts.text);
+					opts.wrap.find(".E_resend").removeClass(opts.disabledClass);
+					clearInterval(tid);
+				} else {
+					opts.wrap.find(".E_resend span").html(opts.countDownText.replace(/\{num\}/g, countdown));
+				}
+			}, 1000);
+		}
+
+		that.limitVCode = function(el) {
+			// 不再做限制
+			return;
+			el.css("ime-mode", "disabled");
+
+			el.bind("keydown", function(evt) {
+				if (evt.keyCode > 47 && evt.keyCode < 58) {
+					return el.val().length < 6;
+				}
+
+				return (evt.keyCode < 48 && evt.keyCode != 32) || evt.keyCode > 90;
+			});
+		}
+
+		return that;
+	}
+
+	var secureBase = LIB.dialog.secureBase;
+
+	secureBase.init = function(acct, servcode, callback) {
+		$.ajax({
+			url: "/p/uni/index.do",
+			data: {
+				acct: acct,
+				servcode: servcode
+			},
+			type: "POST",
+			success: function(res) {
+
+				// DEBUG
+				// var res = {"code":"1","msg":"ok","obj":{"methods":[{"method_name":"mobile_d_login","remains": 12}, {"method_name":"mobile_u"}],"token":"cab566fc4498792ed430b04a632db07b8f543a93"}};	
+				// var res ={"code":"1","msg":"ok","obj":{"methods":[{"maskMobile":"156******17","remains":10,"method_name":"mobile_d_login"}],"token":"10799076ffbf7eb1a81486dcb20b3238a01e916a"}};
+				if (res.code != "1") {
+					callback(false, res.msg);
+				} else {
+					callback(true, res.obj);
+				}
+			},
+			error: function(req) {
+				callback(false, LIB.errLog(req));
+			}
+		});
+	}
+
+	// opts = {
+	// 	type: "QA",
+	// 	acct: "bennyzheng@foxmail.com",
+	// 	servcode: "abc",
+	// 	buttonText: ["下一步", "下一步"], // 最多有几步就得传几个
+	// 	title: "密保验证"
+	// }
+	secureBase.build = function(opts) {
+		var dialog = null;
+
+		switch(opts.type) {
+			case "QA":
+				dialog = verifyByQA(opts);
+				break;
+			case "email":
+				dialog = verifyByEmail(opts);
+				break;
+			case "mobile_u":
+				dialog = verifyByMobileU(opts);
+				break;
+			case "pwd":
+				dialog = verifyByPasswd(opts);
+				break;
+			case "email_login":
+				dialog = verifyByEmailLogined(opts);
+				break;
+			case "mobile_d_login":
+				dialog = verifyByMobileDLogined(opts);
+				break;
+			case "mobile_u_verify":
+				dialog = verifyByMobileUV(opts);
+				break;
+			case "mobile_d":
+				// dialog = verifyByMobileD(opts);
+				break;
+			case "mobile_unmask":
+				dialog = verifyByMobileUnmask(opts);
+				break;
+			case "bakmobile_d_login":
+				dialog = verifyByBakMobileDLogined(opts);
+				break;	
+			case "swtoken":
+				dialog = verifySWToken(opts);
+				break;
+
+		}
+
+		return dialog;
+	}
+
+	var verifySWToken = function(opts) {
+		var that = secureBase();
+		var defTextVCode = "请输入动态口令";
+		var buttonText = opts.buttonText || ["下一步", "下一步"];
+		var dialogTitle = (opts.title || "手机令牌验证") + "<span>第一步：验证手机令牌</span>";
+		var node = $('<div class="m_dialog_verify m_dialog_verify_mobileD"></div>');
+		var html = '<div class="step2 E_step1">\
+						<div class="form_item text">\
+							<span class="field_title text_title">您的手机：</span>' + opts.extra.maskMobile + '\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">动态口令：</span><span class="text_input_v3"><input type="text" class="E_verifyCode default_text" value="' + defTextVCode + '"><span class="space"></span></span>\
+						</div>{contents}\
+						<div class="form_item">&nbsp;</div>\
+						<div class="form_notice E_error" style="visibility:hidden"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>' + buttonText[0] + '</span></a></div>\
+					</div>';
+		var contents = [];
+
+		$.each(opts.extra.hint1, function(idx, item) {
+			contents.push('<div class="form_notice gray">' + item + '</div>');
+		});
+
+		node.html(html.replace(/\{contents\}/ig, contents.join("")));
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+
+		LIB.bindDefaultText(node.find(".E_verifyCode"), defTextVCode);
+
+		node.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(node);
+
+			var vcode = $.trim(node.find(".E_verifyCode").val());
+
+			if (vcode.length == 0 || vcode == defTextVCode) {
+				that.showError(node, "验证码错误，请输入正确的动态口令。");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/mobile/chkSwToken.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					swtoken: vcode,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(node, res.msg);
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(node, LIB.errLog(req));
+				}
+			});
+		});
+
+		return that;
+	}
+
+	var verifyByQA = function(opts) {
+		var that = secureBase();
+		var verifyURL = '/p/uni/qa/chk.do';
+		var defTextQA = "输入密保问题答案";
+		var buttonText = opts.buttonText || ["下一步"];
+		var dialogTitle = (opts.title || "密保验证") + "<span>第一步：验证密保问题</span>";
+		var node = $('<div class="m_dialog_verify m_dialog_verify_qa"></div>');
+		var tmpl = '<div class="form_item">\
+								<span class="field_title text_title">密保问题一：</span>{q1}\
+							</div>\
+							<div class="form_item">\
+								<span class="field_title">密保答案：</span><span class="text_input_v3"><input type="text" class="default_text E_A1" value="' + defTextQA + '" /><span class="space"></span></span>\
+							</div>\
+							<div class="form_item E_QA2">\
+								<span class="field_title text_title">密保问题二：</span>{q2}\
+							</div>\
+							<div class="form_item E_QA2">\
+								<span class="field_title">密保答案：</span><span class="text_input_v3"><input type="text" class="default_text E_A2" value="' + defTextQA + '" /><span class="space"></span></span>\
+							</div>\
+							<div class="form_item">&nbsp;</div>\
+							<div class="form_notice E_error" style="visibility:hidden;margin-top: 10px;"><span class="error">这是错误信息</span></div>\
+							<div class="opra" style="margin-top: 20px;"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>' + buttonText[0] + '</span></a></div>';
+		
+		
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+
+		if (opts.extra.code == "-1") {
+			var html = errTMPL.replace(/\{err\}/ig, opts.extra.errorTips);
+			node.html(html);
+			return that;
+		}
+
+		var qs = [];
+
+		if ( opts.extra.q1 != undefined) {
+			qs.push(1);
+		}
+		if ( opts.extra.q2 != undefined) {
+			qs.push(2);
+		}
+		if ( opts.extra.q3 != undefined) {
+			qs.push(3);
+		}
+
+		//打乱问题次序
+		qs= qs.sort(function(){ 
+			return 0.5 - Math.random();
+		});
+
+		if(qs.length == 1){
+			node.html(tmpl.replace(/\{q1\}/g, opts.extra['q' + qs[0]]));
+			node.find(".E_QA2").hide();		
+		 } else {
+			node.html(tmpl.replace(/\{q1\}/g, opts.extra['q' + qs[0]]).replace(/\{q2\}/g, opts.extra['q' + qs[1]]));
+		}
+		
+		LIB.bindDefaultText(node.find(".E_A1"), defTextQA);
+		LIB.bindDefaultText(node.find(".E_A2"), defTextQA);
+
+		node.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(node);
+
+			var postData = {
+					acct: opts.acct,
+					token: opts.token,
+					servcode: opts.servcode
+				}
+			
+			var a1 = $.trim(node.find(".E_A1").val());
+			var a2 = $.trim(node.find(".E_A2").val());
+
+			switch (qs[0]) {
+				case 1:
+					postData.q1 = opts.extra['q' + qs[0]];
+					postData.a1 = a1;
+					break;
+				case 2:
+					postData.q2 = opts.extra['q' + qs[0]];
+					postData.a2 = a1;
+					break;
+				case 3:
+					postData.q3 = opts.extra['q' + qs[0]];
+					postData.a3 = a1;
+					break;
+			}
+			if(qs.length == 1){
+				if (a1.length == 0 || a1 == defTextQA) {
+					that.showError(node, "请输入密保问题答案");
+					return;
+				}
+			} else { //大于1就是两种以上的情况也只取前面两个，策略已经由后端完成 多种只取前两种
+				
+				if (a1.length == 0 || a2.length == 0 || a1 == defTextQA || a2 == defTextQA) {
+					that.showError(node, "请输入密保问题答案");
+					return;
+				}
+
+				switch (qs[1]) {
+					case 1:
+						postData.q1 = opts.extra['q' + qs[1]];
+						postData.a1 = a2;
+						break;
+					case 2:
+						postData.q2 = opts.extra['q' + qs[1]];
+						postData.a2 = a2;
+						break;
+					case 3:
+						postData.q3 = opts.extra['q' + qs[1]];
+						postData.a3 = a2;
+				}
+			}
+
+
+			LIB.lock();
+
+			$.ajax({
+				url: verifyURL,
+				data: postData,
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(node, res.msg);
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(node, LIB.errLog(req));
+				}
+			});
+		});
+
+		return that;
+	}
+
+	var verifyByEmail = function(opts) {
+		var that = secureBase();
+		var defTextEmail = "输入您的密保邮箱";
+		var defTextEmailVCode = "请输入密保邮箱收到的6位验证码";
+		var buttonText = opts.buttonText || ["下一步", "下一步"];
+		var dialogTitle = (opts.title || "密保验证") + "<span>第一步：验证密保邮箱</span>";
+		var node = $('<div class="m_dialog_verify m_dialog_verify_email"></div>');
+		var html = '<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title text_title">密保邮箱：</span><span class="E_hideEmail red"></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">密保邮箱：</span><span class="text_input_v3"><input type="text" style="width:100px;" class="default_text E_email" value="' + defTextEmail + '" /><span class="space"></span></span>@<span class="E_mailType"></span>\
+						</div>{contents}\
+						<div class="form_notice E_error" style="visibility:hidden"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a href="javascript:void(0);" onclick="return false;" class="E_next btn_blue_v3 opra_btn"><span>' + buttonText[0] + '</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<div class="form_item text">\
+							验证码已经发送到您的密保邮箱！请<a href="#" target="_blank" class="E_toEmail">进入邮箱</a>查收。\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_verifyCode default_text" value="' + defTextEmailVCode + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item text">\
+							没收到验证码，您可以选择：<a class="btn_blue_v3 E_resend btn_blue_v3_disabled" onclick="return false;" href="javascript:void(0);"><span>正在发送</span></a>\
+						</div>\
+						<div class="form_notice E_error" style="visibility:hidden"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><div style="padding-bottom: 10px;">邮箱丢失？点此"<a target="_blank" href="https://complaint.duowan.com/yy/complaint.action?complaintType=4">申请重置密保</a>"</div><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>' + buttonText[1] + '</span></a></div>\
+					</div>';
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+
+		if (opts.extra.code == "-1") {
+			var html = errTMPL.replace(/\{err\}/ig, opts.extra.errorTips);
+			node.html(html);
+			return that;
+		}
+
+		var contents = [];
+
+		$.each(opts.extra.hint1, function(idx, item) {
+			contents.push('<div class="form_notice gray">' + item + '</div>');
+		});
+
+		node.html(html.replace(/\{contents\}/ig, contents.join("")));
+
+		var E_step1 = node.find(".E_step1");
+		var E_step2 = node.find(".E_step2");
+		var mailType = opts.extra.maskEmail.split("@")[1];
+		var email_save = "";
+
+		E_step1.find(".E_hideEmail").html(opts.extra.maskEmail);
+		E_step1.find(".E_mailType").text(mailType);
+		LIB.bindDefaultText(E_step1.find(".E_email"), defTextEmail);
+		LIB.bindDefaultText(E_step2.find(".E_verifyCode"), defTextEmailVCode);
+		that.limitVCode(E_step2.find(".E_verifyCode"));
+
+		// 第一步的下一步
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var email = $.trim(E_step1.find(".E_email").val());
+
+			if (email.length == 0 || email == defTextEmail) {
+				that.showError(E_step1, "邮箱错误，请输入您的密保邮箱。");
+				return;
+			}
+
+			email = email + "@" + mailType;
+			E_step2.find(".E_toEmail").attr("href", LIB.mailToUrl(email));
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/email/chkEmail.do',
+				data: {
+					acct: opts.acct,
+					email: email,
+					token: opts.token,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					email_save = email;
+
+					// 成功了，进入下一步
+					showStep2();
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+		
+		// 重新发送验证码
+		E_step2.find(".E_resend").click(function() {
+			// 在倒计时时不允许再次发送
+			if ($(this).hasClass("btn_blue_v3_disabled") || LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/email/chkEmail.do',
+				data: {
+					email: email_save,
+					acct: opts.acct,
+					token: opts.token,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					// 成功了，继续倒计时
+					that.countDown({wrap: E_step2});
+					that.clearError(E_step2);
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+		});
+
+		// 第二步的下一步
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			var evcode = $.trim(E_step2.find(".E_verifyCode").val());
+
+			if (evcode.length == 0 || evcode == defTextEmailVCode) {
+				that.showError(E_step2, "验证码错误，请输入正确的验证码。");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/email/chkEVCode.do',
+				data: {
+					email: email_save,
+					acct: opts.acct,
+					token: opts.token,
+					evcode: evcode,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+					that.hide("ok", {
+						oauth_token: res.obj,
+						isEmail:1
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+		});
+
+		var showStep2 = function() {
+			E_step1.hide();
+			E_step2.show();
+			that.setMiddle();
+			that.countDown({wrap: E_step2});
+		}
+
+		return that;
+	}
+
+	var verifyByMobileUnmask = function(opts) {
+		var that = secureBase();
+		var defTextMobileUnmask = "请输入您的密保手机号码";
+		var buttonText = opts.buttonText || ["下一步","下一步"];
+		var dialogTitle = (opts.title || "密保验证") + "<span>第一步：输入密保手机号码</span>";
+		var node = $('<div class="m_dialog_verify m_dialog_verify_mobileUnmask"></div>');
+		var html = '<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title">密保手机：</span><span class="text_input_v3"><input type="text" class="default_text E_MobileUnmask" value="' + defTextMobileUnmask + '" /><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title text_title">&nbsp;</span>（温馨提示：<span class="E_hideMobileUnmask red"></span>）\
+						</div>\
+						<div class="form_notice E_error" style="visibility:hidden"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a href="javascript:void(0);" onclick="return false;" class="E_next btn_blue_v3 opra_btn"><span>' + buttonText[0] + '</span></a></div>\
+					</div>';
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+
+		if (opts.extra.code == "-1") {
+			var html = errTMPL.replace(/\{err\}/ig, opts.extra.errorTips);
+			node.html(html);
+			return that;
+		}
+
+		node.html(html);
+		var E_step1 = node.find(".E_step1");
+		E_step1.find(".E_hideMobileUnmask").html(opts.extra.maskMobile);
+		LIB.bindDefaultText(E_step1.find(".E_MobileUnmask"), defTextMobileUnmask);
+
+		// 第一步的下一步
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var mobileUnmask = $.trim(E_step1.find(".E_MobileUnmask").val());
+
+			if (!/^00\d/.test(mobileUnmask) && !/^1\d{10}$/.test(mobileUnmask)) {
+				that.showError(E_step1, "请输入正确的密保手机。");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/mobile/chkUnmask.do',
+				data: {
+					acct: opts.acct,
+					mobile: mobileUnmask,
+					token: opts.token,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		return that;
+	}
+
+	var verifyByEmailLogined = function(opts) {
+		var that = secureBase();
+		var defTextEmailVCode = "请输入密保邮箱收到的6位验证码";
+		var buttonText = opts.buttonText || ["下一步", "下一步"];
+		var dialogTitle = (opts.title || "密保验证") + "<span>第一步：验证密保邮箱</span>";
+		var node = $('<div class="m_dialog_verify m_dialog_verify_email"></div>');
+		var html = '<div class="step2 E_step2">\
+						<div class="form_item text">\
+							验证码已发送到：<a href="#" target="_blank" class="E_toEmail">进入邮箱</a>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_verifyCode default_text" value="' + defTextEmailVCode + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item text">\
+							<a href="http://kf.yy.com/search/qa/922.html#=%u90AE%u7BB1%u6536%u53D6%u4E0D%u5230%u9A8C%u8BC1%u7801" target="_blank">没收到验证码？</a>您可以选择：<a class="btn_blue_v3 E_resend btn_blue_v3_disabled" onclick="return false;" href="javascript:void(0);"><span>正在发送</span></a>\
+						</div>\
+						<div class="form_notice E_error" style="visibility:hidden"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><div style="padding-bottom: 10px;">邮箱丢失？点此"<a target="_blank" href="https://complaint.duowan.com/yy/complaint.action?complaintType=4">申请重置密保</a>"</div><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>' + buttonText[1] + '</span></a></div>\
+					</div>';
+		node.html(html);
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+
+		// var E_step1 = node.find(".E_step1"); // 在这里没有第一步了……
+		var E_step2 = node.find(".E_step2");
+		var mailType = opts.extra.maskEmail.split("@")[1];
+		var email_save = "";
+
+		LIB.bindDefaultText(E_step2.find(".E_verifyCode"), defTextEmailVCode);
+		that.limitVCode(E_step2.find(".E_verifyCode"));
+		E_step2.find(".E_toEmail").attr("href", LIB.mailToUrl("abc@" + mailType));
+		E_step2.find(".E_toEmail").text(opts.extra.maskEmail);
+
+		LIB.lock();
+
+		$.ajax({
+			url: '/p/uni/email/sendVCode.do',
+			data: {
+				acct: opts.acct,
+				token: opts.token,
+				servcode: opts.servcode
+			},
+			type: "POST",
+			success: function(res) {
+				LIB.unlock();
+
+				if (res.code == -3) {
+					that.hide();
+					var dialog = LIB.dialog.alert(res.msg);
+					dialog.show();
+					dialog.bind("hide", function() {
+						location.reload(true);
+					});
+
+					return;
+				}
+
+				if (res.code != 1) {
+					that.showError(E_step2, res.msg);
+					return;
+				}
+
+				that.countDown({wrap: E_step2});
+			},
+			error: function(req) {
+				LIB.unlock();
+				that.showError(E_step2, LIB.errLog(req));
+			}
+		});
+		
+		// 重新发送验证码
+		E_step2.find(".E_resend").click(function() {
+			// 在倒计时时不允许再次发送
+			if ($(this).hasClass("btn_blue_v3_disabled") || LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/email/sendVCode.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					// 成功了，继续倒计时
+					that.countDown({wrap: E_step2});
+					that.clearError(E_step2);
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+		});
+
+		// 第二步的下一步
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			var evcode = $.trim(E_step2.find(".E_verifyCode").val());
+
+			if (evcode.length == 0 || evcode == defTextEmailVCode) {
+				that.showError(E_step2, "请输入验证码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/email/chkEVCode2.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					evcode: evcode,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});	
+			
+		});
+
+		return that;
+	}
+
+	var verifyByMobileU = function(opts) {
+		var that = secureBase();
+		var dialogTitle = (opts.title || "密保验证");
+		var buttonText = buttonText || ["确定"];
+		var node = $('<div class="m_dialog_verify m_dialog_verify_mobileU"></div>');
+		var html = '<div class="form_item">\
+				<span class="field_title text_title">使用手机：</span><span class="red E_hideMobile"></span>\
+			</div>\
+			<div class="form_item">\
+				<span class="field_title text_title">编辑短信：</span><strong class="red">{1}</strong>\
+			</div>\
+			<div class="form_item">\
+				<span class="field_title text_title">发送到：</span><span class="red" style="display:inline-block;">{2}</span>\
+			</div>\
+			<ul class="form_item E_contents"></ul>\
+			<div class="opra"><a href="javascript:void(0);" onclick="return false;" class="btn_blue_v3 opra_btn E_close"><span>' + buttonText[0] + '</span></a></div>\
+			<div class="pop_tips">如手机号码无法使用，您可以“<a  target="_blank" href="https://complaint.duowan.com/yy/complaint.action?complaintType=5">申诉更换手机</a>”</div>';
+
+		var contents = [];
+		if(opts.extra.hint1 != null){
+			$.each(opts.extra.hint1, function(idx, item) {
+				contents.push('<li>' + item + '</li>');
+			});	
+		}
+
+		node.html(html.replace(/\{1\}/g, opts.extra.content).replace(/\{2\}/g, opts.extra.gateway.replace(/(\d{4})/g, "$1 ")));
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+		//初始化弹窗
+		
+		node.find(".E_contents").html(contents.join(""));
+		node.find(".E_hideMobile").html(opts.extra.maskMobile);
+		node.find(".E_close").click(function() {
+			that.hide("ok");
+		});
+
+		return that;
+	}
+
+	var verifyByMobileUV = function(opts) {
+		var that = secureBase();
+		var dialogTitle = (opts.title || "密保验证");
+		var buttonText = buttonText || ["我已经发送短信，下一步"];
+		var delay = 0;
+		var inner = $('<div class="m_dialog_verify m_dialog_verify_mobileUV"></div>');
+		var html = '<div class="form_item">\
+							<span class="field_title text_title">使用手机：</span><span class="red E_hideMobile"></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title text_title">编辑短信：</span><strong class="red E_msgContent"></strong>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title text_title">发送到：</span><span class="red E_gateway"  style="display:inline-block;"></span>\
+						</div>\
+						<ul class="form_item E_contents"></ul>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px; text-align:center;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a href="javascript:void(0);" onclick="return false;" class="btn_blue_v3 E_next"><span>' + buttonText[0] + '</span></a></div>\
+						<div class="pop_tips">如手机号码无法使用，您可以“<a  target="_blank" href="https://complaint.duowan.com/yy/complaint.action?complaintType=5">申诉更换手机</a>”</div>';
+		that.setInner(inner);
+		inner.html(html);
+		that.setTitle(dialogTitle);
+
+		var contents = [];
+		if(opts.extra.hint1 != null){
+			$.each(opts.extra.hint1, function(idx, item) {
+				contents.push('<li>' + item + '</li>');
+			});
+		}
+
+		inner.find(".E_hideMobile").text(opts.extra.maskMobile);
+		inner.find(".E_msgContent").text(opts.extra.content);
+		inner.find(".E_gateway").html(opts.extra.gateway.replace(/(\d{4})/g, "$1 "));
+		inner.find(".E_contents").html(contents.join(""));
+
+		inner.find(".E_next").click(function() {
+			if (LIB.locked || delay) {
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/mobile/chkMobileUp.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(inner, res.msg);
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(inner, LIB.errLog(req));
+				}
+			});
+
+			countDown();
+		});
+
+		var countDown = function() {
+			var button = inner.find(".E_next");
+
+			delay = 10;
+			button.addClass("btn_blue_v3_disabled");
+			button.find("span").text(buttonText[0] + "(" + delay + ")");
+
+			var tid = setInterval(function() {
+				delay--;
+
+				if (delay == 0) {
+					button.removeClass("btn_blue_v3_disabled");
+					button.find("span").text(buttonText[0]);
+
+					clearInterval(tid);
+				} else {
+					button.find("span").text(buttonText[0] + "(" + delay + ")");
+
+					if (!button.hasClass("btn_blue_v3_disabled")) {
+						button.addClass("btn_blue_v3_disabled");
+					}
+				}
+			}, 1000);
+		}
+
+		return that;
+	}
+
+	var verifyByPasswd = function(opts) {
+		var that = secureBase();
+		var defTextPassword = "请输入现在的密码";
+		var defTextVCode = "请输入验证码";
+		var dialogTitle = (opts.title || "密保验证") + "<span>第一步：验证登录密码</span>";
+		var buttonText = buttonText || ["下一步"];
+		var node = $('<div class="m_dialog_verify m_dialog_verify_passwd"></div>');
+		var html = '<div class="form_item">\
+							<span class="field_title">密码：</span><span class="text_input_v3"><input type="password" class="E_passwd" placeholder="' + defTextPassword + '"><span class="space"></span></span>\
+						</div>\
+					<div class="form_item">\
+						<span class="field_title">验证码：</span><span class="text_input_v3"><input type="text" class="E_code" /><span class="space"></span></span>\
+					</div>\
+					<div class="form_item">\
+						<span class="field_title">&nbsp;</span><img src="about:blank" class="verify_code_img E_imgCode E_change" /> <a href="javascript:void(0);" onclick="return false;" class="E_change">换一张</a>\
+					</div>\
+					<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+					<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>' + buttonText[0] + '</span></a></div>';
+		node.html(html);
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+		LIB.bindDefaultText(node.find(".E_code"), defTextVCode);
+
+		var updateImg = function() {
+			node.find(".E_code").val(defTextVCode);
+			node.find(".E_code").addClass("default_text");
+			node.find(".E_code")[0].blur();
+			node.find(".E_imgCode").attr("src", "/p/vcode/create.do?type=UAVPWD&_tid=" + new Date().getTime());
+		}
+
+		updateImg();
+
+		node.find(".E_change").click(updateImg);
+		node.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(node);
+			var passwd = $.trim(node.find(".E_passwd").val());
+			var code = $.trim(node.find(".E_code").val());
+
+			if (passwd.length == 0 || passwd == defTextPassword) {
+				that.showError(node, "请输入现在的密码");
+				return;
+			}
+
+			if (code.length == 0 || code == defTextVCode) {
+				that.showError(node, "请输入验证码");
+				return;
+			}
+
+			if(!!UDB.SDK.rsa){
+				passwd = UDB.SDK.rsa.RSAUtils.encryptedString(passwd);
+			}
+			
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/pwd/chk.do',
+				data: {
+					pwd: passwd,
+					acct: opts.acct,
+					token: opts.token,
+					imgvcode: code,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+					//var res = {"code":"1","msg":"验证码错误","obj":""}
+
+					if (res.code != 1) {
+						that.showError(node, res.msg);
+						updateImg();
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(node, LIB.errLog(req));
+				}
+			});	
+		});
+
+		return that;
+	}
+
+	var verifyByMobileDLogined = function(opts) {
+		var that = secureBase();
+		var sended = false;
+		var defTextMobileVCode = "请输入6位数字验证码";
+		var buttonText = opts.buttonText || ["下一步", "下一步"];
+		var dialogTitle = (opts.title || "密保验证") + "<span>第一步：验证密保手机</span>";
+		var node = $('<div class="m_dialog_verify m_dialog_verify_mobileD"></div>');
+		var html = '<div class="step2 E_step2">\
+						<div class="form_item text">\
+							<span class="field_title text_title">您的手机：</span>' + opts.extra.maskMobile + '\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_verifyCode default_text" value="' + defTextMobileVCode + '"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取免费验证码</span></a>\
+						</div>\
+						<div class="form_item form_notice E_notice">\
+							<span>今日还可获取5条免费验证码</span><br />\
+							收不到验证码？<br />您可以<a class="E_mbu" onclick="return false;" href="javascript:void(0);">&nbsp;&nbsp;切换验证方式</a><br />或者<a href="http://kf.yy.com/search/qa/5699.html#=%u624B%u673A%u6536%u53D6%u4E0D%u5230%u9A8C%u8BC1%u7801" target="_blank">查看帮助</a>\
+						</div>\
+						<div class="form_item">&nbsp;</div>\
+						<div class="form_notice E_error" style="visibility:hidden"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><div style="padding-bottom: 10px;">手机丢失？点此"<a target="_blank" href="https://complaint.duowan.com/yy/complaint.action?complaintType=5">申请重置密保</a>"</div><a class="btn_blue_v3 btn_blue_v3_disabled opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>' + buttonText[0] + '</span></a></div>\
+					</div>';
+		node.html(html);
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+
+		var E_step2 = node.find(".E_step2");
+		
+		LIB.bindDefaultText(E_step2.find(".E_verifyCode"), defTextMobileVCode);
+		that.limitVCode(E_step2.find(".E_verifyCode"));
+
+		if (opts.extra.remains > 0) {
+			E_step2.find(".E_notice span").text("今日还可获取" + opts.extra.remains + "条免费验证码");
+		} else {
+			E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+			E_step2.find(".E_resend").addClass("btn_blue_v3_disabled");
+		}
+
+		var sendMVCode = function() {
+			if (opts.extra.remains < 1) {
+				that.hide("show", {
+					type: "mobile_u",
+					msg: "发送短信次数过多，请稍候再试"
+				});
+
+				return;
+			}
+
+			$.ajax({
+				url: '/p/uni/mobile/sendVCode.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					// DEBUG 
+					// var res = {code: 1};
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					opts.extra.remains = parseInt(res.obj, 10);
+
+					if (opts.extra.remains > 0) {
+						E_step2.find(".E_notice span").text("今日还可获取" + opts.extra.remains + "条免费验证码");
+					} else {
+						E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+						E_step2.find(".E_resend").addClass("btn_blue_v3_disabled");
+					}
+
+					sended = true;
+
+					if (E_step2.find(".E_next").hasClass("btn_blue_v3_disabled")) {
+						E_step2.find(".E_next").removeClass("btn_blue_v3_disabled");	
+					} 
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+
+			that.countDown({
+				wrap: E_step2,
+				text: "获取免费验证码"
+			});
+		}
+
+		E_step2.find(".E_resend").click(function() {
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+			}
+
+			sendMVCode();
+		});
+
+		E_step2.find(".E_mbu").click(function() {
+			that.hide("show", {
+				type: "mobile_u",
+				msg: "其它验证方式暂不可用，请稍后再试。"
+			});
+		});
+
+		// 第二步的下一步
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked || !sended) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			var mvcode = $.trim(E_step2.find(".E_verifyCode").val());
+
+			if (mvcode.length == 0 || mvcode == defTextMobileVCode) {
+				that.showError(E_step2, "验证码错误，请输入正确的验证码。");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/mobile/chkMVCode2.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					mvcode: mvcode,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+					
+					// DEBUG 
+					// var res = {code: 1};
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+			
+		});
+
+		var oldShow = that.show;
+
+		that.show = function() {
+			if (opts.extra.remains < 1) {
+				that.hide("show", {
+					type: "mobile_u",
+					msg: "发送短信次数过多，请稍候再试"
+				});
+			}
+			else {
+				oldShow.call(that);
+				sendMVCode();
+			}
+		}
+
+		return that;
+	}
+
+	var verifyByBakMobileDLogined = function(opts) {
+		var that = secureBase();
+		var sended = false;
+		var defTextMobileVCode = "请输入6位数字验证码";
+		var buttonText = opts.buttonText || ["下一步", "下一步"];
+		var dialogTitle = (opts.title || "密保验证") + "<span>第一步：验证备用手机</span>";
+		var node = $('<div class="m_dialog_verify m_dialog_verify_mobileD"></div>');
+		var html = '<div class="step2 E_step2">\
+						<div class="form_item text">\
+							<span class="field_title text_title">备用手机：</span>' + opts.extra.maskBakMobile + '\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_verifyCode default_text" value="' + defTextMobileVCode + '"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取免费验证码</span></a>\
+						</div>\
+						<div class="form_item form_notice E_notice">\
+							<span>今日还可获取5条免费验证码</span>\
+							<a href="http://kf.yy.com/search/qa/5699.html#=%u624B%u673A%u6536%u53D6%u4E0D%u5230%u9A8C%u8BC1%u7801" target="_blank">&nbsp;&nbsp;收不到验证码？</a>\
+						</div>\
+						<div class="form_item">&nbsp;</div>\
+						<div class="form_notice E_error" style="visibility:hidden"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><div style="padding-bottom: 10px;">手机丢失？点此"<a target="_blank" href="https://complaint.duowan.com/yy/complaint.action?complaintType=5">申请重置密保</a>"</div><a class="btn_blue_v3 btn_blue_v3_disabled opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>' + buttonText[0] + '</span></a></div>\
+					</div>';
+		node.html(html);
+		that.setInner(node);
+		that.setTitle(dialogTitle);
+
+		var E_step2 = node.find(".E_step2");
+		
+		LIB.bindDefaultText(E_step2.find(".E_verifyCode"), defTextMobileVCode);
+		that.limitVCode(E_step2.find(".E_verifyCode"));
+
+		if (opts.extra.remains > 0) {
+			E_step2.find(".E_notice span").text("今日还可获取" + opts.extra.remains + "条免费验证码");
+		} else {
+			E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+			E_step2.find(".E_resend").addClass("btn_blue_v3_disabled");
+		}
+
+		var sendMVCode = function() {
+			if (opts.extra.remains < 1) {
+				that.hide("show", {
+					type: "mobile_u"
+				});
+
+				return;
+			}
+
+			$.ajax({
+				url: '/p/uni/bakMobile/sendVCode.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+					// var res = {code: 1, msg: "23424234"};
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					opts.extra.remains = parseInt(res.obj, 10);
+
+					if (opts.extra.remains > 0) {
+						E_step2.find(".E_notice span").text("今日还可获取" + opts.extra.remains + "条免费验证码");
+					} else {
+						E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+						E_step2.find(".E_resend").addClass("btn_blue_v3_disabled");
+					}
+
+					sended = true;
+
+					if (E_step2.find(".E_next").hasClass("btn_blue_v3_disabled")) {
+						E_step2.find(".E_next").removeClass("btn_blue_v3_disabled");	
+					} 
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+
+			that.countDown({
+				wrap: E_step2,
+				text: "获取免费验证码"
+			});
+		}
+
+		E_step2.find(".E_resend").click(function() {
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+			}
+
+			sendMVCode();
+		});
+
+		// 第二步的下一步
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked || !sended) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			var mvcode = $.trim(E_step2.find(".E_verifyCode").val());
+
+			if (mvcode.length == 0 || mvcode == defTextMobileVCode) {
+				that.showError(E_step2, "验证码错误，请输入正确的验证码。");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: '/p/uni/bakMobile/chkMVCode.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token,
+					mvcode: mvcode,
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+					// var res = {code: 1, msg: "23424234"};
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					that.hide("ok", {
+						oauth_token: res.obj
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+			
+		});
+
+		var oldShow = that.show;
+
+		that.show = function() {
+			if (opts.extra.remains < 1) {
+				that.hide("show", {
+					type: "mobile_u"
+				});
+			}
+			else {
+				oldShow.call(that);
+				sendMVCode();
+			}
+		}
+
+		return that;
+	}
+	
+})();
+
+(function() {
+	var secureBase = LIB.dialog.secureBase;
+
+	LIB.dialog.findPassword = function(opts) {
+		var emailFlag=opts.isEmail;
+		var that = secureBase();
+		var defTextPassword = "请输入新的密码";
+		var defTextPassword1 = "请再次输入新的密码";
+		var node = $('<div class="m_dialog_findPassword"></div>');
+		var tmpl = '<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title">新的密码：</span><span class="text_input_v3"><input type="password" class="E_newPassword" placeholder="' + defTextPassword + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">确认密码：</span><span class="text_input_v3"><input type="password" class="E_newPassword1" placeholder="' + defTextPassword1 + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">密码强度：</span>\
+							<span class="password_level">\
+								<span class="level_icon E_reach">\
+									<span></span>\
+									<span></span>\
+									<span></span>\
+									<span></span>\
+								</span>\
+								<span class="level_text E_passwordLevel">&nbsp;</span>\
+							</span>\
+						</div>\
+						<div class="form_notice gray">1、新密码长度为8-20位；</div>\
+						<div class="form_notice gray">2、不含空格和中文全角符号；</div>\
+						<div class="form_notice gray">3、新密码不能是9位以下纯数字</div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<div class="message">找回密码成功！</div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_close" onclick="return false;" href="javascript:void(0);"><span>关闭</span></a></div>\
+					</div>\
+					<div class="step3 E_step3" style="display:none">\
+						<div class="m_form m_forceReg" style="padding:10px 0px 0px 19px;line-height: 22px;">\
+							<div class="fr_title">提示：本次找回密码需要您发送短信，请按提示操作：</div>\
+							<div class="step6_text">\
+								<p><span class="text_title">请用任意手机</span></p>\
+								<p><span class="text_title">编辑短信：</span><strong><em node-name="msmcode"   class="msgCon" style="color:#f00;">正在获取数据</em></strong></p>\
+								<p><span class="text_title">发送到：</span><em node-name="gateway" class="targetCon" style="color:#f00;">正在获取数据</em></p>\
+							</div>\
+							<div class="notice">\
+								<p  style="color:#666;">1、短信费用一般为0.1元/条，由运营商收取</p>\
+							</div>\
+							<div class="form_notice E_error" style="visibility:hidden;padding:10px 0 0 0;"><span class="error">错误信息占位</span></div>\
+							<div class="step6_opra"  style="padding-left:67px;">\
+								<a class="btn_blue_v3 btn_next E_next" node-name="next" href="javascript:void(0);" onClick="return false;"><span>我已发送短信，立即修改密码</span></a>\
+							</div>\
+						</div>\
+					</div>';
+		node.html(tmpl);
+		that.setInner(node);
+
+		that.setTitle('找回密码<span>第二步：修改密码</span>');
+		var E_step1 = node.find(".E_step1");
+		var E_step2 = node.find(".E_step2");
+		var E_step3 = node.find(".E_step3");
+		if(emailFlag==1){
+			that.setTitle('找回密码<span>第二步：上行短信</span>');
+			//showStep3();
+			E_step1.hide();
+			E_step3.show();
+			that.setMiddle();
+			var getMessage=function (){
+				$.ajax({
+					url: '/p/uni/extra/reqMobileUp.do',
+					data: {
+						acct: opts.acct,
+						token: opts.token
+					},
+					type: "POST",
+					success: function(res) {
+						if (res.code != 0) {
+							that.showError(E_step3, res.msg);
+							return;
+						}else{
+							var tmpFun = function(str) {
+								return str == null || str == "";
+							}
+
+							if (tmpFun(res) || tmpFun(res.obj) || tmpFun(res.obj.mobileUpVcode) || tmpFun(res.obj.gateWay)) {
+								E_step3.find('.msgCon').text("获取不到数据");
+								E_step3.find('.targetCon').text("获取不到数据");
+							} else {
+								E_step3.find('.msgCon').text(res.obj.mobileUpVcode);
+								E_step3.find('.targetCon').text(res.obj.gateWay);
+							}
+						}
+	
+						
+					},
+					error: function(req) {
+						LIB.unlock();
+						that.showError(E_step3, LIB.errLog(req));
+					}
+				});
+			};
+			getMessage();
+			E_step3.find(".E_next").click(function() {
+			$.ajax({
+				url: '/p/uni/extra/chkMobileUp.do',
+				data: {
+					acct: opts.acct,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					if (res.code != 0) {
+						that.showError(E_step3, res.msg);
+							return;
+						}
+						showStep1();
+						that.setTitle('找回密码<span>第三步：修改密码</span>');
+					},
+					error: function(req) {
+						LIB.unlock();
+						that.showError(E_step3, LIB.errLog(req));
+					}
+				});
+				
+			});
+		}
+		var passwordLevel = function() {
+			var val = $.trim($(this).val());
+
+			if (val.length == 0) {
+				E_step1.find(".E_reach span").removeClass("reach");
+				E_step1.find(".E_passwordLevel").html("&nbsp;");
+			} else {
+				var level = LIB.passwordLevel(val);
+				var color = "";
+				var text = "";
+				var reachs = E_step1.find(".E_reach span");
+				var level = LIB.passwordLevel(val);
+
+				switch (level) {
+				case 0:
+					color = "red";
+					text = "极低";
+					break;
+				case 1:
+					color = "#FF9900";
+					text = "中等";
+					break;
+				case 2:
+					color = "green";
+					text = "较强";
+					break;
+				case 3:
+					color = "green";
+					text = "最好";
+					break;
+				}
+
+				E_step1.find(".E_passwordLevel").css("color", color);
+				E_step1.find(".E_passwordLevel").html(text);
+
+				reachs.removeClass("reach");
+
+				for (var i = 0; i <= level; i++) {
+					$(reachs[i]).addClass("reach");
+				}
+			}
+		}
+
+		E_step1.find(".E_newPassword").bind("keyup", passwordLevel);
+		E_step1.find(".E_newPassword").bind("blur", passwordLevel);
+
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var pass = $.trim(E_step1.find(".E_newPassword").val());
+			var pass1 = $.trim(E_step1.find(".E_newPassword1").val());
+
+			if (pass.length == 0 || pass == defTextPassword) {
+				that.showError(E_step1, "请输入新的密码");
+				return;
+			}
+
+			if (pass != pass1) {
+				that.showError(E_step1, "两次输入的密码不一致");
+				return;
+			}
+
+			if (LIB.passwordLevel(pass) == 0) {
+				that.showError(E_step1, "密码强度太低，请重新输入");
+				return;
+			}
+
+			if(!!UDB.SDK.rsa){
+				pass = UDB.SDK.rsa.RSAUtils.encryptedString(pass);
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/p/pwd/fgt/modify.do",
+				data: {
+					acct: opts.acct, 
+					token: opts.token, 
+					pwd: pass, 
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					showStep2();
+
+					that.bind("hide", function() {
+						location.href= "/p/pwd/fgt/index.do";
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_close").click(function() {
+			that.hide("ok");
+		});
+
+		
+		
+		var showStep1 = function() {
+			E_step3.hide();
+			E_step1.show();
+			that.setMiddle();
+		}
+		var showStep2 = function() {
+			that.setTitle('找回密码');
+			E_step1.hide();
+			E_step2.show();
+			that.setMiddle();
+		}
+		var showStep3 = function() {
+			E_step1.hide();
+			E_step3.show();
+			that.setMiddle();
+		}
+		return that;
+	}
+
+	LIB.dialog.changePassword = function(opts) {
+		var that = secureBase();
+		var defTextPassword = "请输入新的密码";
+		var defTextPassword1 = "请再次输入新的密码";
+		var node = $('<div class="m_dialog_findPassword"></div>');
+		var tmpl = '<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title">新的密码：</span><span class="text_input_v3"><input type="password" class="E_newPassword" placeholder="' + defTextPassword + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">确认密码：</span><span class="text_input_v3"><input type="password" class="E_newPassword1" placeholder="' + defTextPassword1 + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">密码强度：</span>\
+							<span class="password_level">\
+								<span class="level_icon E_reach">\
+									<span></span>\
+									<span></span>\
+									<span></span>\
+									<span></span>\
+								</span>\
+								<span class="level_text E_passwordLevel">&nbsp;</span>\
+							</span>\
+						</div>\
+						<div class="form_notice gray">1、新密码长度为8-20位；</div>\
+						<div class="form_notice gray">2、不含空格和中文全角符号；</div>\
+						<div class="form_notice gray">3、新密码不能是9位以下纯数字</div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<div class="message">修改成功！</div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_close" onclick="return false;" href="javascript:void(0);"><span>关闭</span></a></div>\
+					</div>';
+		node.html(tmpl);
+		that.setInner(node);
+
+		that.setTitle('修改密码<span>第二步：修改密码</span>');
+		var E_step1 = node.find(".E_step1");
+		var E_step2 = node.find(".E_step2");
+
+		var passwordLevel = function() {
+			var val = $.trim($(this).val());
+
+			if (val.length == 0) {
+				E_step1.find(".E_reach span").removeClass("reach");
+				E_step1.find(".E_passwordLevel").html("&nbsp;");
+			} else {
+				var level = LIB.passwordLevel(val);
+				var color = "";
+				var text = "";
+				var reachs = E_step1.find(".E_reach span");
+				var level = LIB.passwordLevel(val);
+
+				switch (level) {
+				case 0:
+					color = "red";
+					text = "极低";
+					break;
+				case 1:
+					color = "#FF9900";
+					text = "中等";
+					break;
+				case 2:
+					color = "green";
+					text = "较强";
+					break;
+				case 3:
+					color = "green";
+					text = "最好";
+					break;
+				}
+
+				E_step1.find(".E_passwordLevel").css("color", color);
+				E_step1.find(".E_passwordLevel").html(text);
+
+				reachs.removeClass("reach");
+
+				for (var i = 0; i <= level; i++) {
+					$(reachs[i]).addClass("reach");
+				}
+			}
+		}
+
+		E_step1.find(".E_newPassword").bind("keyup", passwordLevel);
+		E_step1.find(".E_newPassword").bind("blur", passwordLevel);
+
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var pass = $.trim(E_step1.find(".E_newPassword").val());
+			var pass1 = $.trim(E_step1.find(".E_newPassword1").val());
+
+			if (pass.length == 0 || pass == defTextPassword) {
+				that.showError(E_step1, "请输入新的密码");
+				return;
+			}
+
+			if (pass != pass1) {
+				that.showError(E_step1, "两次输入的密码不一致");
+				return;
+			}
+
+			if (LIB.passwordLevel(pass) == 0) {
+				that.showError(E_step1, "密码强度太低，请重新输入");
+				return;
+			}
+
+			if(!!UDB.SDK.rsa){
+				pass = UDB.SDK.rsa.RSAUtils.encryptedString(pass);
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/pwd/chg/chg.do",
+				data: {
+					password: pass, 
+					oauth_token: opts.oauth_token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					showStep2();
+
+					that.bind("hide", function() {
+						location.reload(true);
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_close").click(function() {
+			that.hide("ok");
+		});
+
+		var showStep2 = function() {
+			that.setTitle('修改密码');
+			E_step1.hide();
+			E_step2.show();
+			that.setMiddle();
+		}
+
+		return that;
+	}
+
+	LIB.dialog.bindEmail = function(opts) {
+		var that = secureBase();
+		var defTextEmail = "输入您的邮箱地址";
+		var oldemail=$('#maskEmail').val();
+		var defTextEmailVCode = "请输入6位数字验证码";
+		var inner = $('<div class="m_dialog_bindEmail"></div>');
+		var html = '<div class="step0 E_step0" style="display:none">\
+						<div class="form_notice gray" style="padding:15px 0 0 33px;">原密保邮箱：'+oldemail+'</div>\
+						<div class="form_item"  >\
+							<span class="field_title">原密保邮箱：</span><span class="text_input_v3"><input type="text" class="E_email default_text"><span class="space"></span></span>\
+						</div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;margin-bottom: 10px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title">邮箱：</span><span class="text_input_v3"><input type="text" class="E_email default_text"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_vcode default_text"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取验证码</span></a>\
+						</div>\
+						<div class="form_item form_notice"><a style="display:inline-block;margin-left:103px;" href="http://kf.yy.com/search/qa/922.html#=%u90AE%u7BB1%u6536%u53D6%u4E0D%u5230%u9A8C%u8BC1%u7801" target="_blank">&nbsp;&nbsp;收不到验证码？</a></div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step3 E_step2" style="display:none">\
+						<h3>' + (opts.isChange ? '修改成功' : '绑定成功') + '!</h3>\
+						<div class="contents">\
+							<p>当前密保邮箱：<span class="E_curEmail"></span></p>\
+							<p>修改密保邮箱：<span class="E_newEmail"></span></p>\
+							<div class="red E_finishNoticeConfirm" style="text-align:center; margin-top: 10px;">请使用新密保邮箱或YY号<span class="E_yyid"></span>登录</div>\
+						</div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_close" onclick="return false;" href="javascript:void(0);"><span>确定</span></a></div>\
+					</div>';
+					//<p>当前帐号已开通<a href="/acct/index.do">邮箱登录</a>功能，您可以使用邮箱登录本帐号。</p>\
+		inner.html(html);
+		that.setInner(inner);
+		//that.setTitle(opts.isChange ? "修改密保邮箱<span>第二步：验证邮箱</span>" : "绑定密保邮箱<span>第二步：验证邮箱</span>");
+		
+		var E_step0 = inner.find(".E_step0");
+		var E_step1 = inner.find(".E_step1");
+		var E_step2 = inner.find(".E_step2");
+		var E_step3 = inner.find(".E_step3");
+		var email_save = null;
+		var remains = 10;
+		var bindNum = 0;
+		var oldEmail = "";
+		
+		if(opts.isPWD=='true'){
+			that.setTitle(opts.isChange ? "修改密保邮箱" : "修改密保邮箱");
+			E_step0.show();
+			E_step1.hide();
+		}else{
+			E_step0.hide();
+			E_step1.show();
+			that.setTitle(opts.isChange ? "修改密保邮箱<span>第二步：验证新邮箱</span>" : "绑定密保邮箱<span>第二步：验证邮箱</span>");
+		}
+
+			E_step0.find(".E_next").click(function() {
+				if (LIB.locked) {
+					return;
+				}
+	
+				that.clearError(E_step0);
+	
+				var email = $.trim(E_step0.find(".E_email").val());
+
+			if (email.length == 0) {
+					that.showError(E_step0, "请输入正确的邮箱地址");
+					return;
+				}
+
+	            var patt1 = new RegExp(/\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+/);
+				var result = patt1.test(email);
+
+				if(!result){
+					that.showError(E_step0, "请输入正确的邮箱地址");
+					return;
+				}
+
+				LIB.lock();
+	
+				$.ajax({
+					url: "/mb/eml/checkEmail.do",
+					data: {
+						token: opts.token, 
+						oldEmail: email, 
+						oauth_token: opts.oauth_token, 
+						servcode: opts.servcode
+					},
+					type: "POST",
+					success: function(res) {
+						LIB.unlock();
+	
+						if (res.code == -3) {
+							that.hide();
+
+							var dialog = LIB.dialog.alert(res.msg);
+							dialog.show();
+						
+							dialog.bind("hide", function() {
+								location.reload(true);
+							});
+	
+							return;
+						}
+	
+						if (res.code != 1) {
+							that.showError(E_step0, res.msg);
+							return;
+						}
+	
+					oldEmail = email;
+						remains = parseInt(res.obj, 10);
+						showStep1($.trim(E_step0.find(".E_email").val()));
+						that.setTitle(opts.isChange ? "修改密保邮箱<span>第二步：验证新邮箱</span>" : "绑定密保邮箱<span>第二步：验证邮箱</span>");
+					},
+					error: function(req) {
+						LIB.unlock();
+						that.showError(E_step0, LIB.errLog(req));
+					}
+				});
+			});
+
+		E_step1.find(".E_resend").click(function() {
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+		}
+		
+			that.clearError(E_step1);
+			
+			if (remains < 1) {
+				that.showError(E_step1, "帐号今日已经获取10次验证码，请24：00后绑定");
+				return;
+			}
+
+			var email = $.trim(E_step1.find(".E_email").val());
+
+			if (email.length == 0 || email == defTextEmail) {
+				that.showError(E_step1, "请输入正确的邮箱地址");
+				return;
+			}
+			
+			var patt1 = new RegExp(/\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+/);
+			var result = patt1.test(email);
+			
+			if(!result){
+				that.showError(E_step1, "请输入正确的邮箱地址");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/eml/sendVCode.do",
+				data: {
+					token: opts.token, 
+					email: email, 
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode,
+					oldEmail: oldEmail
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					remains = parseInt(res.obj, 10);
+
+					if (remains == 0) {
+						E_step1.find(".E_notice").text("今日已经无法获取邮箱验证码");
+					} else {
+						E_step1.find(".E_notice").text("今日还可获取" + remains + "次邮箱验证码");
+					}
+
+					that.countDown({ 
+						'wrap': E_step1,
+						'text': "重新发送"
+					});
+
+					email_save = email;
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+
+			that.countDown({
+				wrap: E_step2,
+				text: "重新发送"
+			});
+		});
+
+		E_step1.find(".E_next").click(function() {
+			that.setTitle(opts.isChange ? "修改密保邮箱<span>第二步：验证邮箱</span>" : "绑定密保邮箱<span>第二步：验证邮箱</span>");
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var email = $.trim(E_step1.find(".E_email").val());
+
+			if (email != email_save) {
+				that.showError(E_step1, "邮箱已经更改，请重新获取验证码");
+				return;
+			}
+
+			var vcode = $.trim(E_step1.find(".E_vcode").val());
+
+			if (!/^\d{6}$/.test(vcode)) {
+				that.showError(E_step1, "请输入6位数字验证码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/eml/bind.do",
+				data: {
+					email: email, 
+					oauth_token: opts.oauth_token,
+					evcode: vcode,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					bindNum = parseInt(res.obj, 10);
+					showStep2(res.obj);
+
+					that.bind("hide", function() {
+						location.reload(true);
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_close").click(function() {
+			that.setTitle(opts.isChange ? "修改密保邮箱<span>第二步：验证邮箱</span>" : "绑定密保邮箱<span>第二步：验证邮箱</span>");
+			that.hide("ok");
+		});
+
+		var showStep2 = function(obj) {
+			that.setTitle(opts.isChange ? "修改密保邮箱" : "绑定密保邮箱");
+			// E_step2.find(".E_bindNum").text(bindNum);
+
+			if (obj.maskOldEmail == null || obj.maskOldEmail == "") {
+				E_step2.find(".E_curEmail").parent().hide();
+			} else {
+				E_step2.find(".E_curEmail").text(obj.maskOldEmail);
+			}
+
+			
+			E_step2.find(".E_newEmail").text(email_save);
+			E_step2.find(".E_yyid").text(obj.yyid);
+			E_step1.hide();
+			E_step2.show();
+		}
+		var showStep1 = function(oldmail) {
+			E_step1.find(".E_email").attr('oldmail',oldmail);
+			E_step0.hide();
+			E_step1.show();	
+		}
+		return that;
+	}
+
+	LIB.dialog.bindMobile = function(opts) {
+		// 国际手机号前缀获取控件实例
+		var mF = null;
+		var that = secureBase();
+		var defTextMobile = "输入您正在使用的手机号码";
+		var defTextMobileVCode = "请输入6位数字验证码";
+		var inner = $('<div class="m_dialog_bindMobile"></div>');
+		var html = '<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title">手机号：</span><span class="text_input_v3"><input type="text" class="E_mobile default_text" value="' + defTextMobile + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_notice gray">每个手机号码只能同时绑定10个YY帐号；</div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<div class="form_item text E_sendMsg">验证码已发送：</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_vcode default_text" value="' + defTextMobileVCode + '"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取免费验证码</span></a>\
+						</div>\
+						<div class="form_item form_notice E_notice"><span>&nbsp;</span><a href="http://kf.yy.com/search/qa/5699.html#=%u624B%u673A%u6536%u53D6%u4E0D%u5230%u9A8C%u8BC1%u7801" target="_blank">&nbsp;&nbsp;收不到验证码？</a></div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step3 E_step3" style="display:none">\
+						<div class="m_form m_forceReg" style="padding:10px 0px 0px 19px;line-height: 22px;">\
+							<div class="step3_text">\
+								<p><span class="text_title">请用手机号：<span class="E_mobileU"></span></span></p>\
+								<p><span class="text_title">编辑短信：</span><strong><em class="msgCon E_content" style="color:#f00;">正在获取数据</em></strong></p>\
+								<p><span class="text_title">发送到：</span><em class="targetCon E_gateway" style="color:#f00;">正在获取数据</em></p>\
+							</div>\
+							<div class="notice">\
+								<p  style="color:#666;">1、短信费用一般为0.1元/条，由运营商收取</p>\
+							</div>\
+							<div class="form_notice E_error" style="visibility:hidden;padding:10px 0 0 0; text-align: left;"><span class="error">错误信息占位</span></div>\
+							<div class="step3_opra">\
+								<a class="btn_blue_v3 btn_next E_next" node-name="next" href="javascript:void(0);" onClick="return false;"><span>我已发送短信，立即绑定手机</span></a>\
+							</div>\
+						</div>\
+					</div>\
+					<div class="step4 E_step4" style="display:none">\
+						<div class="suc"><h3>密保手机绑定成功！</h3><p>当前手机号已与<em class="E_bindNum">1</em>个YY帐号建立绑定关系</p></div>\
+						<div class="contents">\
+							<p>推荐：装手机安全中心，安全问题不担心</p>\
+							<div class="ewmCon"><div class="sl"><span><a class="ipBtn" href="https://itunes.apple.com/cn/app/yy-an-quan-zhong-xin/id881332490?mt=8" target="_blank"></a></span><span><a class="azBtn" href="http://yydl.duowan.com/mobile/yyudbsec-android/3.4.2/yyudbsec-3.4.2.apk" target="_blank"></a></span></div><img src="https://res.udb.duowan.com/aq/images/mbtoken0.gif"></div>\
+							<p class="E_openNotice">2、当前帐号已开通<a href="/acct/index.do">手机号登录</a>功能，您可以使用手机号号码登录本帐号。</p>\
+						</div>\
+					</div>';
+		inner.html(html);
+
+		mF = new mobileFixSelect({
+	        target: $(".E_step1", inner)
+	    });
+
+		that.setInner(inner);
+		that.setTitle("绑定密保手机<span>第二步：验证手机</span>");
+
+		var E_step1 = inner.find(".E_step1");
+		var E_step2 = inner.find(".E_step2");
+		var E_step3 = inner.find(".E_step3");
+		var E_step4 = inner.find(".E_step4");
+		var mobile_save = "";
+		var mobileFix_save = "";
+		var remains = 0;
+		var bindNum = 0;
+		var gateWay = "";
+		var content = "";
+
+		LIB.bindDefaultText(E_step1.find(".E_mobile"), defTextMobile);
+		LIB.bindDefaultText(E_step2.find(".E_vcode"), defTextMobileVCode);
+		that.limitVCode(E_step2.find(".E_vcode"));
+
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var mobile = $.trim(E_step1.find(".E_mobile").val());
+			var mobileFix = mF.mobileFix; 
+			if((mobileFix == "" && !/^1\d{10}$/.test(mobile)) || !/^\d{1,30}$/.test(mobile)){
+				that.showError(E_step1, "请输入正确的手机号码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/mob/sendBind.do",
+				data: {
+					token: opts.token, 
+					mobile: mobileFix + mobile, 
+					mobilefix: mobileFix, 
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					// DEBUG
+					// res = {code: 2, obj: {gateway: "23423432", content: "2342343242"}};
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					
+					mobile_save = mobile;
+					mobileFix_save = mobileFix;
+					if(res.code == 2){
+						gateWay = res.obj.gateway;
+						content = res.obj.content;
+						showStep3();
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					remains = parseInt(res.obj, 10);
+					showStep2();
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_resend").click(function() {
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/mob/sendBind.do",
+				data: {
+					token: opts.token, 
+					mobile: mobileFix_save + mobile_save,
+					mobilefix: mobileFix_save, 
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if(res.code == 2){
+						gateWay = res.obj.gateWay;
+						content = res.obj.content;
+						showStep3();
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					remains = parseInt(res.obj, 10);
+
+					if (remains == 0) {
+						E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+					} else {
+						E_step2.find(".E_notice span").text("今日还可获取" + remains + "次免费验证码");
+					}
+
+					that.countDown({ 
+						'wrap': E_step2,
+						'text': "获取免费验证码"
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+
+			that.countDown({
+				wrap: E_step2,
+				text: "获取免费验证码"
+			});
+		});
+
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			var vcode = $.trim(E_step2.find(".E_vcode").val());
+
+			if (!/^\d{6}$/.test(vcode)) {
+				that.showError(E_step2, "请输入6位数字验证码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/mob/bind.do",
+				data: {
+					mobile: mobileFix_save + mobile_save,
+					mobilefix: mobileFix_save, 
+					oauth_token: opts.oauth_token,
+					mvcode: vcode,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					bindNum = parseInt(res.obj.bindCnt, 10);
+
+
+					if (res.obj.isBindLgnMob == "0") {
+						E_step4.find(".E_openNotice").html("&nbsp;");
+					}
+
+					showStep4();
+
+					that.bind("hide", function() {
+						location.reload(true);
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+		});
+		
+		E_step3.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+			$.ajax({
+				url: "/mb/mob/bind.do",
+				data: {
+					mobile: mobileFix_save + mobile_save,
+					mobilefix: mobileFix_save,
+					oauth_token: opts.oauth_token,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step3, res.msg);
+						return;
+					}
+
+					bindNum = parseInt(res.obj.bindCnt, 10);
+
+
+					if (res.obj.isBindLgnMob == "0") {
+						E_step4.find(".E_openNotice").html("&nbsp;");
+					}
+
+					showStep4();
+
+					that.bind("hide", function() {
+						location.reload(true);
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+
+		});
+
+		E_step4.find(".E_close").click(function() {
+			that.hide("ok");
+		});
+
+		var showStep2 = function() {
+			E_step2.find(".E_sendMsg").text('验证码已发送：' + mobileFix_save + mobile_save);
+
+			if (remains == 0) {
+				E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+			} else {
+				E_step2.find(".E_notice span").text("今日还可获取" + remains + "次免费验证码");
+			}
+
+			that.countDown({ 
+				'wrap': E_step2,
+				'text': "获取免费验证码"
+			});
+
+			E_step1.hide();
+			E_step2.show();
+		}
+
+		var showStep3 = function() { 
+			E_step3.find(".E_mobileU").html(mobileFix_save + mobile_save);
+			E_step3.find(".E_content").html(content);
+			E_step3.find(".E_gateway").html(gateWay);
+			E_step1.hide();
+			E_step2.hide();
+			E_step3.show();
+		}
+
+		var showStep4 = function() {
+			that.setTitle("绑定密保手机");
+			E_step4.find(".E_bindNum").text(bindNum);
+			E_step2.hide();
+			E_step3.hide();
+			E_step4.parents('.m_dialog'). addClass('m_dialog_new');
+			that.setMiddle();
+			$('.m_dialog_new').css('top',parseInt($('.m_dialog_new').css('top')) - 90);
+			E_step4.show();	
+		}
+
+		return that;
+	}
+
+	LIB.dialog.bindBakMobile = function(opts) {
+		var that = secureBase();
+		// 国际手机号前缀获取控件实例
+		var mF = null;
+		var titText =opts.change == true ? "改绑备用手机" : "绑定备用手机";
+		var stepText =opts.change == true ? "验证新备用手机" : "验证备用手机";
+		var defTextMobile = "输入您正在使用的手机号码";
+		var defTextMobileVCode = "请输入6位验证码";
+		// 今天还可以获取9条免费短信
+		var inner = $('<div class="m_dialog_bindBakMobile"></div>');
+		var html = '<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title">手机号：</span><span class="text_input_v3"><input type="text" class="E_mobile default_text"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_vcode default_text"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取验证码</span></a>\
+						</div>\
+						<div class="form_error E_error gray">&nbsp;</div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<div class="suc"><h3>'+ titText +'成功！</h3></div>\
+						<div class="contents">\
+							<p>推荐：装手机安全中心，安全问题不担心</p>\
+							<div class="ewmCon"><div class="sl"><span><a class="ipBtn" href="https://itunes.apple.com/cn/app/yy-an-quan-zhong-xin/id881332490?mt=8" target="_blank"></a></span><span><a class="azBtn" href="http://yydl.duowan.com/mobile/yyudbsec-android/3.4.2/yyudbsec-3.4.2.apk" target="_blank"></a></span></div><img src="https://res.udb.duowan.com/aq/images/mbtoken0.gif"></div>\
+							<p class="E_openNotice">2、当前帐号已开通<a href="/acct/index.do">手机号登录</a>功能，您可以使用手机号号码登录本帐号。</p>\
+						</div>\
+					</div>';
+		inner.html(html);
+		that.setInner(inner);
+		that.setTitle(titText + "<span>第二步："+ stepText +"</span>");
+		mF = new mobileFixSelect({
+	        target: $(".E_step1", inner)
+	    });
+
+		var E_step1 = inner.find(".E_step1");
+		var E_step2 = inner.find(".E_step2");
+		var mobile_save = "";
+		var mobileFix_save = "";
+		var remains = 0;
+		var noticeText = "&nbsp;";
+
+		var showError = function(step, msg) {
+			step.find(".E_error").html('<span class="error">' + msg + '</span>');
+		}
+
+		var clearError = function(step) {
+			step.find(".E_error").html(noticeText);
+		}
+
+		E_step1.find(".E_resend").click(function() {
+			
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+			}
+
+			clearError(E_step1);
+
+			var mobile = $.trim(E_step1.find(".E_mobile").val());
+			var mobileFix = mF.mobileFix; 
+			if((mobileFix == "" && !/^1\d{10}$/.test(mobile)) ||  !/^\d{1,30}$/.test(mobile)){
+				showError(E_step1, "请输入正确的手机号码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/mob/bak/sendVcode.do",
+				data: {
+					token: opts.token, 
+					mobile: mobileFix + mobile,
+					mobilefix: mobileFix, 
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					//var res = {code:1, obj:0};
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						showError(E_step1, res.msg);
+						return;
+					}
+
+					remains = parseInt(res.obj, 10);
+
+					if (remains == 0) {
+						noticeText = "今日已经无法获取免费验证码";
+					} else {
+						noticeText = "今日还可获取" + remains + "次免费验证码";
+					}
+
+					clearError(E_step1);
+
+					that.countDown({ 
+						'wrap': E_step1,
+						'text': "获取验证码"
+					});
+
+					mobile_save = mobile;
+					mobileFix_save = mobileFix;
+				},
+				error: function(req) {
+					LIB.unlock();
+					showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			clearError(E_step1);
+
+			var vcode = $.trim(E_step1.find(".E_vcode").val());
+
+			var mobile = $.trim(E_step1.find(".E_mobile").val());
+			var mobileFix = mF.mobileFix;
+
+			if((mobileFix == "" && !/^1\d{10}$/.test(mobile)) || !/^\d{1,30}$/.test(mobile)){
+				showError(E_step1, "请输入正确的手机号码");
+				return;
+			}
+
+			if(mobile_save != ""){
+				if (mobile != mobile_save || mobileFix != mobileFix_save) {
+					showError(E_step1, "手机号码已经更改，请重新获取验证码");
+					return;
+				}	
+			}else{
+				showError(E_step1, "请先获短信取验证码");
+				return;
+			}
+			
+			if (!/^\d{6}$/.test(vcode)) {
+				showError(E_step1, "请输入6位数字验证码");
+				return;
+			}
+
+			LIB.lock();
+
+			var bindUrl = opts.change == true ? "/mb/mob/bak/change.do" : "/mb/mob/bak/bind.do";
+			$.ajax({
+				url: bindUrl,
+				data: {
+					mobile: mobileFix_save + mobile_save, 
+					mobilefix: mobileFix_save,
+					oauth_token: opts.oauth_token, 
+					mvcode: vcode,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						showError(E_step1, res.msg);
+						return;
+					}
+
+					showStep2();
+					
+				},
+				error: function(req) {
+					LIB.unlock();
+					showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_close").click(function() {
+			that.hide("hide");
+		});
+
+		var showStep2 = function() {
+			that.bind("hide", function() {
+				location.reload(true);
+			});
+			that.setTitle("绑定密保手机");
+			E_step2.parents('.m_dialog'). addClass('m_dialog_new');
+			that.setMiddle();
+			$('.m_dialog_new').css('top',parseInt($('.m_dialog_new').css('top'))-90);
+			E_step1.hide();
+			E_step2.show();	
+		}
+
+		return that;
+	}
+	LIB.dialog.changeBakMobile = function(opts) {
+		return LIB.dialog.bindBakMobile(opts);
+	}
+	LIB.dialog.showQuickRealname = function() {
+		//快速登录弹出层。
+		var that = secureBase();
+		var rdcode = new Date().getTime();
+		var inner = $('<div class="m_dialog_showQuickRealname"></div>');
+		var html = '<h3 class="quick_des">快速认证</h3>\
+					<p>在手机YY客户端登录成功后，进入实名认证页面即可开始认证。（点击个人中心 > 设置 > 实名认证）</p>\
+					<div class="quick_main clearfix">\
+						<div class="quick_step fl">\
+							<div id="quickStepBox'+ rdcode +'"></div>\
+						</div>\
+						<div class="quick_qrcode fr">\
+							<div class="quick_qrcode_des">还没安装YY客户端？扫一扫立即下载</div>\
+							<img src="https://res.udb.duowan.com/aq/images/rn_qrcode.png" />\
+						</div>\
+					</div>';
+		inner.html(html);
+
+		that.setInner(inner);
+
+		var list = [
+				{
+		            imgUrl: 'https://res.udb.duowan.com/aq/images/rn_quick_step1.png',
+		            href: 'javascript:void(0);'
+	            }, 
+	            {
+		            imgUrl: 'https://res.udb.duowan.com/aq/images/rn_quick_step2.png',
+		            href: 'javascript:void(0);'
+	            }, 
+	            {
+		            imgUrl: 'https://res.udb.duowan.com/aq/images/rn_quick_step3.png',
+		            href: 'javascript:void(0);'
+	            }
+	        ]; 
+
+		$('#quickStepBox' + rdcode).fade({
+            url: list,
+            boxWid:468,
+            boxHei:518
+        }).css({
+            margin:'0 auto'
+        });
+
+		return that;
+	}
+
+	LIB.dialog.bindMobileForQA = function(opts) {
+		var that = secureBase();
+		var defTextMobile = "输入您正在使用的手机号码";
+		var defTextMobileVCode = "请输入6位数字验证码";
+		var inner = $('<div class="m_dialog_bindMobile"></div>');
+		var html = '<div class="step1 E_step1">\
+						<div class="form_notice" style="padding:5px 0 5px 57px;"><span style="color:red;font-size: 14px;font-weight: bold;">帐号存在风险，请绑定手机！</span></div>\
+						<div class="form_item">\
+							<span class="field_title">手机号：</span><span class="text_input_v3"><input type="text" class="E_mobile default_text" value="' + defTextMobile + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_notice gray">1、每个手机号码只能同时绑定10个YY帐号；</div>\
+						<div class="form_notice gray">2、暂不支持港澳台或国外手机号码。</div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<div class="form_item text E_sendMsg">验证码已发送：</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_vcode default_text" value="' + defTextMobileVCode + '"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取免费验证码</span></a>\
+						</div>\
+						<div class="form_item form_notice E_notice"><span>&nbsp;</span><a href="http://kf.yy.com/search/qa/5699.html#=%u624B%u673A%u6536%u53D6%u4E0D%u5230%u9A8C%u8BC1%u7801" target="_blank">&nbsp;&nbsp;收不到验证码？</a></div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step3 E_step3" style="display:none">\
+						<h3>绑定成功!</h3>\
+						<div class="contents">\
+							<p>1、当前手机号已和<em class="E_bindNum">3</em>个帐号建立绑定关系；</p>\
+							<p class="E_openNotice">2、当前帐号已开通<a href="/acct/index.do">手机号登录</a>功能，您可以使用手机号号码登录本帐号。</p>\
+							<p style="padding-top:12px;"><a href="http://aq.yy.com/app/yysec/index.html"  target="_blank"><strong style="color: #70a0d0;font-size:16px;text-decoration: underline;">装手机安全中心，安全问题不担心。</strong></a></p>\
+						</div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_close" onclick="return false;" href="javascript:void(0);"><span>确定</span></a></div>\
+					</div>';
+		inner.html(html);
+		that.setInner(inner);
+		that.setTitle("绑定密保手机<span>第二步：验证手机</span>");
+
+		var E_step1 = inner.find(".E_step1");
+		var E_step2 = inner.find(".E_step2");
+		var E_step3 = inner.find(".E_step3");
+		var mobile_save = null;
+		var remains = 0;
+		var bindNum = 0;
+
+		LIB.bindDefaultText(E_step1.find(".E_mobile"), defTextMobile);
+		LIB.bindDefaultText(E_step2.find(".E_vcode"), defTextMobileVCode);
+		that.limitVCode(E_step2.find(".E_vcode"));
+
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var mobile = $.trim(E_step1.find(".E_mobile").val());
+
+			if (!/^1\d{10}$/.test(mobile)) {
+				that.showError(E_step1, "请输入正确的手机号码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/p/pwd/fgt/sendVCode.do",
+				data: {
+					acct: opts.acct,
+					token: opts.token, 
+					mobile: mobile, 
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					mobile_save = mobile;
+					remains = parseInt(res.obj, 10);
+					showStep2();
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_resend").click(function() {
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+			}
+
+			if (remains < 1) {
+				that.showError(E_step2, "帐号收取短信验证码已达5次，请24：00后绑定");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/p/pwd/fgt/sendVCode.do",
+				data: {
+					acct: opts.acct,
+					token: opts.token, 
+					mobile: mobile_save, 
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					remains = parseInt(res.obj, 10);
+
+					if (remains == 0) {
+						E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+					} else {
+						E_step2.find(".E_notice span").text("今日还可获取" + remains + "次免费验证码");
+					}
+
+					that.countDown({ 
+						'wrap': E_step2,
+						'text': "获取免费验证码"
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+
+			that.countDown({
+				wrap: E_step2,
+				text: "获取免费验证码"
+			});
+		});
+
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step2);
+
+			var vcode = $.trim(E_step2.find(".E_vcode").val());
+
+			if (!/^\d{6}$/.test(vcode)) {
+				that.showError(E_step2, "请输入6位数字验证码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/p/pwd/fgt/bindMob.do",
+				data: {
+					acct: opts.acct,
+					mobile: mobile_save, 
+					oauth_token: opts.oauth_token,
+					mvcode: vcode,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					bindNum = parseInt(res.obj.bindCnt, 10);
+
+
+					if (res.obj.isBindLgnMob == "0") {
+						E_step3.find(".E_openNotice").html("&nbsp;");
+					}
+
+					showStep3();
+
+					that.bind("hide", function() {
+						location.reload(true);
+					});
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step3.find(".E_close").click(function() {
+			that.hide("close");
+		});
+
+		var showStep2 = function() {
+			E_step2.find(".E_sendMsg").text('验证码已发送：' + mobile_save);
+
+			if (remains == 0) {
+				E_step2.find(".E_notice span").text("今日已经无法获取免费验证码");
+			} else {
+				E_step2.find(".E_notice span").text("今日还可获取" + remains + "次免费验证码");
+			}
+
+			that.countDown({ 
+				'wrap': E_step2,
+				'text': "获取免费验证码"
+			});
+
+			E_step1.hide();
+			E_step2.show();
+		}
+
+		var showStep3 = function() {
+			//that.setTitle("绑定密保手机");
+			//E_step3.find(".E_bindNum").text(bindNum);
+			//E_step2.hide();
+			//E_step3.show();
+			that.hide("show");
+			// var dialog = LIB.dialog.findPassword({
+			// 	acct: opts.acct,
+			// 	servcode: opts.servcode,
+			// 	token: opts.token,
+			// 	oauth_token: opts.oauth_token
+			// });
+   //dialog.setTitle('绑定密保手机<br/><span style="color: red;display: inline-block;margin-top: 13px;padding-left: 28px">绑定密保手机成功！请修改密码！</span>');
+			// dialog.show();	
+
+		}
+
+		return that;
+	}
+	LIB.dialog.changeBindMobile = function(opts) {
+		var that = secureBase();
+		// 国际手机号前缀获取控件实例
+		var mF = null;
+		var defTextMobile = "输入您正在使用的手机号码";
+		var defTextMobileVCode = "请输入6位验证码";
+		// 今天还可以获取9条免费短信
+		var inner = $('<div class="m_dialog_bindMobile m_dialog_cbindMobile"></div>');
+		var html = '<div class="step1 E_step1">\
+						<div class="form_item">\
+							<span class="field_title">手机号：</span><span class="text_input_v3"><input type="text" class="E_mobile default_text"><span class="space"></span></span>\
+						</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_vcode default_text"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取验证码</span></a>\
+						</div>\
+						<div class="form_error E_error gray">&nbsp;</div>\
+						<div class="form_notice gray">每个手机号码只能同时绑定10个YY帐号；</div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<div class="form_notice gray">由于<span class="E_moblie"></span>已关联另外一个YY号，如果继续将该号码设为当前帐号的新密保手机，则生效后：</div>\
+						<div class="form_notice" style="margin-top: 10px;">1、原号码<span class="E_oldM"></span>将被注销，新号码<span class="E_moblie"></span>仅作为密保手机不能作登录用。</div>\
+						<div class="form_notice"><span style="color: red">2、登录时请直接使用YY号：<span class="E_yyid"></span>。</span></div>\
+						<div class="form_error E_error">&nbsp;</div>\
+						<div class="opra">\
+							<a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>继 续</span></a>\
+							<a class="btn_blue_v3 btn_blue_v3_disabled opra_btn E_cancel" onclick="return false;" href="javascript:void(0);"><span>取 消</span></a>\
+						</div>\
+					</div>\
+					<div class="step3 E_step3" style="display:none">\
+						<h3>已提交修改密保手机申请!</h3>\
+						<div class="contents">\
+							<p>当前密保手机：<span class="E_curPhone"></span></p>\
+							<p>修改密保手机：<span class="E_newPhone"></span></p>\
+							<p>预计生效时间：<span class="E_time red"></span></p>\
+							<div class="gray E_finishNotice" style="padding-left:84px;display:none; padding-top: 5px;">（生效后将以短信方式通知您）</div>\
+							<div class="red E_finishNoticeConfirm" style="text-align:center;display:none padding-top: 5px;">修改后原手机号码将注销，请用YY号<span class="E_yyid"></span>登录</div>\
+						</div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_close" onclick="return false;" href="javascript:void(0);"><span>确定</span></a></div>\
+					</div>\
+					';
+		inner.html(html);
+		that.setInner(inner);
+		that.setTitle("修改密保手机<span>第二步：验证手机</span>");
+		mF = new mobileFixSelect({
+	        target: $(".E_step1", inner)
+	    });
+
+		var E_step1 = inner.find(".E_step1");
+		var E_step2 = inner.find(".E_step2");
+		var E_step3 = inner.find(".E_step3");
+		var mobile_save = "";
+		var mobileFix_save = "";
+		var remains = 10;
+		var bindNum = 0;
+		var noticeText = "&nbsp;";
+		var changeData = {};
+
+		var showError = function(step, msg) {
+			step.find(".E_error").html('<span class="error">' + msg + '</span>');
+		}
+
+		var clearError = function(step) {
+			step.find(".E_error").html(noticeText);
+		}
+
+		E_step1.find(".E_resend").click(function() {
+			
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+			}
+
+			if (remains < 1) {
+				showError(E_step1, "帐号收取短信验证码已达10次，请24：00后绑定");
+				return;
+			}
+
+			clearError(E_step1);
+
+			var mobile = $.trim(E_step1.find(".E_mobile").val());
+			var mobileFix = mF.mobileFix; 
+			if((mobileFix == "" && !/^1\d{10}$/.test(mobile)) ||  !/^\d{1,30}$/.test(mobile)){
+				showError(E_step1, "请输入正确的手机号码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/mob/sendChg.do",
+				data: {
+					token: opts.token, 
+					mobile:mobileFix + mobile,
+					mobilefix: mobileFix,
+					oauth_token: opts.oauth_token, 
+					servcode: opts.servcode
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						showError(E_step1, res.msg);
+						return;
+					}
+
+					remains = parseInt(res.obj, 10);
+
+					if (remains == 0) {
+						noticeText = "今日已经无法获取免费验证码";
+					} else {
+						noticeText = "今日还可获取" + remains + "次免费验证码";
+					}
+
+					clearError(E_step1);
+
+					that.countDown({ 
+						'wrap': E_step1,
+						'text': "获取验证码"
+					});
+
+					mobile_save = mobile;
+					mobileFix_save = mobileFix;
+				},
+				error: function(req) {
+					LIB.unlock();
+					showError(E_step1, LIB.errLog(req));
+				}
+			});
+
+			that.countDown({
+				wrap: E_step1,
+				text: "获取验证码"
+			});
+		});
+
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			clearError(E_step1);
+
+			var vcode = $.trim(E_step1.find(".E_vcode").val());
+
+			var mobile = $.trim(E_step1.find(".E_mobile").val());
+			var mobileFix = mF.mobileFix;
+
+			if((mobileFix == "" && !/^1\d{10}$/.test(mobile)) || !/^\d{1,30}$/.test(mobile)){
+				showError(E_step1, "请输入正确的手机号码");
+				return;
+			}
+
+			if(mobile_save != ""){
+				if (mobile != mobile_save || mobileFix != mobileFix_save) {
+					showError(E_step1, "手机号码已经更改，请重新获取验证码");
+					return;
+				}	
+			}else{
+				showError(E_step1, "请先获短信取验证码");
+				return;
+			}
+			
+			if (!/^\d{6}$/.test(vcode)) {
+				showError(E_step1, "请输入6位数字验证码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/mob/change.do",
+				data: {
+					mobile: mobileFix_save + mobile_save, 
+					mobilefix: mobileFix_save,
+					oauth_token: opts.oauth_token, 
+					mvcode: vcode,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == -3) {
+						that.hide();
+						var dialog = LIB.dialog.alert(res.msg);
+						dialog.show();
+						dialog.bind("hide", function() {
+							location.reload(true);
+						});
+
+						return;
+					}
+
+					if (res.code != 1) {
+						showError(E_step1, res.msg);
+						return;
+					}
+
+					// bindNum = parseInt(res.obj.bindCnt, 10);
+
+					changeData = res.obj;
+
+					if (res.obj.confirmMark) {
+						showStep2();
+					} else {
+						showStep3();
+					}
+				},
+				error: function(req) {
+					LIB.unlock();
+					showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/mb/mob/confirmChg.do",
+				data: {
+					oauth_token: opts.oauth_token,
+					token: opts.token
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					changeData.effectiveDay = res.obj.effectiveDay;
+
+					showStep3();
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step2.find(".E_cancel").click(function() {
+			that.hide("cancel");
+		});
+
+		E_step3.find(".E_close").click(function() {
+			that.hide("ok");
+		});
+
+		var showStep2 = function() {
+			E_step1.hide();
+			E_step2.show();
+
+			E_step2.find(".E_moblie").text(mobileFix_save + mobile_save);
+			E_step2.find(".E_oldM").text(changeData.maskOldMobile);
+			E_step2.find(".E_yyid").text(changeData.yyid);
+			}
+
+		var showStep3 = function() {
+			that.bind("hide", function() {
+				location.reload(true);
+			});
+
+			E_step1.hide();
+			E_step2.hide();
+			that.setTitle("绑定密保手机");
+			// E_step3.find(".E_bindNum").text(bindNum);
+
+			if (changeData.confirmMark) {
+				E_step3.find(".E_finishNotice").hide();
+				E_step3.find(".E_finishNoticeConfirm").show();
+				E_step3.find(".E_finishNoticeConfirm .E_yyid").text(changeData.yyid);
+			} else {
+				E_step3.find(".E_finishNotice").show();
+				E_step3.find(".E_finishNoticeConfirm").hide();
+		}
+
+			E_step3.find(".E_curPhone").text(changeData.maskOldMobile);
+			E_step3.find(".E_newPhone").text(mobileFix_save + mobile_save);
+			E_step3.find(".E_time").text(changeData.effectiveDay);
+
+			E_step3.show();	
+		}
+
+		return that;
+	}
+
+	LIB.dialog.loginMobileNoBind = function() {
+		var that = secureBase();
+		var inner = $('<div class="m_dialog_loginMObileNoBind"></div>');
+		var html = '<p>只能使用密保手机作为辅助帐号登录</p><p>请先绑定密保手机。</p>\
+			<div class="opra"><a class="btn_blue_v3 opra_btn" href="/mb/mob/index.do"><span>下一步</span></a></div>';
+		inner.html(html);
+
+		that.setInner(inner);
+		that.setTitle("开通手机号登录");
+
+		return that;
+	}
+
+	LIB.dialog.loginMobileBind = function(opts) {
+		var that = secureBase();
+		var defTextMobile = "请输入密保手机号";
+		var defTextMobileVCode = "请输入6位数字验证码";
+		var inner = $('<div class="m_dialog_loginMObileBind"></div>');
+		var html = '<div class="step1 E_step1">\
+						<div class="form_item notice">只能使用密保手机作为辅助帐号登录</div>\
+						<div class="form_item"><span class="field_title text_title">手机号：</span> ' + opts.mobile + ' </div>\
+						<div class="form_item">\
+							<span class="field_title">手机号：</span><span class="text_input_v3"><input type="text" class="E_mobile default_text" value="' + defTextMobile + '"><span class="space"></span></span>\
+						</div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" href="javascript:void(0);" onclick="return false;"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step2 E_step2" style="display:none">\
+						<p>手机号已经和帐号：<span class="E_acct"></span>建立登录绑定关系。</p>\
+						<p>继续操作，您将更换登录绑定关系到当前帐号。</p>\
+						<p style="color: red">更换绑定后，你将无法使用该手机号登录：<span class="E_acct"></span></p>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" href="javascript:void(0);" onclick="return false;"><span>下一步</span></a></div>\
+					</div>\
+					<div class="step3 E_step3" style="display:none">\
+						<div class="form_item text E_sendMsg">验证码已发送：</div>\
+						<div class="form_item">\
+							<span class="field_title">验证码：</span><span class="text_input_v3 vcode"><input type="text" class="E_vcode default_text" value="' + defTextMobileVCode + '"><span class="space"></span></span>\
+							<a class="btn_blue_v3 E_resend" onclick="return false;" href="javascript:void(0);"><span>获取免费验证码</span></a>\
+						</div>\
+						<div class="form_item form_notice E_notice"></div>\
+						<div class="form_notice E_error" style="visibility:hidden; margin-top: 5px;"><span class="error">错误信息占位</span></div>\
+						<div class="opra"><a class="btn_blue_v3 opra_btn E_next" onclick="return false;" href="javascript:void(0);"><span>下一步</span></a></div>\
+					</div>\
+					<div class="stepOK E_stepOK" style="display:none">\
+						<p style="text-indent: 24px;">您已成功设置辅助帐号，使用手机号 <span class="E_mobile"></span> 登录将匹配帐号<span class="E_maskNewUname"></span>。</p>\
+						<p class="okTip" style="display:none;color:red; margin-top: 20px;">温馨提示：</p>\
+						<p class="okTip" style="display:none;text-indent: 24px;">该手机号原先捆绑的帐号<span class="E_maskOldUname"></span>已关闭手机号辅助登录功能，您可使用通行证<span class="E_oldUname"></span>登录。</p>\
+						<div class="opra E_opra"><a class="btn_blue_v3 opra_btn E_close" href="javascript:void(0);" onclick="return false;"><span>确定</span></a></div>\
+					</div>\
+					';
+		inner.html(html);
+
+		that.setInner(inner);
+		that.setTitle("开通手机号登录");
+
+		var E_step1 = inner.find(".E_step1");
+		var E_step2 = inner.find(".E_step2");
+		var E_step3 = inner.find(".E_step3");
+		var E_stepOK = inner.find(".E_stepOK");
+		var mobile_save = "";
+		var otheruname = "";
+		var saveData = {};
+
+		LIB.bindDefaultText(E_step1.find(".E_mobile"), defTextMobile);
+		LIB.bindDefaultText(E_step3.find(".E_vcode"), defTextMobileVCode);
+		that.limitVCode(E_step3.find(".E_vcode"));
+
+		E_step1.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step1);
+
+			var mobile = $.trim(E_step1.find(".E_mobile").val());
+			mobile_save = mobile;
+
+			if (!/^00\d{1,30}$/.test(mobile) && !/^1\d{10}$/.test(mobile)) {
+				that.showError(E_step1, "请输入正确的手机号码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/acct/lgmob/chkMobAndBind.do",
+				data: {
+					lgnmobile: mobile
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code == "2") {
+						// 已经和别的号绑定了
+						otheruname = res.obj.otheruname;
+						showStep2();
+
+						return;
+					}
+
+					if (res.code != 1) {
+						that.showError(E_step1, res.msg);
+						return;
+					}
+
+					saveData = res.obj;
+
+					// 直接显示成功
+					showStepOK();
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step1, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_stepOK.find(".E_close").click(function() {
+			that.hide("ok");
+		});
+
+		E_step2.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/acct/lgmob/sendVcode.do",
+				data: {},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(E_step2, res.msg);
+						return;
+					}
+
+					showStep3();
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step2, LIB.errLog(req));
+				}
+			});
+		});
+
+		E_step3.find(".E_resend").click(function() {
+			if (LIB.locked || $(this).hasClass("btn_blue_v3_disabled")) {
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/acct/lgmob/sendVcode.do",
+				data: {},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(E_step3, res.msg);
+						return;
+					}
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step3, LIB.errLog(req));
+				}
+			});
+
+			that.countDown({ 
+				'wrap': E_step3,
+				'text': "获取免费验证码",
+				'countDownText': '重新获取验证码({num})'
+			});
+		});
+
+		E_step3.find(".E_next").click(function() {
+			if (LIB.locked) {
+				return;
+			}
+
+			that.clearError(E_step3);
+
+			var vcode = $.trim(E_step3.find(".E_vcode").val());
+
+			if (!/^\d{6}$/.test(vcode)) {
+				that.showError(E_step3, "请输入6位数字验证码");
+				return;
+			}
+
+			LIB.lock();
+
+			$.ajax({
+				url: "/acct/lgmob/chkVcodeAndBind.do",
+				data: {
+					vcode: vcode,
+					lgnmobile: mobile_save
+				},
+				type: "POST",
+				success: function(res) {
+					LIB.unlock();
+
+					if (res.code != 1) {
+						that.showError(E_step3, res.msg);
+						return;
+					}
+
+					saveData = res.obj;
+					showStepOK();
+				},
+				error: function(req) {
+					LIB.unlock();
+					that.showError(E_step3, LIB.errLog(req));
+				}
+			});
+		});
+
+		var showStepOK = function() {
+			that.setTitle("成功开通手机号登录");
+			E_stepOK.find(".E_mobile").text(saveData.mobile);
+			E_stepOK.find(".E_maskNewUname").text(saveData.maskNewUname);
+
+			if (saveData.oldUname != null && saveData.oldUname != "") {
+				E_stepOK.find(".okTip").show();
+				E_stepOK.find(".E_opra").css("margin-top", "80px");
+				E_stepOK.find(".E_maskOldUname").text(saveData.maskOldUname);
+				E_stepOK.find(".E_oldUname").text(saveData.oldUname);
+			}
+
+			E_step1.hide();
+			E_step3.hide();
+			E_stepOK.show();
+
+			that.bind("hide", function() {
+				location.reload(true);
+			});
+		}
+
+		var showStep2 = function() {
+			E_step2.find(".E_acct").text(otheruname);
+
+			E_step1.hide();
+			E_step2.show();
+		}
+
+		var showStep3 = function() {
+			that.countDown({ 
+				'wrap': E_step3,
+				'text': "获取免费验证码",
+				'countDownText': '重新获取验证码({num})'
+			});
+
+			E_step3.find(".E_sendMsg").text('验证码已发送：' + mobile_save);
+
+			E_step2.hide();
+			E_step3.show();
+		}
+
+		return that;
+	}
+})();

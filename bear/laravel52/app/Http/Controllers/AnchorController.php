@@ -28,7 +28,8 @@ class AnchorController extends Controller
 				break;
 			}
 		}
-		return view('anchor/index',['res'=>$res]);
+		$cate=DB::table('type')->where('parent_id','=',0)->get();
+		return view('anchor/index',['res'=>$res,'cate'=>$cate]);
 	}
 }
  ?>
