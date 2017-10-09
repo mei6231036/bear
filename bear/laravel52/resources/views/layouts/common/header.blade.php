@@ -1,3 +1,36 @@
+<?php
+use Symfony\Component\HttpFoundation\Session\Session;
+    //用户session
+        $session=new Session;
+        $user=$session->get('user');
+        if($user)
+        {
+            $user = DB::table('user_info')->select('*')->where('user_id',$user->user_id)->first();
+        }
+        //系统推荐
+        $data=DB::table('type')->where('parent_id','!=',0)->get();
+        $arr=[];
+        foreach ($data as $key => $val) {
+            foreach ($val as $k => $v) {
+                $arr[$key][$k]=$v;
+            }
+        }
+        $res=[];
+        $num=0;
+        while (1) { 
+            $a=array_rand($arr);
+            if (!in_array($arr[$a],$res)) {
+                $res[]=$arr[$a];
+                $num++;
+            }
+            if ($num>8) {
+                break;
+            }
+        }
+
+?>
+
+
 <div class="duya-header" id="duya-header">
 
     <div class="duya-header-wrap clearfix">

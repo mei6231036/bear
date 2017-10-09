@@ -37,6 +37,5 @@ Route::get('/register',"IndexController@register");
 Route::get('/anchor',"AnchorController@index");
 Route::resource('home',"home\HomeController");
 Route::resource('/yy',"YyController@index");
-Route::get('/article',function(){
-    return view('article.index');
-});
+
+Route::get('/article',"ArticleController@index");
