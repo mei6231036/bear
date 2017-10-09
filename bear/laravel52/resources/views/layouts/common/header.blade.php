@@ -27,7 +27,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
                 break;
             }
         }
-
 ?>
 
 
@@ -248,8 +247,13 @@ use Symfony\Component\HttpFoundation\Session\Session;
                 <div class="hy-nav-right nav-user success-login" style="display:block">
 
                     <a class="nav-user-title" href="myuser" target="_blank">
-
+                        
+                        @if($user->signature == '')
                         <img id="login-userAvatar" src="images/10001.jpg" alt="头像" />
+                        @else
+                        <img id="login-userAvatar" src="{{$user->heading}}" alt="头像" />
+                        @endif
+                        
 
                         <span id="login-username" title="{{$user->nickname}}">{{$user->nickname}}</span>
 
@@ -269,8 +273,12 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
                                 <a class="avatar" id="J_huyaNavUserCardAvatar" href="myuser" target="_blank">
 
+                                    
+                                    @if($user->signature == '')
                                     <img src="images/10001.jpg" id="J_huyaNavUserCardAvatarImg" />
-
+                                    @else
+                                    <img src="{{$user->heading}}" id="J_huyaNavUserCardAvatarImg" />
+                                    @endif
                                 </a>
 
 
