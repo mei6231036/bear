@@ -214,7 +214,7 @@
                 @else 
                 <div class="hy-nav-right nav-user success-login" style="display:block">
 
-                    <a class="nav-user-title" href="http://i.huya.com/" target="_blank">
+                    <a class="nav-user-title" href="myuser" target="_blank">
 
                         <img id="login-userAvatar" src="images/10001.jpg" alt="头像" />
 
@@ -234,7 +234,7 @@
 
                             <div class="u-info">
 
-                                <a class="avatar" id="J_huyaNavUserCardAvatar" href="http://i.huya.com/" target="_blank">
+                                <a class="avatar" id="J_huyaNavUserCardAvatar" href="myuser" target="_blank">
 
                                     <img src="images/10001.jpg" id="J_huyaNavUserCardAvatarImg" />
 
@@ -254,7 +254,7 @@
 
                                     <div class="between">
 
-                                        <span class="from" id="J_huyaNavUserCardExpFrom">LV-{{$user->level}}</span>
+                                        <span class="from" id="J_huyaNavUserCardExpFrom">LV{{$user->level}}</span>
 
                                         <div class="bar-cnt">
 
@@ -272,7 +272,7 @@
 
                                         </div>
 
-                                        <span class="to" id="J_huyaNavUserCardExpTo">LV-{{$user->level+1}}</span>
+                                        <span class="to" id="J_huyaNavUserCardExpTo">LV{{$user->level+1}}</span>
 
                                     </div>
 
@@ -312,7 +312,7 @@
 
                                     <li class="links-i">
 
-                                        <a href="http://i.huya.com/" target="_blank" class="new-clickstat" report='{"eid":"click/position","position":"header/usercard/entrance1"}'>                                        
+                                        <a href="myuser" target="_blank" class="new-clickstat" report='{"eid":"click/position","position":"header/usercard/entrance1"}'>                                        
 
                                             <i></i>
 

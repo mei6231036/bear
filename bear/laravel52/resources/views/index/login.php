@@ -112,7 +112,7 @@ var youdao_conv_id = 271546;
 					return false;
 			     }else{
 			     	alert('快去看直播吧');
-			     	location.href = "http://127.0.0.1/bear/bear/laravel52/public/";//location.href实现客户端页面的跳转 
+			     	location.href = "/";//location.href实现客户端页面的跳转 
 			     }
 			   }
 			});
