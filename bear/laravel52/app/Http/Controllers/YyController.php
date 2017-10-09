@@ -4,9 +4,8 @@ use DB;
 /**
 * 
 */
-class AnchorController extends Controller
+class YyController extends Controller
 {
-	
 	public function index()
 	{
 		$data=DB::table('type')->where('parent_id','!=',0)->get();
@@ -28,8 +27,9 @@ class AnchorController extends Controller
 				break;
 			}
 		}
-		$cate=DB::table('type')->where('parent_id','=',0)->get();
-		return view('anchor/index',['res'=>$res,'cate'=>$cate]);
+		return view('yy/index',['res'=>$res]);
 	}
+
 }
+
  ?>

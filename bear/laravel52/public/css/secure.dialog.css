@@ -1,0 +1,193 @@
+@charset "utf-8";
+
+.m_dialog { position: absolute; background-color: white; font-family: "Microsoft Yahei"; border: solid 1px #d6d6d6; -webkit-border-radius: 5px; -moz-border-radius: 5px; -ms-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 3px 3px 5px #555555;; -moz-box-shadow: 3px 3px 5px #555555;; box-shadow: 3px 3px 5px #555555; color: #3e3e3e; }
+.m_dialog .dialog_title { position: relative; padding-top: 12px; padding-left: 18px;}
+.m_dialog .dialog_title h2 { font-weight: normal; font-size: 18px; }
+.m_dialog .dialog_title h2 span { font-size: 14px; color: #909090; padding-left: 15px; }
+.m_dialog .dialog_title a.close { display: inline-block; position: absolute; right: 23px; top: 18px; height: 11px; width: 13px; background:url(../images/secure_bg.gif) no-repeat scroll left top transparent; }
+.m_dialog .verify_code_img { vertical-align: middle; cursor: pointer; width: 113px; height: 37px; }
+.m_dialog .opra { text-align: center; }
+.m_dialog .opra_btn span { width: 116px; text-align: center; }
+.m_dialog .form_item { padding: 6px 0px; }
+.m_dialog .form_item .field_title { display: inline-block; width: 105px; width: 105px; text-align: right; vertical-align: middle; }
+.m_dialog .form_item .text_title { vertical-align: top; *vertical-align: middle; _vertical-align: top; }
+.m_dialog .form_notice { padding-left: 105px; }
+.m_dialog .form_notice .error, .m_dialog .error { color: red; }
+.m_dialog a { color: #0000ff; }
+.m_dialog .red { color: red; }
+.m_dialog .gray { color: gray; }
+.m_dialog .blue { color: blue; }
+.m_dialog .green { color: #10a021;}
+.m_dialog .text_input_v3 input { _height: 23px; }
+.m_dialog .text_input_v3 .space { _margin-top: -1px; }
+.m_dialog .default_text { color: #999999; }
+.m_dialog a { color: #70a0d0; }
+
+.m_dialog_verify { padding-bottom: 30px; width: 360px; color: #3e3e3e; }
+.m_dialog_verify_email .step1 { margin-top: 12px; }
+.m_dialog_verify_email .step1 { margin-top: 22px; }
+.m_dialog_verify_email .step1 .opra { margin-top: 50px; }
+.m_dialog_verify_email .step2 { margin-top: 22px; }
+.m_dialog_verify_email .step2 .text { margin-left: 35px; }
+.m_dialog_verify_email .step2 .field_title { width: 83px; }
+.m_dialog_verify_email .step2 .form_notice { padding-left: 36px; }
+.m_dialog_verify_email .step2 .opra { margin-top: 50px; }
+.m_dialog_verify_email .step2 .vcode input { width: 177px; }
+.m_dialog_verify_mobileU { padding-top: 12px; }
+.m_dialog_verify_mobileU ul { margin-left: 24px; list-style: decimal inside none; color: #9d9d9d; line-height: 1.3; margin-bottom: 2px;  }
+.m_dialog_verify_mobileU ul li { word-break: break-all; word-wrap: break-word; }
+.m_dialog_verify_mobileU .opra { margin-top: 15px; }
+.m_dialog_verify_mobileU .field_title { width: 83px; }
+.m_dialog_verify_mobileU .pop_tips { margin-top: 15px; }
+
+.m_dialog_verify_mobileD .form_item .field_title { width: 80px; }
+.m_dialog_verify_mobileD .form_item .vcode input { width: 118px; }
+.m_dialog_verify_mobileD .form_notice { padding-left: 86px; padding-right: 20px; color: gray; }
+.m_dialog_verify_mobileD .step1 {padding-top:20px;}
+.m_dialog_verify_mobileD .step2 .text {padding-left:30px;}
+
+.m_dialog_verify_mobileUnmask .step1{padding-top:20px;}
+.m_dialog_verify_mobileUnmask .step1 .opra{margin-top:40px;}
+
+.m_dialog_findPassword { padding-bottom: 30px; width: 360px; color: #3e3e3e; }
+.m_dialog_findPassword .step1 { margin-top: 12px; }
+.m_dialog_findPassword .step1 .password_level { position: relative; padding-left: 110px; }
+.m_dialog_findPassword .step1 .password_level .level_icon { position: absolute; display: inline-block; top: 0px; left: 0px; top: -3px; width: 110px; _top: 5px; }
+.m_dialog_findPassword .step1 .password_level .level_icon span { display: inline-block; width: 22px; height: 20px; background: url(../images/secure_bg.gif) no-repeat scroll -46px top transparent; }
+.m_dialog_findPassword .step1 .password_level .level_icon span.reach { background: url(../images/secure_bg.gif) no-repeat scroll -19px top transparent; }
+.m_dialog_findPassword .step1 .form_notice { padding-left: 45px; }
+.m_dialog_findPassword .step1 .opra { margin-top: 30px; }
+.m_dialog_findPassword .step2 { margin-top: 80px; }
+.m_dialog_findPassword .step2 .message{ font-size: 24px; text-align: center;}
+.m_dialog_findPassword .step2 .opra { margin-top: 80px; }
+
+.m_dialog_bindMobile { padding-bottom: 30px; width: 360px; color: #3e3e3e; }
+.m_dialog_bindMobile .step1,
+.m_dialog_bindMobile .step2 { margin-top: 12px; }
+.m_dialog_bindMobile .step1 .form_notice { padding-left: 57px; }
+.m_dialog_bindMobile .step2 .form_notice { padding-left: 32px; }
+.m_dialog_bindMobile .step1 .opra { margin-top: 50px; }
+.m_dialog_bindMobile .step2 .field_title { width: 80px; }
+.m_dialog_bindMobile .step2 .vcode input { width: 118px; }
+.m_dialog_bindMobile .step2 .E_sendMsg { padding-left: 32px; color: gray; }
+.m_dialog_bindMobile .step2 .E_notice { padding-left: 80px; }
+.m_dialog_bindMobile .step2 .opra { margin-top: 50px;}
+.m_dialog_bindMobile .step3 { padding: 20px 30px 0px 30px; }
+.m_dialog_bindMobile .step3 h3 { font-size: 22px; text-align: center; margin-bottom: 30px; }
+.m_dialog_bindMobile .step3 .opra { margin-top: 50px; }
+
+.m_dialog_bindBakMobile { padding-bottom: 30px; width: 360px; color: #3e3e3e; }
+.m_dialog_bindBakMobile .E_error { text-align: left; padding-left: 105px; margin-top: -5px; margin-bottom: 10px; }
+.m_dialog_bindBakMobile .form_error .error { color: #ff1212; }
+.m_dialog_bindBakMobile .step1{margin-top:12px;}
+.m_dialog_bindBakMobile .step1 .text_input_v3 input {width: 165px; }
+.m_dialog_bindBakMobile .step1 .vcode input { width: 70px; }
+.m_dialog_bindBakMobile .step1 .opra { margin-top: 30px; }
+.m_dialog_bindBakMobile .step1 .btn_blue_v3 span { width: 71px; text-align: center; }
+.m_dialog_bindBakMobile .step2 .contents { font-size: 14px; }
+.m_dialog_bindBakMobile .step2 .contents div { font-size: 12px; }
+.m_dialog_bindBakMobile .suc h3{padding-top:16px;}
+
+.m_dialog_bindEmail { padding-bottom: 30px; width: 360px; color: #3e3e3e; }
+.m_dialog_bindEmail .step1,
+.m_dialog_bindEmail .step2 { margin-top: 12px; }
+.m_dialog_bindEmail .step1 .opra { margin-top: 50px; }
+.m_dialog_bindEmail .step2 .field_title { width: 80px; }
+.m_dialog_bindEmail .step2 .vcode input { width: 118px; }
+.m_dialog_bindEmail .step2 .E_sendMsg { padding-left: 32px; color: gray; }
+.m_dialog_bindEmail .step2 .opra { margin-top: 50px;}
+.m_dialog_bindEmail .step2 .E_notice { padding-left: 80px; }
+.m_dialog_bindEmail .step3 { padding: 20px 30px 0px 30px; }
+.m_dialog_bindEmail .step3 h3 { font-size: 22px; text-align: center; margin-bottom: 30px; }
+.m_dialog_bindEmail .step3 .opra { margin-top: 50px; }
+
+.m_dialog_verify_mobileUV { padding-top: 12px; }
+.m_dialog_verify_mobileUV ul { margin-left: 24px; list-style: decimal inside none; color: #9d9d9d; line-height: 1.3; margin-bottom: 2px;  }
+.m_dialog_verify_mobileUV ul li { word-break: break-all; word-wrap: break-word; }
+.m_dialog_verify_mobileUV .opra { margin-bottom: 0px; }
+.m_dialog_verify_mobileUV .field_title { width: 83px; }
+.m_dialog_verify_mobileUV .pop_tips { margin-top: 15px; }
+
+.m_dialog_loginMObileNoBind { padding: 20px; width: 320px; color: #3e3e3e; }
+.m_dialog_loginMObileNoBind p { line-height: 1.7; }
+.m_dialog_loginMObileNoBind .opra { margin-top: 100px; }
+
+.m_dialog_loginMObileBind { padding-bottom: 30px; width: 360px; color: #3e3e3e; }
+.m_dialog_loginMObileBind .step1 .opra { margin-top: 40px; }
+.m_dialog_loginMObileBind .step1 .notice { padding-left:57px; padding-top: 20px;  }
+.m_dialog_loginMObileBind .stepOK { padding: 20px 20px 0px 20px }
+.m_dialog_loginMObileBind .stepOK p { line-height: 1.7; }
+.m_dialog_loginMObileBind .stepOK .opra { margin-top: 100px; }
+.m_dialog_loginMObileBind .step2 { padding: 20px 20px 0px 20px }
+.m_dialog_loginMObileBind .step2 p { line-height: 2; }
+.m_dialog_loginMObileBind .step2 .opra { margin-top: 86px; }
+.m_dialog_loginMObileBind .step3 .field_title { width: 80px; }
+.m_dialog_loginMObileBind .step3 .vcode input { width: 118px; }
+.m_dialog_loginMObileBind .step3 .E_sendMsg { padding-left: 32px; color: gray; }
+.m_dialog_loginMObileBind .step3 .opra { margin-top: 50px;}
+
+/*放最后*/
+.m_dialog .dialog_inner .E_error { text-align: center; padding-left: 0px; }
+
+.m_dialog_cbindMobile .E_error { text-align: left; padding-left: 105px; margin-top: -5px; margin-bottom: 10px; }
+.m_dialog_cbindMobile .form_error .error { color: #ff1212; }
+.m_dialog_cbindMobile .step1 .text_input_v3 input {width: 165px; }
+.m_dialog_cbindMobile .step1 .vcode input { width: 70px; }
+.m_dialog_cbindMobile .step1 .opra { margin-top: 30px; }
+.m_dialog_cbindMobile .step2 .opra { margin-top: 20px; }
+.m_dialog_cbindMobile .step1 .btn_blue_v3 span { width: 71px; text-align: center; }
+.m_dialog_cbindMobile .step2 { height: 178px; padding-top: 15px;}
+.m_dialog_cbindMobile .step2 .form_notice { padding-right: 32px; }
+.m_dialog_cbindMobile .step2 .E_error { margin-top: 0px; text-align: left; color: red; }
+.m_dialog_cbindMobile .step3 .contents { font-size: 14px; }
+.m_dialog_cbindMobile .step3 .contents div { font-size: 12px; }
+
+.m_dialog_bindEmail .E_error { text-align: left; padding-left: 105px; margin-top: -5px; margin-bottom: 10px; }
+.m_dialog_bindEmail .form_error .error { color: #ff1212; }
+.m_dialog_bindEmail .step1 .text_input_v3 input {width: 165px; }
+.m_dialog_bindEmail .step1 .vcode input { width: 70px; }
+.m_dialog_bindEmail .step1 .opra { margin-top: 30px; }
+.m_dialog_bindEmail .step3 .contents { font-size: 14px; }
+.m_dialog_bindEmail .step3 .contents div { font-size: 12px; }
+/*.m_dialog_bindEmail .step2 .opra { margin-top: 20px; }*/
+.m_dialog_bindEmail .step1 .btn_blue_v3 span { width: 71px; text-align: center; }
+/*.m_dialog_bindEmail .step2 { height: 178px; padding-top: 15px;}
+.m_dialog_bindEmail .step2 .form_notice { padding-right: 32px; }
+.m_dialog_bindEmail .step2 .E_error { margin-top: 0px; text-align: left; color: red; }*/
+
+/*add 2014-11-25*/
+/*新弹窗样式*/
+.m_dialog_new{ border-radius:0;box-shadow:none; width:500px;
+webkit-border-radius: 0; 
+-moz-border-radius: 0; 
+-ms-border-radius: 0; 
+border-radius: 0; 
+-webkit-box-shadow: none;
+-moz-box-shadow: none;
+box-shadow: none;
+}
+.m_dialog_new .dialog_title a.close,.m_dialog_new .suc,.ewmCon .sl .ipBtn,.ewmCon .sl .azBtn{ background:url(../images/pop_new_icons.png) no-repeat;}
+.m_dialog_new .dialog_title a.close{ width:30px; height:30px;}
+.m_dialog_new .dialog_title a.close:hover{ background-position: -40px 0;}
+.m_dialog_new .dialog_title h2{ display:none;}
+.m_dialog_new .dialog_title{ height:44px; padding-top:0;}
+.m_dialog_new .suc{ background-position: -232px 0; padding-left:81px; height:93px; margin-left:32px;}
+.m_dialog_new .suc h3{ margin-bottom:0; font-size:22px; font-weight:normal; color:#010101; text-align:left; line-height:38px;}
+.m_dialog_new .suc p{ font-size:14px; color:#010101; line-height:26px;}
+.m_dialog_new .m_dialog_bindMobile{ width:auto; margin-top:-20px; padding-bottom:20px;}
+.m_dialog_new .m_dialog_bindMobile .step3{padding: 20px 47px 0;}
+
+.m_dialog_new .m_dialog_bindBakMobile{ width:auto; margin-top:-20px; padding-bottom:20px;}
+.m_dialog_new .m_dialog_bindBakMobile .step2{padding: 20px 47px 0;}
+
+.m_dialog_new .contents{ border-top:1px solid #e4e5e6; padding-top:30px; overflow:hidden;zoom:1; padding-left:34px;}
+.m_dialog_new .contents p{ font-size:19px; color:#010101;}
+.m_dialog_new .contents .E_openNotice{ display:none;}
+.ewmCon{ overflow:hidden;zoom:1; padding-top:25px;}
+.ewmCon .sl{ float:left; width:200px; margin-right:23px;}
+.ewmCon .sl  span{ display:inline-block;}
+.ewmCon .sl .ipBtn{ background-position: 0 -43px; width:200px; height:50px; display:inline-block; margin-bottom:15px;}
+.ewmCon .sl .ipBtn:hover{background-position: 0 -104px;}
+.ewmCon .sl .azBtn{ background-position: 0 -166px; width:200px; height:50px; display:inline-block;}
+.ewmCon .sl .azBtn:hover{background-position: 0 -228px;}
+.ewmCon img{ border:1px solid #e1e1e1; width:118px; height:118px;}
