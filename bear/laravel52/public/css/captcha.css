@@ -1,0 +1,41 @@
+.data-form {
+padding-top: 10px;
+}
+.mod-form-s form {
+font-size: 12px;
+}
+.mod-form-s form label {
+float: left;
+display: inline;
+margin-right: 8px;
+width: 100px;
+text-align: right;
+font-weight: 400;
+height: 26px;
+line-height: 26px;
+color: #777;
+}
+.data-form form label {
+font-size: 14px;
+width: 88px;
+margin: 0;
+}
+input, button, textarea, select, optgroup, option {
+font-family: inherit;
+font-size: inherit;
+font-style: inherit;
+font-weight: inherit;
+}
+.mod-form-s form input {
+float: left;
+display: inline;
+margin: 0 8px 0 0;
+width: 240px;
+padding: 0 5px;
+height: 24px;
+line-height: 24px\9;
+border: 1px solid #A2A2A2;
+-webkit-border-radius: 3px;
+border-radius: 3px;
+background: url(../img/bgs_form_v3.png) repeat-x 0 0;
+}
