@@ -9,7 +9,7 @@ class IndexController extends Controller
 		//用户session
 		$session=new Session;
 		$user=$session->get('user');
-
+		//系统推荐
 		$data=DB::table('type')->where('parent_id','!=',0)->get();
 		$arr=[];
 		foreach ($data as $key => $val) {
@@ -29,7 +29,7 @@ class IndexController extends Controller
 				break;
 			}
 		}
-		return view('index/index',['res'=>$res,'user'=>$user]);
+		return view('index/index',['res'=>$res,'user'=>$user,]);
 	}
 	public function add()
 	{

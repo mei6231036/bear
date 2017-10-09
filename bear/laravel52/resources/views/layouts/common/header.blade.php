@@ -250,9 +250,15 @@
 
                                 </a>
 
-                                <p class="nick" id="J_huyaNavUserCardNick">...1</p>
+                                <p class="nick" id="J_huyaNavUserCardNick"><?php echo $user->nickname ?></p>
 
-                                <p class="user-sign" id="J_huyaNavUserCardSign">...2</p>
+                                <p class="user-sign" id="J_huyaNavUserCardSign">
+                                    <?php if($user->signature == '') { ?>
+                                    <a href="">点击编辑属于您的个性签名</a>
+                                    <?php } else { ?>
+                                    <a href=""><?php echo $user->signature  ?></a>
+                                    <?php } ?>
+                                </p>
 
                                 <div class="exp clearfix">
 

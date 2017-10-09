@@ -42,6 +42,7 @@ class LoginController extends Controller
 		if($request->isMethod('get')){
 	        $where['email']=$request->input('email');
 	        $data = DB::table('user')->where($where)->first();
+	        $info = DB::table('user_info')->select('*')->where('user_id',$data->user_id)->first();
 	        if($data->password!=md5($request->input('password')))
 	        {
 	        	echo 1;
@@ -49,7 +50,7 @@ class LoginController extends Controller
 	        	//登陆成功
 	        	// $request->session()->put('user'.$data->email,$data);
 	        	$session=new Session;
-				$session->set('user',$data);
+				$session->set('user',$info);
 	        }
         }
 	}
