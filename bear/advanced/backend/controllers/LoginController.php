@@ -13,10 +13,11 @@ class LoginController extends Controller
 	{
 		$a_name=Yii::$app->request->get('a_name');
 		$a_pwd=Yii::$app->request->get('a_pwd');
-		$callback=Yii::$app->request->get('callback')
-		$pwd=md5($a_pwd);
+		$callback=Yii::$app->request->get('callback');
+		// $pwd=md5($a_pwd);
 		$db=Yii::$app->db;
-		$res=$db->createCommand("select * from admin where a_name='$a_name' and a_pwd='$pwd'")->queryOne();
+		$res=$db->createCommand("select * from admin where a_name='$a_name' and a_pwd='$a_pwd'")->queryOne();
+		// echo "select * from admin where a_name='$a_name' and a_pwd='$a_pwd'";die;
 		if ($res) {
 			$this->session['user']=$res;
 			$msg['error']=1;
