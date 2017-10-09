@@ -1,0 +1,63 @@
+/*!
+ * WebSite    : http://live.yy.com
+ * Author     : Johnny
+ * Description: yy直播公用样式
+ * $Date$
+ * */
+
+
+/*---- box ----*/
+.box{position:relative;background:#FFF;border:1px solid #dddddd;padding:0 20px}
+.box .box-hd{position:relative;height:40px;line-height:40px;background:url(../images/bg-x.png) repeat-x 0 -189px;}
+.box .box-hd .icon{float:left;width:16px;height:16px;margin:7px 8px 0 0;background-color:#3c6;}
+.box .box-hd .title{float:left;margin-right:10px;font-size:14px;color:#333;background:url(../images/bg-x.png) repeat-x 0 -439px;}
+.box .box-hd .act{float:right;}
+.box .box-hd .act .links{float:right;overflow:hidden;display:inline;margin-right:-6px;height:16px;margin-top:9px;}
+.box .box-hd .act .links a,
+.box .box-hd .act .links a{float:left;display:inline;white-space:nowrap;line-height:16px;padding:0 5px 0 0;margin:-2px -1px 0 6px;border-right:1px solid #999;}
+.box .box-hd .act .more{float:right;margin-left:10px;}
+.box .box-hd .act .links span{color:#777;}
+.box .box-hd .act .more{float:right;margin-left:10px;color:#777}
+.box .box-hd .act .btn-close{float:right;}
+.box .box-bd{padding-top:20px;zoom:1;}
+
+.gird-s-l .box,
+.gird-s-r .box{padding:0 15px}
+/*---- 弹出框 ----*/
+.pop-box{position:absolute;zoom:1;padding:5px;width:406px;background-color:transparent;background-color:rgba(0,0,0,.2);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#33000000,endColorstr=#33000000);-webkit-border-radius:5px;border-radius:5px;}
+:root .pop-box{filter:none;}
+.pop-box .box{border-color:#aaa;}
+.pop-box .input-yy{text-align: center;font-size:14px;margin-bottom:10px;}
+.pop-box .input-yy input{border:1px solid #a2a2a2;padding:4px 10px;color:#333;height:20px;line-height:20px; -webkit-border-radius: 4px;border-radius:4px;}
+.pop-box .input-yy input:focus{outline:0;}
+
+.pop-box .mod-form .btns{text-align: center;padding:12px 0 40px;}
+.pop-box .mod-form .btns button{overflow:hidden;width:69px;height:31px;margin:0 10px;border:0 none;background:url(../images/base-sprite.png) no-repeat -300px -199px;}
+.pop-box .mod-form .btns .btn-submit,
+.pop-box .mod-form .btns .btn-confirm{background-position:-300px -160px}
+.pop-box .mod-form .btns .btn-cancel{background-position:-300px -199px}
+/*.pop-box .mod-form .btns span{display:none;}*/
+.pop-box .mod-form .warning{padding:0 20px 12px 30px;}
+.pop-box .mod-form .warning i{float:left;margin:5px 8px 0 0;width:40px;height:40px;background:url(../images/base-sprite.png) no-repeat -180px -90px;}
+.pop-box .mod-form .warning p{overflow:hidden;zoom:1;font-size:14px;line-height:24px;}
+.pop-box .mod-form .warning strong{margin:0 5px;color:#333;font-size:14px;}
+.pop-box .mod-form p{font-size:14px;}
+.pop-box .mod-form p i {display:inline-block;zoom:1;width:16px;height:16px;vertical-align:-4px;*vertical-align:-2px;margin-right:4px;background:url(../images/base-sprite.png) no-repeat -180px -210px;}
+.pop-box .mod-form .msg-error i{background-position:-210px -210px;}
+
+.pop-box .invite-form .p textarea {
+    border: 1px solid #A2A2A2;
+    color: #AAAAAA;
+    height: 46px;
+    padding: 3px 6px;
+    resize: none;
+    width: 350px;
+}
+
+.pop-tip{width:auto}
+.pop-tip .box-bd{padding:8px 0}
+.pop-tip .box-bd p{font-size:14px;zoom:1;}
+.pop-tip .box-bd p i{display:inline-block;zoom:1;width:16px;height:16px;vertical-align:-4px;*vertical-align:-2px;margin-right:4px;background:url(../images/base-sprite.png) no-repeat -180px -210px;}
+.msg-error{width:250px;background-position:-210px -210px;}
+.pop-tip div {}
+.pop-tip p{display:inline-block;zoom:1;*display:inline;}
