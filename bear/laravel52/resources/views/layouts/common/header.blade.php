@@ -240,11 +240,8 @@
 
                                 </a>
 
-<<<<<<< HEAD
-                                <p class="nick" id="J_huyaNavUserCardNick">...</p>
 
-                                <p class="user-sign" id="J_huyaNavUserCardSign">...</p>
-=======
+
                                 <p class="nick" id="J_huyaNavUserCardNick">{{$user->nickname}}</p>
 
                                 <p class="user-sign" id="J_huyaNavUserCardSign">
@@ -254,7 +251,7 @@
                                     <a href="">{{$user->signature}}</a>
                                     @endif
                                 </p>
->>>>>>> a739b7e487ab7b9cb0541a091cdc7ba714aa1e67
+
 
                                 <div class="exp clearfix">
 
