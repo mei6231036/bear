@@ -7,28 +7,53 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class MyuserController extends Controller
 {	
 	// 个人中心
-	function index()
+	public function index()
 	{
 		return  view('myuser.index');
 	}   
-	 	function myauth()
+	public	function myauth()
 	{
 
-		return  view('myuser.myauth',['cate'=>$cate]);
+
+		$cate=DB::table('type')->where('parent_id','=',0)->get();
+		$session=new Session;
+		$user=$session->get('user');
+		if ($user) {
+		$user_id=$user->user_id;
+		$res=DB::table('anchor')->where("user_id","=",$user_id)->first();
+		if (!empty($res->name)) {
+			$status=1;
+		}else{
+			$status=0;
+		}
+		}else{
+			$status=0;
+		}
+		if (!empty($res->number)) {
+		if ($res->status!=1) {
+			$rz=0;
+		}else{
+			$rz=1;
+		}
+	}else{
+			$rz=0;
+	}
+		return  view('myuser.myauth',['cate'=>$cate,'status'=>$status,'rz'=>$rz]);
+
 	}   
-	 	function myaccount()
+	 public	function myaccount()
 	{
 		return  view('myuser.myaccount');
 	}   
-	 	function mylevel()
+	 public	function mylevel()
 	{
 		return  view('myuser.mylevel');
 	}   
-	 	function mylist()
+	 public	function mylist()
 	{
 		return  view('myuser.mylist');
 	}   
-	 	function mysubscribe()
+	 public	function mysubscribe()
 	{
 		return  view('myuser.mysubscribe');
 	}   

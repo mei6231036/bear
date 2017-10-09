@@ -100,7 +100,7 @@
                     <h3 class="header">&nbsp;个人中心</h3>
                     <ul class="icon-filter">
                         <li>
-                            <a menu="home" href="myuser" class="selected">
+                            <a menu="home" href="myuser">
                                 <span class="icon icon-home"></span>
                                 <span class="title">
                                     我的信息
@@ -200,13 +200,8 @@
                 <span>高级实名认证</span>
               </div>
               <p id="warning"></p>
-                            <p id="anth_desc">高级实名认证正在维护中，请使用上述的推荐认证方式：下载虎牙助手app进行认证</p>
+              @if($rz==0)
               <ul id="anth_main" class="auth_type">
-                <li>
-                  <p class="p_1">简单认证</p>
-                  <p class="p_2"></p>
-                  <p class="p_3">只需提交姓名和身份证信息，可提高账号安全等级</p>
-                </li>
                 <li class="active">
                   <p class="p_1">高级认证</p>
                   <p class="p_2"></p>
@@ -214,11 +209,15 @@
                   <a href="<?=url('/yy')?>" target="_blank" class="go_real_auth">开始高级实名认证</a>
                 </li>
               </ul>
+              @else
+                <p class="finish_tips"><span></span>已完成高级实名认证</p>
+              @endif
                             <div class="h5_head">
                 <span>完善主播资料</span>
               </div>
                              <!-- <p class="real_auth_tips">（主播头像可到主播设置中修改，其他资料一经提交不得修改，请谨慎填写）</p> -->
-                <form action="" method="POST" enctype="multipart/form-data">  
+                @if($status==0)
+        <form action="/" method="POST" enctype="multipart/form-data">  
                <table cellpadding="0" cellspacing="0" border="0" class="info_set">
                 <tr>
                   <td class="td_1">主播昵称：</td>
@@ -271,7 +270,9 @@
                 </tr>
                </table>
                </form>
-
+                @else
+                <p class="finish_tips"><span></span>已完善主播资料</p>
+                @endif
 
               <p class="ques_head">常见问题解决<span><img src="../main/statics/img/ques_icon.png" /></span></p>
               <ul class="ques_wrap">

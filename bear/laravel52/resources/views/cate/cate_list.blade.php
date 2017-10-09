@@ -6,23 +6,29 @@
 <!--[if IE 9]>         <html class="ie9" lang="zh-cmn-Hans"> <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="zh-cmn-Hans"><!--<![endif]-->
 <head>
+<<<<<<< HEAD
     <style>div{overflow:auto;}</style>
 <meta charset="utf-8">
 <title>游戏直播_网络游戏直播_虎牙直播</title>
+=======
+    <meta charset="utf-8">
+<title>在线直播_全部游戏直播_网络游戏直播&nbsp;-&nbsp;虎牙直播</title>
+>>>>>>> ffb22cd02792e881636e699308e27d701e306e9e
 <meta name="renderer" content="webkit">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="Keywords" content="热门游戏直播,高清游戏直播,游戏直播,网络游戏直播,手游直播,单机游戏直播,lol直播,dota2直播,虎牙直播"/>
-<meta name="Description" content="虎牙为你提供高清游戏直播，包括LOL直播、dnf游戏直播、dota直播，24小时不间断直播更新，非一般游戏视觉与听觉体验尽在虎牙直播。"/>
+<meta name="Keywords" content="热门游戏直播,高清游戏直播平台,电竞赛事直播,单机游戏直播,lol直播,dnf直播,吃货直播,娱乐直播厅,美女直播厅,电视台节目,虎牙直播huya">
+<meta name="Description" content="虎牙直播为您提供高清、流畅的视频直播和各种游戏赛事的直播平台，除了英雄联盟lol直播、地下城与勇士dnf直播、穿越火线cf直播等热门游戏直播，更有美女直播厅、电视台节目、娱乐美女直播厅等24小时免费的在线直播内容。">
 
-<link rel='canonical' href='http://www.huya.com/g' />
-<link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/pages_modules_33264e9.css">
-<link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/auto_combine_82253_9a4c4e6.css">
+<link rel="canonical" href="http://www.huya.com/l">
+    <link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/pages_modules_33264e9.css">
+<link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/auto_combine_5ce4a_ae45c5d.css">
 <!--HEAD_END-->
-<script data-fixed="true">
-var APP_URL = "http://www.huya.com/";
-</script>
-</head>
+    <script src="//hm.baidu.com/hm.js?51700b6c722f5bb4cf39906a596ea41f"></script><script data-fixed="true">
+    var APP_URL = "http://www.huya.com/";
+    var GAME_HOMENAME = "allLive";
+    </script>
+<style id="respondStyle">.live-list .game-live-item {width:388px!important;}.live-list .video-info {height:218px!important;}</style><script charset="utf-8" type="text/javascript" async="" src="//a.msstatic.com/huya/main/js/header_search_tip_10ae642.js"></script></head>
 <body>
 <script data-fixed="true">var w=document.body.clientWidth;1480>w&&(document.body.className+=" w-1000");</script>
 <!-- S 通用头部 -->
@@ -86,6 +92,7 @@ var APP_URL = "http://www.huya.com/";
         <div id="sidebar-scroll" style="height: 605px; overflow: hidden; padding: 0px; width: 240px;" class="jspScrollable">
             
 
+<<<<<<< HEAD
             
             
         <div class="jspContainer" style="width: 240px; height: 605px;"><div class="jspPane" style="top: 0px; width: 232px;"><div class="sidebar-show-nav">
@@ -118,6 +125,29 @@ var APP_URL = "http://www.huya.com/";
                 <a target="_blank" class="sidebar-banner-link clickstat third-clickstat" id="sidebarBanner" eid="click/push/leftnaviad" eid_desc="点击/推荐/左侧导航推荐图" href="http://www.huya.com/s7" title="S7全球总决赛"><img src="//livewebbs2.msstatic.com/huya_1506067853_content.jpg" alt="S7全球总决赛" width="200" height="80"></a>
             </div></div><div class="jspVerticalBar" style="display: block;"><div class="jspTrack" style="height: 605px;"><div class="jspDrag" style="height: 400px; top: 0px;"></div></div></div></div></div>
         <div class="sidebar-tool">
+=======
+<!-- <div class="sidebar-recom">
+           @foreach($cate as $val)
+           <div class="m sidebar-show-line ">
+                    <a class="m-title clickstat" href="http://www.huya.com/g/100023" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1">
+                        <i class="m-title-type" style="background-image: url('//huyaimg.msstatic.com/cdnimage/sidebarNavGroup/phpz3aAZJ1488336152.png');"></i>
+                        <span class="m-title-span">{{$val->typename}}</span>
+                    </a>
+                    <div class="m-bd">
+                        <div class="recomend-list clearfix">
+                            @foreach($val->child as $v)  
+                            <a class="recomend-item clickstat" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1" href="" title="英雄联盟">{{$v->typename}}</a>
+                            @endforeach                            
+                            <a class="recomend-item clickstat" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1" href="http://www.huya.com/" title="全部">全部</a>            
+                        </div>
+                    </div>
+            </div>  
+            @endforeach                                                                  
+</div> -->
+
+<div class="jspVerticalBar" style="display: block;"><div class="jspTrack" style="height: 625px;"><div class="jspDrag" style="height: 428px; top: 0px;"></div></div></div>
+<div class="sidebar-tool">
+>>>>>>> ffb22cd02792e881636e699308e27d701e306e9e
             <a target="_blank" class="download clickstat" eid="click/navi/zuoce/xiazai" eid_desc="点击/导航/左侧导航/客户端下载" href="http://www.huya.com/download/" title="下载客户端"></a>
             <a target="_blank" class="toAnchor clickstat" eid="click/navi/zuoce/zhubo" eid_desc="点击/导航/左侧导航/我要做主播" href="http://www.huya.com//e/zhubo" title="我要直播"></a>
         </div>

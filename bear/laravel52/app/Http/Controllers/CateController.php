@@ -16,6 +16,7 @@ class CateController extends Controller
 					$cate[$v['parent_id']]['child'][]=$v;
 				}
 			}
+
 		return view('cate/cate_list',['cate'=>$cate,'data'=>$data]);
 	}
 
@@ -52,6 +53,11 @@ class CateController extends Controller
 				}
 			}
 		return view('cate/cate_list',['cate'=>$cate,'data'=>$da]);
+
+		}
+
+		// var_dump($cate);die;
+		return view('cate/cate_list',['cate'=>$cate]);
 	}
 }
 
