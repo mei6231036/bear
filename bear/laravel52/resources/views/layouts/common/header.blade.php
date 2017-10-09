@@ -191,7 +191,7 @@
                 </div>
 
                 <!-- 判断用户是否登录 -->
-                <?php if(!isset($user)) { ?>
+                @if(!isset($user)) 
                 <div class="hy-nav-right un-login" style="display:block">
 
                     <div class="hy-nav-title">
@@ -211,14 +211,14 @@
                     </div>
 
                 </div>
-            <?php } else { ?>
+                @else 
                 <div class="hy-nav-right nav-user success-login" style="display:block">
 
                     <a class="nav-user-title" href="http://i.huya.com/" target="_blank">
 
                         <img id="login-userAvatar" src="images/10001.jpg" alt="头像" />
 
-                        <span id="login-username"></span>
+                        <span id="login-username" title="{{$user->nickname}}">{{$user->nickname}}</span>
 
                         <i></i>
 
@@ -240,31 +240,45 @@
 
                                 </a>
 
+<<<<<<< HEAD
                                 <p class="nick" id="J_huyaNavUserCardNick">...</p>
 
                                 <p class="user-sign" id="J_huyaNavUserCardSign">...</p>
+=======
+                                <p class="nick" id="J_huyaNavUserCardNick">{{$user->nickname}}</p>
+
+                                <p class="user-sign" id="J_huyaNavUserCardSign">
+                                    @if($user->signature == '')
+                                    <a href="">点击编辑属于您的个性签名</a>
+                                    @else
+                                    <a href="">{{$user->signature}}</a>
+                                    @endif
+                                </p>
+>>>>>>> a739b7e487ab7b9cb0541a091cdc7ba714aa1e67
 
                                 <div class="exp clearfix">
 
                                     <div class="between">
 
-                                        <span class="from" id="J_huyaNavUserCardExpFrom">LV-</span>
+                                        <span class="from" id="J_huyaNavUserCardExpFrom">LV-{{$user->level}}</span>
 
                                         <div class="bar-cnt">
 
-                                            <p id="J_huyaNavUserCardBarInfo"></p>
+                                            <p id="J_huyaNavUserCardBarInfo">
+                                                亲，你还要{{200-$user->integral}}点经验才能升级呢
+                                            </p>
 
                                             <p class="bar">
 
-                                                <i id="J_huyaNavUserCardExpBar"><b class="J_huyaNavUserCardExpText"></b></i>
+                                                <i id="J_huyaNavUserCardExpBar" style="width: {{$user->integral/200*100}}% ;"><b class="J_huyaNavUserCardExpText"></b></i>
 
-                                                <span class="J_huyaNavUserCardExpText"></span>
+                                                <span class="J_huyaNavUserCardExpText">{{$user->integral}}/200</span>
 
                                             </p>
 
                                         </div>
 
-                                        <span class="to" id="J_huyaNavUserCardExpTo">LV-</span>
+                                        <span class="to" id="J_huyaNavUserCardExpTo">LV-{{$user->level+1}}</span>
 
                                     </div>
 
@@ -280,11 +294,11 @@
 
                                     <ul class="type">
 
-                                        <li><i class="gold-bean"></i><em id="J_huyaNavUserCardAssetsGb">...</em></li>
+                                        <li><i class="gold-bean"></i><em id="J_huyaNavUserCardAssetsGb">{{$user->jindou}}</em></li>
 
-                                        <li class="type-ticket"><i class="gold-ticket"></i><em id="J_huyaNavUserCardAssetsTk">...</em></li>
+                                        <li class="type-ticket"><i class="gold-ticket"></i><em id="J_huyaNavUserCardAssetsTk">{{$user->jin_quan}}</em></li>
 
-                                        <li><i class="silver-bean"></i><em id="J_huyaNavUserCardAssetsSb">...</em></li>
+                                        <li><i class="silver-bean"></i><em id="J_huyaNavUserCardAssetsSb">{{$user->yindou}}</em></li>
 
                                     </ul>
 
@@ -361,7 +375,7 @@
                     </div>
 
                 </div>
-                <?php } ?>
+                @endif
             </div>
 
             <div class="duya-header-tips">

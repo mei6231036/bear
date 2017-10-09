@@ -20,7 +20,6 @@ class LoginController extends Controller
 	        }else{
 	        	//入用户登录表
 	        	$data['password'] = md5($request->input('password'));
-		        $data['money']	  = '0';
 		        $data['addtime']  = time();
 		        $data['ip'] = ip2long($myip);
 		        $res=DB::table('user')->insert($data);
@@ -42,6 +41,7 @@ class LoginController extends Controller
 		if($request->isMethod('get')){
 	        $where['email']=$request->input('email');
 	        $data = DB::table('user')->where($where)->first();
+	        // $info = DB::table('user_info')->select('*')->where('user_id',$data->user_id)->first();
 	        if($data->password!=md5($request->input('password')))
 	        {
 	        	echo 1;

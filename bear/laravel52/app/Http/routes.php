@@ -16,6 +16,14 @@ Route::get('/', function () {
    
 });
 Route::get('/home',"home\HomeController@index");
+// 个人中心
+Route::get('/myuser',"MyuserController@index");
+Route::get('/myauth',"MyuserController@myauth");
+Route::get('/myaccount',"MyuserController@myaccount");
+Route::get('/mylevel',"MyuserController@mylevel");
+Route::get('/mylist',"MyuserController@mylist");
+Route::get('/mysubscribe',"MyuserController@mysubscribe");
+
 Route::get('/',"IndexController@index");
 Route::get('/add',"IndexController@add");
 Route::get('/cate',"CateController@show");
