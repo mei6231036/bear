@@ -191,7 +191,7 @@
                 </div>
 
                 <!-- 判断用户是否登录 -->
-                <?php if(!isset($user)) { ?>
+                @if(!isset($user)) 
                 <div class="hy-nav-right un-login" style="display:block">
 
                     <div class="hy-nav-title">
@@ -211,14 +211,14 @@
                     </div>
 
                 </div>
-            <?php } else { ?>
+                @else 
                 <div class="hy-nav-right nav-user success-login" style="display:block">
 
                     <a class="nav-user-title" href="http://i.huya.com/" target="_blank">
 
                         <img id="login-userAvatar" src="images/10001.jpg" alt="头像" />
 
-                        <span id="login-username"></span>
+                        <span id="login-username" title="{{$user->nickname}}">{{$user->nickname}}</span>
 
                         <i></i>
 
@@ -240,14 +240,14 @@
 
                                 </a>
 
-                                <p class="nick" id="J_huyaNavUserCardNick"><?php echo $user->nickname ?></p>
+                                <p class="nick" id="J_huyaNavUserCardNick">{{$user->nickname}}</p>
 
                                 <p class="user-sign" id="J_huyaNavUserCardSign">
-                                    <?php if($user->signature == '') { ?>
+                                    @if($user->signature == '')
                                     <a href="">点击编辑属于您的个性签名</a>
-                                    <?php } else { ?>
-                                    <a href=""><?php echo $user->signature  ?></a>
-                                    <?php } ?>
+                                    @else
+                                    <a href="">{{$user->signature}}</a>
+                                    @endif
                                 </p>
 
                                 <div class="exp clearfix">
@@ -262,7 +262,7 @@
 
                                             <p class="bar">
 
-                                                <i id="J_huyaNavUserCardExpBar"><b class="J_huyaNavUserCardExpText"></b></i>
+                                                <i id="J_huyaNavUserCardExpBar"><b class="J_huyaNavUserCardExpText">1111</b></i>
 
                                                 <span class="J_huyaNavUserCardExpText"></span>
 
@@ -367,7 +367,7 @@
                     </div>
 
                 </div>
-                <?php } ?>
+                @endif
             </div>
 
             <div class="duya-header-tips">
