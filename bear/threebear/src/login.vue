@@ -100,6 +100,9 @@
 	      if(response.body.error==0)
 	      {
 			this.$router.push('/')
+	      }else{
+	      	alert('账户名或密码错误')
+			this.$router.push('/login')
 	      }
 
 	 
@@ -122,6 +125,9 @@
 	
 </script>
 
-<style>
-	
+<style scoped>
+	#navbar,#sidebar
+	{
+		display: none;
+	}
 </style>

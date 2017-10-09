@@ -68,6 +68,14 @@ class TypeController extends Controller
 		}
 		return $arr['callback'].'('.json_encode($data).')';
 	}
+	//修改 首先查询单条
+	public function actionUpone()
+	{
+		$arr = Yii::$app->request->get();
+		$db  = Yii::$app->db;
+		$data['arr']= $db->createCommand("select * from type where id = {$arr['id']}")->queryOne();
+		return $arr['callback'].'('.json_encode($data).')';
+	}
 	/*修改类型
 
 	 id  	   类型主键id
@@ -82,6 +90,10 @@ class TypeController extends Controller
 		{
 			$data['code'] = '200';
 			$data['message'] = 'type update is ok';
+		}else
+		{
+			$data['code'] = '201';
+			$data['message'] = 'type update is fail';
 		}
 		return $arr['callback'].'('.json_encode($data).')';
 	}

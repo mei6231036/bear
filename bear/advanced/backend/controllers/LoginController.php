@@ -12,6 +12,7 @@ class LoginController extends Controller
 	{
 		// $this->session=Yii::$app->session;
 	}
+	
 	//登录接口
 	public function actionIndex()
 	{
