@@ -35,7 +35,7 @@
 
 													<label class="block clearfix">
 														<span class="block input-icon input-icon-right">
-															<input type="password" class="form-control" placeholder="密码" v-model="admin.pwd" />
+															<input type="password" class="form-control" placeholder="密码" v-model="admin.a_pwd" />
 															<i class="icon-lock"></i>
 														</span>
 													</label>
@@ -97,11 +97,12 @@
 	        //这里是处理正确的回调
 
 	        console.log(response.bodyText)
-	      if(response.body.error==0)
+	      if(response.body.error==1)
 	      {
+	      	alert('登陆成功')
 			this.$router.push('/')
 	      }else{
-	      	alert('账户名或密码错误')
+	      	alert('账户或密码错误')
 			this.$router.push('/login')
 	      }
 
