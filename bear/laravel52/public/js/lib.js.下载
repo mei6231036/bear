@@ -1,0 +1,541 @@
+var LIB = {
+	locked: false,
+	lock: function() {
+		LIB.locked = true;
+	},
+	unlock: function() {
+		LIB.locked = false;
+	},
+	log: function(msg) {
+		console && console.log && console.log(msg);
+	},
+	getType: function(obj) {
+		var type;
+		return ((type = typeof(obj)) == "object" ? obj == null && "null" || Object.prototype.toString.call(obj).slice(8, -1) : type).toLowerCase();
+	},
+	errLog: function(req) {
+		switch(parseInt(req.status, 10)) {
+			case 503:
+				return "您的IP访问次数过多，请稍后再试。";
+			default:
+				return "网络连接失败，请稍候再试[" + req.status + "]"
+		}
+	},
+	stopEvent: function(evt) {
+		if (evt.preventDefault) {
+			evt.preventDefault();
+			evt.stopPropagation();
+		} else {
+			evt.cancelBubble = true;
+			evt.returnValue = false;
+		}
+	},
+	encodeHTML: function(str) {
+		if (str == null) {
+			return "";
+		}
+
+		str = new String(str);
+
+		str = str.replace(/</g, '&lt;');
+		str = str.replace(/>/g, '&gt;');
+		str = str.replace(/"/g, '&quot;');
+		str = str.replace(/'/g, '&#39;');
+		str = str.replace(/&/g, '&amp;');
+
+		return str;
+	},
+	encodePattern: function(str) {
+		if (str == null) {
+			return "";
+		}
+
+		var pattern = /([\$\(\)\*\+\.\[\]\?\\\^\{\}\}])/g;
+		return str.replace(pattern, "\\$1");
+	},
+	passwordLevel: function(pwd) {
+		var ls = 0;
+
+		if (/^(.)\1+$/.test(pwd)) {
+			// 如果是同一个字符组成一字符串直接返回弱密码
+			return 0;
+		}
+
+		if(pwd.length < 9 && /^[0-9]+$/.test(pwd)) {
+			return 0;
+		}
+		
+		if (pwd.match(/[a-z]/)) {
+			ls++;
+		}
+
+		if (pwd.match(/[A-Z]/)) {
+			ls++;
+		}
+
+		if (pwd.match(/[0-9]/)) {
+			ls++;
+		}
+
+		if (pwd.match(/.[^a-zA-Z0-9]/)) {
+			ls++;
+		}
+
+		var lvl = 0;
+
+		if (pwd.length < 8) {
+			lvl = 0;
+		} else if (pwd.length >= 8 && ls <= 2) {
+			lvl = 1;
+		} else if (pwd.length < 14 && ls > 2) {
+			lvl = 2;
+		} else if (pwd.length >=14 && ls > 2) {
+			lvl = 3;
+		}
+
+		return lvl;
+	},
+	mailToUrl: function(email) {
+		var hash = {
+			'qq.com': 'http://mail.qq.com',
+		    'gmail.com': 'https://mail.google.com/',
+		    'sina.com': 'http://mail.sina.com.cn',
+		    '163.com': 'http://mail.163.com',
+		    '126.com': 'http://mail.126.com',
+		    'yeah.net': 'http://www.yeah.net/',
+		    'sohu.com': 'http://mail.sohu.com/',
+		    'tom.com': 'http://mail.tom.com/',
+		    'sogou.com': 'http://mail.sogou.com/',
+		    '139.com': 'http://mail.10086.cn/',
+		    'hotmail.com': 'http://www.hotmail.com',
+		    'live.com': 'http://login.live.com/',
+		    'live.cn': 'http://login.live.cn/',
+		    'live.com.cn': 'http://login.live.com.cn',
+		    '189.com': 'http://webmail16.189.cn/webmail/',
+		    'yahoo.com.cn': 'http://mail.cn.yahoo.com/',
+		    'yahoo.cn': 'http://mail.cn.yahoo.com/',
+		    'eyou.com': 'http://www.eyou.com/',
+		    '21cn.com': 'http://mail.21cn.com/',
+		    '188.com': 'http://www.188.com/',
+		    'foxmail.coom': 'http://www.foxmail.com'
+		}
+
+		var host = email.split("@")[1].toLowerCase();
+
+		if (host in hash) {
+			return hash[host];
+		} else {
+			return 'http://mail.' + host;
+		}
+	},
+	shadow: function(match) {
+		if (match.length == 1) {
+		    match = "*";
+		} else if (match.length < 5) {
+		    match[1] = match[match.length - 2] = "*";
+		    match = match.join("");
+		} else {
+		    match = match[0] + match[1] + new Array(match.length - 3).join("*") + match[match.length - 2] + match[match.length - 1];
+		}
+
+		return match;
+	},
+	shadowEmail: function(email) {
+		var match = email.match(/^.+(?:@)/)[0];
+		match = match.substr(0, match.length - 1).split("");
+		match = LIB.shadow(match);
+		match += email.substr(email.indexOf('@'));
+		return match;
+	},
+	bindDefaultText: function(el, defaultText) {
+		el.bind("focus", function() {
+			var el = $(this);
+			var val = $.trim(el.val());
+
+			if (val == defaultText) {
+				el.val("");
+				el.removeClass("default_text");
+			}
+		});
+
+		el.bind("blur", function() {
+			var el = $(this);
+			var val = $.trim(el.val());
+
+			if (val.length == 0 || val == defaultText) {
+				el.val(defaultText);
+				el.addClass("default_text");
+			}
+		});
+	}
+}
+
+LIB.components = {};
+
+LIB.components.getUniqueId = (function() {
+	var uniqueID = 0;
+	var prefix = "LIB_COMPONENTS_";
+
+	return function() {
+		return prefix + (uniqueID++);
+	}
+})();
+
+LIB.components.getZIndex = (function() {
+	var zIndex = 1000;
+
+	return function() {
+		return zIndex++;
+	}
+})();
+
+LIB.components.base = (function() {
+	return function() {
+		var that = {};
+		var events = {};
+
+		that.bind = function(evtType, handler) {
+			if (typeof(handler) != "function") {
+				return;
+			}
+
+			if (!(evtType in events)) {
+				events[evtType] = [];
+			}
+
+			$.each(events[evtType], function(index, item) {
+				if (item === handler) {
+					return;
+				}
+			});
+
+			events[evtType].push(handler);
+		}
+
+		that.unbind = function(evtType, handler) {
+			if (!(evtType in events)) {
+				return;
+			}
+
+			$.each(events[evtType], function(index, item) {
+				if (item === handler) {
+					events[evtType] = events[evtType].splice(index, 1);
+					return;
+				}
+			});
+		}
+
+		that.fire = function(evtType, data) {
+			if (!(evtType in events)) {
+				return;
+			}
+
+			$.each(events[evtType], function(index, item) {
+				try {
+					var evt = {
+						type: evtType,
+						target: that,
+						data: data
+					}
+
+					item(evt);
+				} catch(ex) {
+					LIB.log("LIB.components.base:" + ex.message);
+				}
+			});
+		}
+
+		return that;
+	}
+})();
+
+LIB.dialog = {};
+
+LIB.dialog.hasDialog = null;
+
+LIB.dialog.base = (function() {
+	var hasDialog = false;
+	
+	LIB.dialog.hasDialog = function() {
+		return hasDialog;
+	}
+
+	return function() {
+		var that = LIB.components.base();
+		var dialog = $('<div class="m_dialog"></div>');
+		var midBinded = false;
+		dialog.css("z-index", LIB.components.getZIndex());
+		dialog.hide();
+		dialog.appendTo(document.body);
+		
+		var mask = LIB.dialog.mask(dialog);
+		// <h2>主标题<span>副标题</span></h2>
+		dialog.html('<div class="dialog_title">\
+						<h2></h2>\
+						<a href="javascript:void(0);" onclick="return false;" class="close"></a>\
+					</div>\
+					<div class="dialog_inner"></div>');
+
+		var dialog_inner = dialog.find(".dialog_inner");
+		var title = dialog.find(".dialog_title h2");
+		var inner = null;
+
+		that.setInner = function(node) {
+			if ((typeof node) == "string") {
+				dialog_inner.html(node);
+			} else {
+				dialog_inner.html("");
+				node.appendTo(dialog_inner);
+			}
+
+			inner = node;
+		}
+
+		that.getInner = function() {
+			return inner;
+		}
+
+		that.getId = function() {
+			return dialogId;
+		}
+
+		that.setTitle = function(_title) {
+			title.html(_title);
+		}
+
+		that.show = function() {
+			if (hasDialog) {
+				LIB.log("LIB.dialog.base: 已经存在打开的浮层");
+				return;
+			}
+
+			that.fire("beforeshow");
+			dialog.show();
+			that.setMiddle();
+			hasDialog = true;
+			mask.show();
+			that.fire("show");
+		}
+
+		that.hide = function(hideType, extra) {
+			$(window).unbind("resize", maskResize);
+			midBinded = false;
+			hideType = hideType == null ? "hide" : hideType;
+			that.fire("beforehide");
+			dialog.hide();
+			hasDialog = false;
+			mask.hide();
+			that.fire("hide", {
+				type: hideType,
+				extra: extra
+			});
+		}
+
+		var maskResize = function() {
+			that.setMiddle();
+			mask.hide();
+			mask.show();
+		}
+
+		that.setMiddle = function() {
+			var left = ($(window).width() - dialog.width()) / 2 + $(window).scrollLeft();
+			var top = ($(window).height() - dialog.height()) / 2 + $(window).scrollTop() - 30;
+			left = left < 10 ? 10 : left;
+			top = top < 10 ? 10 : top;
+
+			dialog.css("left", left);
+			dialog.css("top", top);
+
+			if (!midBinded) {
+				$(window).bind("resize", maskResize);
+
+				midBinded = true;
+			}
+		}
+
+		dialog.find("a.close").bind("click", function() {
+			that.hide("close");
+		});
+
+		return that;
+	}
+})();
+
+LIB.dialog.mask = function(node) {
+	var that = {};
+	var layer = null;
+	var ua = navigator.userAgent.toLowerCase();
+	var ie6 = /msie 6/.test(ua);
+	node = $(node);
+
+	var createLayer = function() {
+		if (layer != null) {
+			return layer;
+		}
+
+		layer = $('<div></div>');
+
+		return layer;
+	}
+
+	that.show = function() {
+		createLayer();
+		
+		layer.appendTo(document.body);
+
+		if (ie6) {
+			layer.css("position", "absolute");
+			layer.css("width", $(document).width());
+			layer.css("height", $(document).height());
+		} else {
+			layer.css("position", "fixed");
+			layer.css("width", $(window).width());
+			layer.css("height", $(window).height());
+		}
+
+		layer.css("left", 0);
+		layer.css("top", 0);
+		layer.css("opacity", 0.3);
+		layer.css("z-index", node.css("z-index") - 1);
+		layer.css("background-color", "#000000");
+	}
+
+	that.hide = function() {
+		if (layer) {
+		layer.remove();
+	}
+	}
+
+	return that;
+}
+
+LIB.dialog.alert = function(contents) {
+	var that = LIB.dialog.base();
+	var sTextCenter = true;
+	var node = $('<div class="m_dialog_alert"></div>');
+	node.html('<div class="opra"><a href="javascript:void(0);" onclick="return false;" class="btn_blue_v3 opra_btn" el="btn_OK"><span>确 定</span></a></div>');	
+	that.setInner(node);
+	that.setTitle("警告");
+
+	// 支持字符串或者数组
+	that.setContent = function(contents) {
+		var html = [];
+		contents = typeof(contents) == "string" ? [contents] : contents;
+		
+		$.each(contents, function(index, item) {
+			html.push('<div class="s_text">' + item + '</div>');
+		});
+
+		node.find(".s_text").remove();
+		$(html.join("")).insertBefore(node.find(".opra"));
+		that.setTextCenter(sTextCenter);
+	}
+
+	that.setBText = function(text) {
+		var bText = $("<div class='b_text'></div>");
+		node.find(".b_text").remove();
+
+		if (node.find(".s_text:eq(0)").length) {
+			bText.insertBefore(node.find(".s_text:eq(0)"));
+		} else {
+			bText.insertBefore(node.find(".opra"));
+		}
+
+		bText.html(text);
+	}
+
+	that.setTextCenter = function(val) {
+		sTextCenter = val ? true : false;
+
+		if (sTextCenter) {
+			node.find(".s_text").addClass("s_text_center");
+		} else {
+			node.find(".s_text").removeClass("s_text_center");
+		}
+	}
+
+	that.setOKText = function(text) {
+		node.find("a[el=btn_OK] span").html(LIB.encodeHTML(text));
+	}
+
+	if (contents != null) {
+		that.setContent(contents);
+	}
+
+	node.find("div.opra a[el=btn_OK]").click(function() {
+		that.hide("ok");
+	});
+
+	return that;
+}
+
+LIB.dialog.confirm = function(contents) {
+	var that = LIB.dialog.base();
+	var sTextCenter = true;
+	var node = $('<div class="m_dialog_alert m_dialog_confirm"></div>');
+	node.html('<div class="opra">\
+			<a href="javascript:void(0);" onclick="return false;" class="btn_blue_v3 E_OK" el="btn_OK"><span>确 定</span></a>\
+			<a href="javascript:void(0);" onclick="return false;" class="btn_blue_v3" el="btn_cancel"><span>取 消</span></a>\
+		</div>');	
+	that.setInner(node);
+	that.setTitle("确认");
+
+	// 支持字符串或者数组
+	that.setContent = function(contents) {
+		var html = [];
+		contents = typeof(contents) == "string" ? [contents] : contents;
+		
+		$.each(contents, function(index, item) {
+			html.push('<div class="s_text">' + item + '</div>');
+		});
+
+		node.find(".s_text").remove();
+		$(html.join("")).insertBefore(node.find(".opra"));
+		that.setTextCenter(sTextCenter);
+	}
+
+	that.setBText = function(text) {
+		var bText = $("<div class='b_text'></div>");
+		node.find(".b_text").remove();
+
+		if (node.find(".s_text:eq(0)").length) {
+			bText.insertBefore(node.find(".s_text:eq(0)"));
+		} else {
+			bText.insertBefore(node.find(".opra"));
+		}
+
+		bText.html(text);
+	}
+
+	that.setTextCenter = function(val) {
+		sTextCenter = val ? true : false;
+
+		if (sTextCenter) {
+			node.find(".s_text").addClass("s_text_center");
+		} else {
+			node.find(".s_text").removeClass("s_text_center");
+		}
+	}
+
+	that.setOKText = function(text) {
+		node.find("a[el=btn_OK] span").html(LIB.encodeHTML(text));
+	}
+
+	that.setCancelText = function(text) {
+		node.find("a[el=btn_cancel] span").html(LIB.encodeHTML(text));
+	}
+
+	if (contents != null) {
+		that.setContent(contents);
+	}
+
+	node.find("div.opra a[el=btn_OK]").click(function() {
+		that.hide("ok");
+	});
+
+	node.find("div.opra a[el=btn_cancel]").click(function() {
+		that.hide("cancel");
+	});
+
+	return that;
+}

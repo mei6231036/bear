@@ -240,9 +240,9 @@
 
                                 </a>
 
-                                <p class="nick" id="J_huyaNavUserCardNick">...1</p>
+                                <p class="nick" id="J_huyaNavUserCardNick">...</p>
 
-                                <p class="user-sign" id="J_huyaNavUserCardSign">...2</p>
+                                <p class="user-sign" id="J_huyaNavUserCardSign">...</p>
 
                                 <div class="exp clearfix">
 
