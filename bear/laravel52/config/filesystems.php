@@ -63,10 +63,6 @@ return [
             // 文件将上传到public/uploads目录 如果需要浏览器直接访问 请设置成这个
             //'root' => public_path('uploads'),
         ],
-<<<<<<< HEAD
-=======
-        
->>>>>>> 9b8a7411f8569d93e67fbf2ad13761b8bc4c18f6
         's3' => [
             'driver' => 's3',
             'key' => 'your-key',
