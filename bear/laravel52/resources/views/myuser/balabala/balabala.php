@@ -1,13 +1,3 @@
-<?php 
-use Symfony\Component\HttpFoundation\Session\Session;
-    //用户session
-        $session=new Session;
-        $user=$session->get('user');
-        if($user)
-        {
-            $user = DB::table('user_info')->select('*')->where('user_id',$user->user_id)->first();
-        }
- ?>
 <!DOCTYPE html>
 <html><head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -174,13 +164,11 @@ use Symfony\Component\HttpFoundation\Session\Session;
         <div class="main-col">
             <div class="scroll-content">
                 <div class="mod mod-user-center">
-                    <img style="width:120px;height:120px;" class="user_icon" src="{{$user->heading}}" alt="头像">
+                    <img style="width:120px;height:120px;" class="user_icon" src="myuser_files/9c01cc867d44d2ec227888356019c2_180_135.jpg" alt="头像">
 
                     <img class="img_hover" src="myuser_files/header_hover.png" alt="上传图像">
                                         <form id="img_submit" enctype="multipart/form-data" method="post" action="http://i.huya.com/index.php?m=Home&amp;do=ajaxUlogo">
-                        <div id="fileImg" class="uploadify" style="height: 120px; width: 120px;">
-                        <object id="SWFUpload_0" type="application/x-shockwave-flash" data="myuser_files/uploadify.swf" class="swfupload" style="position: absolute; z-index: 1;" width="120" height="120">
-                        <param name="wmode" value="transparent"><param name="movie" value="base/uploadify/uploadify.swf?preventswfcaching=1507519812755"><param name="quality" value="high"><param name="menu" value="false"><param name="allowScriptAccess" value="always"><param name="flashvars" value="movieName=SWFUpload_0&amp;uploadURL=%2Findex.php%3Fm%3DCaptcha%26do%3DsaveImg&amp;useQueryString=false&amp;requeueOnError=false&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=&amp;filePostName=avatar&amp;fileTypes=*.gif%3B%20*.jpg%3B%20*.png%3B*.jpeg&amp;fileTypesDescription=Image%20Files&amp;fileSizeLimit=1MB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2F&amp;buttonWidth=120&amp;buttonHeight=120&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2"></object><div id="fileImg-button" class="uploadify-button " style="height: 120px; line-height: 120px; width: 120px;"><span class="uploadify-button-text">上传图片</span></div></div><div id="fileImg-queue" class="uploadify-queue"></div>
+                        <div id="fileImg" class="uploadify" style="height: 120px; width: 120px;"><object id="SWFUpload_0" type="application/x-shockwave-flash" data="myuser_files/uploadify.swf" class="swfupload" style="position: absolute; z-index: 1;" width="120" height="120"><param name="wmode" value="transparent"><param name="movie" value="base/uploadify/uploadify.swf?preventswfcaching=1507519812755"><param name="quality" value="high"><param name="menu" value="false"><param name="allowScriptAccess" value="always"><param name="flashvars" value="movieName=SWFUpload_0&amp;uploadURL=%2Findex.php%3Fm%3DCaptcha%26do%3DsaveImg&amp;useQueryString=false&amp;requeueOnError=false&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=&amp;filePostName=avatar&amp;fileTypes=*.gif%3B%20*.jpg%3B%20*.png%3B*.jpeg&amp;fileTypesDescription=Image%20Files&amp;fileSizeLimit=1MB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2F&amp;buttonWidth=120&amp;buttonHeight=120&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2"></object><div id="fileImg-button" class="uploadify-button " style="height: 120px; line-height: 120px; width: 120px;"><span class="uploadify-button-text">上传图片</span></div></div><div id="fileImg-queue" class="uploadify-queue"></div>
                         <input name="uid" value="1842036920" type="hidden">
                         <input name="w" id="img_width" value="" type="hidden">
                         <input name="h" id="img_height" value="" type="hidden">
@@ -190,7 +178,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
                         <input name="y2" id="y2" value="" type="hidden">
                     </form>
                     <div class="user_info">
-                        <h2 style="font-size: 25px;" class="uesr_n">{{$user->nickname}}</h2>
+                        <h2 style="font-size: 25px;" class="uesr_n">葛家小阿淼</h2>
                                                     <span class="user_sex user_sex-female"></span>
                                                 
                         <!-- <p class="yy_num"><span>YY:</span><span id="YY">2094659816</span></p> -->
@@ -201,32 +189,26 @@ use Symfony\Component\HttpFoundation\Session\Session;
                             <a href="javascript:void(0);" class="btn sure_change">确定</a>
                             <a href="javascript:void(0);" class="btn quit_change">取消</a>
                         </div>
-                        <a id="edit_nick" href="myren" class="change_n clickstat" eid="click/grzx/myinfo/edit" eid_desc="点击/个人中心/我的信息/编辑">编辑</a>
+                        <a id="edit_nick" href="http://i.huya.com/?m=UserInfo" class="change_n clickstat" eid="click/grzx/myinfo/edit" eid_desc="点击/个人中心/我的信息/编辑">编辑</a>
                         <a href="javascript:void(0);" class="change_w"></a>
                                                                         <p class="user_msg">
                             <span class="user_age">
-                                {{$user->age}}岁</span>
+                                22岁</span>
                             <span class="user_add">
-                                {{$user->shi}}                          </span>
-                            <span class="user_ps">
-                                @if($user->signature == '')
-                                    你还没有个性签名
-                                    @else
-                                    {{$user->signature}}
-                                    @endif
-                            </span>
+                                北京                            </span>
+                            <span class="user_ps">你还没编辑个性签名。</span>
                         </p>
                         <div class="detail table-badge" id="grow_level">
-                            <span>lv{{$user->level}}</span>
+                            <span>LV1</span>
                             <span class="contact">
-                                <span class="number">{{$user->integral}}/200</span>
-                                <span class="part" style="width:{{$user->integral/200*100}}%;"></span>
+                                <span class="number">55/200</span>
+                                <span class="part" style="width:27.5%;"></span>
                                 <span class="grow_msg" style="top: -32px; left: 0px; display: none;">
-                                                                        <span class="grow_msg_span">今日获得<span class="num">0</span>点经验值，升级还需<span class="num">{{200-$user->integral}}</span>点</span>
+                                                                        <span class="grow_msg_span">今日获得<span class="num">0</span>点经验值，升级还需<span class="num">145</span>点</span>
                                                                         <i class="up_arrows"></i>
                                 </span>
                             </span>
-                            <span>LV{{$user->level+1}}</span>
+                            <span>LV2</span>
                             <a class="question" href="http://i.huya.com/?m=UserLevel">查看等级成长&gt;</a>
                         </div>
                         <ul id="my_estate">
@@ -235,10 +217,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
                                         <i class="icon icon-gold"></i>
                                     </span>
                                     <span class="tool-info">
-                                        <i class="num" style="min-width:28px;">{{$user->jindou}}</i>
+                                        <i class="num" style="min-width:28px;">0</i>
                                                                                     <span class="tool_msg hidden">
                                                 <i class="up_arrows"></i>
-                                                <span class="tool_msg_span">金豆：{{$user->jindou}}</span>
+                                                <span class="tool_msg_span">金豆：0</span>
                                             </span>
                                                                                 <i class="line"></i>
                                     </span>
@@ -248,10 +230,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
                                         <i class="icon icon-coupon"></i>
                                     </span>
                                     <span class="tool-info">
-                                        <i class="num" style="min-width:28px;">{{$user->jin_quan}}</i>
+                                        <i class="num" style="min-width:28px;">0</i>
                                                                                     <span class="tool_msg hidden">
                                                 <i class="up_arrows"></i>
-                                                <span class="tool_msg_span">金豆券：{{$user->jin_quan}}</span>
+                                                <span class="tool_msg_span">金豆券：0</span>
                                             </span>
                                                                                 <i class="line"></i>
                                     </span>
@@ -261,10 +243,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
                                         <i class="icon icon-silver"></i>
                                     </span>
                                     <span class="tool-info">
-                                        <i class="num" style="min-width:28px;">{{$user->yindou}}</i>
+                                        <i class="num" style="min-width:28px;">0</i>
                                                                                     <span class="tool_msg hidden">
                                                 <i class="up_arrows"></i>
-                                                <span class="tool_msg_span">银豆：{{$user->yindou}}</span>
+                                                <span class="tool_msg_span">银豆：0</span>
                                             </span>
                                                                                 <i class="line"></i>
                                     </span>
@@ -287,7 +269,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
             <div class="mod mod-basic" id="account_num">
                 <div class="mod-hd">
                     <h4>账号管理</h4>
-                    <em></em>
+                    <em>（YY:2094659816）</em>
                     <!-- <span class="line line-income"></span> -->
                 </div>
                 <!-- 手机未认证 -->

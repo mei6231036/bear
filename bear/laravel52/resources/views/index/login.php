@@ -84,13 +84,13 @@ var youdao_conv_id = 271546;
     			remember = 0;
     		}
     		var ret = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/;//邮箱正则
-			if(! ret.test(email)){
-				$('#ar').html('邮箱格式错误');
-				$('#ar').attr('style','display:true;')
-				return false;
-			}else{
-				$('#ar').attr('style','display:none;')
-			}
+			// if(! ret.test(email)){
+			// 	$('#ar').html('邮箱格式错误');
+			// 	$('#ar').attr('style','display:true;')
+			// 	return false;
+			// }else{
+			// 	$('#ar').attr('style','display:none;')
+			// }
 			if(pwd =='')
 			{
 				$('#br').html('密码不能为空');
@@ -112,7 +112,7 @@ var youdao_conv_id = 271546;
 					return false;
 			     }else{
 			     	alert('快去看直播吧');
-			     	location.href = "/";//location.href实现客户端页面的跳转 
+			     	location.href = "<?=url('/')?>";//location.href实现客户端页面的跳转 
 			     }
 			   }
 			});

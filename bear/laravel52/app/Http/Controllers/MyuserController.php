@@ -15,6 +15,7 @@ class MyuserController extends Controller
 	}   
 	public	function myauth(Request $request)
 	{
+<<<<<<< HEAD
 		if ($request->isMethod('post')) {
 			$arr['name']=$request->input('name');
 			$arr['type_id']=$request->type_id;
@@ -47,32 +48,38 @@ class MyuserController extends Controller
 }  
 
 		}else{
+=======
+		
+>>>>>>> 9b8a7411f8569d93e67fbf2ad13761b8bc4c18f6
 		$cate=DB::table('type')->where('parent_id','=',0)->get();
 		$session=new Session;
 		$user=$session->get('user');
 		if ($user) {
-		$user_id=$user->user_id;
-		$res=DB::table('anchor')->where("user_id","=",$user_id)->first();
-		if (!empty($res->name)) {
-			$status=1;
-		}else{
-			$status=0;
-		}
+			$user_id=$user->user_id;
+			$res=DB::table('anchor')->where("user_id","=",$user_id)->first();
+			if (!empty($res->name)) {
+				$status=1;
+			}else{
+				$status=0;
+			}
 		}else{
 			$status=0;
 		}
 		if (!empty($res->number)) {
-		if ($res->status!=1) {
-			$rz=0;
+			if ($res->status!=1) {
+				$rz=0;
+			}else{
+				$rz=1;
+			}
 		}else{
-			$rz=1;
+				$rz=0;
 		}
-	}else{
-			$rz=0;
-	}
 		return  view('myuser.myauth',['cate'=>$cate,'status'=>$status,'rz'=>$rz]);
 
+<<<<<<< HEAD
 		}
+=======
+>>>>>>> 9b8a7411f8569d93e67fbf2ad13761b8bc4c18f6
 	}   
 	 public	function myaccount()
 	{
@@ -89,6 +96,50 @@ class MyuserController extends Controller
 	 public	function mysubscribe()
 	{
 		return  view('myuser.mysubscribe');
-	}   
+	}  
+	public	function myren()
+	{
+		return  view('myuser.myren');
+	}    
+	//修改资料
+	public	function myren_do(Request $request)
+	{
+		if ($request->isMethod('post')) {
+			$id = $request->input('user_id');//id
+			$arr = $request->all();
+			$arr['age'] = 2017-$arr['sr_year']; 
+			unset($arr['_token']);
+			
+			//文件
+			$file = $request->file('heading'); 
+
+			if($file -> isValid()){  
+			    //检验一下上传的文件是否有效.  
+			    // 获取文件相关信息
+	            $originalName = $file->getClientOriginalName(); // 文件原名
+	            $ext = $file->getClientOriginalExtension();     // 扩展名
+	            $realPath = $file->getRealPath();   //临时文件的绝对路径
+	            $type = $file->getClientMimeType();     // image/jpeg
+	            // 上传文件
+	            $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext; 
+	            // 使用我们新建的uploads本地存储空间（目录）
+	            $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+	            if($bool){
+	            	$arr['heading']='uploads/'.$filename;
+	            }
+        	}
+			$re = DB::table('user_info')
+			      ->where('user_id','=',$id)
+			      ->update($arr);
+			if($re)
+			{
+				return  view('myuser.index');
+			}
+		}
+
+		
+
+		
+	}    
 	 
 }
