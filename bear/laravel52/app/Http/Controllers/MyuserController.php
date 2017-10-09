@@ -13,7 +13,15 @@ class MyuserController extends Controller
 	}   
 	 	function myauth()
 	{
-
+		$cate=DB::table('type')->where('parent_id','=',0)->get();
+		$data=DB::table('type')->get();
+		foreach ($cate as $key => $val) {
+			foreach ($data as $k => $v) {
+				if ($val->id==$v->parent_id) {
+					$cate[$key]->child[]=$v;
+				}
+			}
+		}
 		return  view('myuser.myauth',['cate'=>$cate]);
 	}   
 	 	function myaccount()
