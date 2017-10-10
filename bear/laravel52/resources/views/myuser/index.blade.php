@@ -195,7 +195,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
                         <input name="y2" id="y2" value="" type="hidden">
                     </form>
                     <div class="user_info">
-                        <h2 style="font-size: 25px;" class="uesr_n"></h2>
+                        <h2 style="font-size: 25px;" class="uesr_n">{{$user->nickname}}</h2>
                                                     <span class="user_sex user_sex-female"></span>
                                                 
                         <!-- <p class="yy_num"><span>YY:</span><span id="YY">2094659816</span></p> -->
