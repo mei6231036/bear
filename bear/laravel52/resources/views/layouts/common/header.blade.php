@@ -267,7 +267,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
                         <div class="tt-user-card">
 
-                            <a class="btn-exit" id="nav-loggout" href="login_out"><i class="hy-nav-exit-icon"></i><span>退出</span></a>
+                            <a class="btn-exit"  href="<?=url('/login_out')?>">
+                                <i class="hy-nav-exit-icon"></i>
+                                <span>退出</span>
+                            </a>
 
                             <div class="u-info">
 

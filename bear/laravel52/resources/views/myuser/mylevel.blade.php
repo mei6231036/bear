@@ -171,14 +171,14 @@ use Symfony\Component\HttpFoundation\Session\Session;
                             <i class="user-level-icon user-level-icon-1"></i>
                         </p>
                         <div class="grow-level">
-                            <span>LV1</span>
+                            <span>LV{{$user->level}}</span>
                             <p class="grow-level-contact">
-                                <span class="grow-level-number">55/200</span>
-                                <span class="grow-level-part" style="width:27.5%;"></span>
+                                <span class="grow-level-number">{{$user->integral}}/200</span>
+                                <span class="grow-level-part" style="width:{{$user->integral/200*100}}% ;"></span>
                             </p>
-                            <span>LV2</span>
+                            <span>LV{{$user->level+1}}</span>
                         </div>
-                                                    <p class="grow-level-gain">今日还可获得<span>200</span>&nbsp;点经验值</p>
+                                                    <p class="grow-level-gain">今日还可获得<span>25</span>&nbsp;点经验值</p>
                                             </div>
                 </div>
                    

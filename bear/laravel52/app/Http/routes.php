@@ -29,6 +29,8 @@ Route::any('/cate',"CateController@show");
 Route::any('/listcate',"CateController@listcate");
 Route::any('/childcate',"CateController@childcate");
 Route::any('/l',"ZbController@show");
+Route::any('/li',"ZbController@li");//直播详情页
+Route::any('/liit',"ZbController@liit");//筛选直播
 Route::any('/sign',"IndexController@sign");
 Route::any('/login',"IndexController@login");
 Route::any('/login_do',"login\LoginController@login");//zyk
