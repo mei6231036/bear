@@ -56,9 +56,6 @@ class CateController extends Controller
 
 		}
 
-		// var_dump($cate);die;
-		return view('cate/cate_list',['cate'=>$cate]);
-	}
 }
 
 

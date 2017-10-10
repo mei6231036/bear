@@ -174,7 +174,12 @@ use Symfony\Component\HttpFoundation\Session\Session;
         <div class="main-col">
             <div class="scroll-content">
                 <div class="mod mod-user-center">
-                    <img style="width:120px;height:120px;" class="user_icon" src="{{$user->heading}}" alt="头像">
+                        @if($user->heading == '')
+                        <img style="width:120px;height:120px;" class="user_icon" src="images/10001.jpg" alt="头像">
+                        @else
+                        <img style="width:120px;height:120px;" class="user_icon" src="{{$user->heading}}" alt="头像">
+                        @endif
+                    
 
                     <img class="img_hover" src="myuser_files/header_hover.png" alt="上传图像">
                                         <form id="img_submit" enctype="multipart/form-data" method="post" action="http://i.huya.com/index.php?m=Home&amp;do=ajaxUlogo">

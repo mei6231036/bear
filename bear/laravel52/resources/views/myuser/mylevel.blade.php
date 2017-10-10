@@ -1,3 +1,13 @@
+<?php 
+use Symfony\Component\HttpFoundation\Session\Session;
+    //用户session
+        $session=new Session;
+        $user=$session->get('user');
+        if($user)
+        {
+            $user = DB::table('user_info')->select('*')->where('user_id',$user->user_id)->first();
+        }
+ ?>
 <!DOCTYPE html>
 <html><head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -149,10 +159,15 @@
                     <h3>等级成长</h3>
                 </div>
                 <div class="user-level-header">
-                    <img class="header-img" src="mylevel_files/9c01cc867d44d2ec227888356019c2_180_135.jpg" width="95" height="95">
+                        @if($user->heading == '')
+                        <img class="header-img" src="images/10001.jpg" width="95" height="95">
+                        @else
+                        <img class="header-img" src="{{$user->heading}}" width="95" height="95">
+                        @endif
+                    
                     <div class="personal-information">
                         <p class="nick">
-                            <span>葛家小阿淼</span>
+                            <span>{{$user->nickname}}</span>
                             <i class="user-level-icon user-level-icon-1"></i>
                         </p>
                         <div class="grow-level">

@@ -248,7 +248,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
                     <a class="nav-user-title" href="myuser" target="_blank">
                         
-                        @if($user->signature == '')
+                        @if($user->heading == '')
                         <img id="login-userAvatar" src="images/10001.jpg" alt="头像" />
                         @else
                         <img id="login-userAvatar" src="{{$user->heading}}" alt="头像" />
