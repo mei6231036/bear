@@ -109,22 +109,25 @@ class MyuserController extends Controller
 			
 			//文件
 			$file = $request->file('heading'); 
-
-			if($file -> isValid()){  
-			    //检验一下上传的文件是否有效.  
-			    // 获取文件相关信息
-	            $originalName = $file->getClientOriginalName(); // 文件原名
-	            $ext = $file->getClientOriginalExtension();     // 扩展名
-	            $realPath = $file->getRealPath();   //临时文件的绝对路径
-	            $type = $file->getClientMimeType();     // image/jpeg
-	            // 上传文件
-	            $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext; 
-	            // 使用我们新建的uploads本地存储空间（目录）
-	            $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-	            if($bool){
-	            	$arr['heading']='uploads/'.$filename;
-	            }
-        	}
+			if($file)
+			{
+				if($file -> isValid()){  
+				    //检验一下上传的文件是否有效.  
+				    // 获取文件相关信息
+		            $originalName = $file->getClientOriginalName(); // 文件原名
+		            $ext = $file->getClientOriginalExtension();     // 扩展名
+		            $realPath = $file->getRealPath();   //临时文件的绝对路径
+		            $type = $file->getClientMimeType();     // image/jpeg
+		            // 上传文件
+		            $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext; 
+		            // 使用我们新建的uploads本地存储空间（目录）
+		            $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+		            if($bool){
+		            	$arr['heading']='uploads/'.$filename;
+		            }
+        		}
+			}
+			
 			$re = DB::table('user_info')
 			      ->where('user_id','=',$id)
 			      ->update($arr);
