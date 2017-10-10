@@ -159,8 +159,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
                     <h3>等级成长</h3>
                 </div>
                 <div class="user-level-header">
-                        @if($user->signature == '')
-                        <img class="header-img" src="uloaps/2017-10-09-13-05-18-59db740ec6586.jpg" width="95" height="95">
+                        @if($user->heading == '')
+                        <img class="header-img" src="images/10001.jpg" width="95" height="95">
                         @else
                         <img class="header-img" src="{{$user->heading}}" width="95" height="95">
                         @endif
