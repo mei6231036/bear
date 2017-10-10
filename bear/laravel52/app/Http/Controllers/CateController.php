@@ -54,7 +54,7 @@ class CateController extends Controller
 			}
 		return view('cate/cate_list',['cate'=>$cate,'data'=>$da]);
 
-		}
+	}
 
 }
 

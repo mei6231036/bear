@@ -46,10 +46,17 @@ class ZbController extends Controller
 			}
 		$anchor_id=$request->input('anchor_id');//主播id
 		//查询信息
-		$arr = DB::table('room') ->where('anchor.anchor_id','=',$anchor_id)->join('anchor','room.anchor_id','=','anchor.anchor_id')->first();
+		$arr = DB::table('room') 
+		         ->where('anchor.anchor_id','=',$anchor_id)
+		         ->join('anchor','room.anchor_id','=','anchor.anchor_id')
+		         ->join('type','room.atype_id','=','type.id')
+		         ->first();
 		$arr=json_decode(json_encode($arr),true);
-		return view('l/live_list',['cate'=>$cate,'arr'=>$arr]);
+		$data = DB::table('anchor')->where('anchor.anchor_id','=',$anchor_id)->join('type','anchor.type_id','=','type.id')->first();
+		$data=json_decode(json_encode($data),true);
+		return view('l/live_list',['cate'=>$cate,'arr'=>$arr,'data'=>$data]);
 	}
+	//筛选
 	public function liit(Request $request)
 	{
 		$id=$request->input('id');
@@ -74,6 +81,33 @@ class ZbController extends Controller
 			}
 		}
 		return view('l/live',['cate'=>$cate,'arr'=>$arr]);
+	}
+	//侧边栏删选
+	public function chliit(Request $request)
+	{
+		$id=$request->input('id');
+		$data=DB::table('type')->get();
+		$data=json_decode(json_encode($data),true);
+		$room=DB::table('room')->get();
+		$room=json_decode(json_encode($room),true);
+		$arr = DB::table('room')
+			->where('type.id','=',$id)
+			->join('anchor','room.anchor_id','=','anchor.anchor_id')
+			->join('type','room.atype_id','=','type.id')
+			->select("*")
+			->get();	
+		$arr=json_decode(json_encode($arr),true);
+		
+		foreach ($data as $k => $v) {
+			if ($v['parent_id']==0) {
+				$cate[$v['id']]['val']=$v;
+			}else
+			{
+				$cate[$v['parent_id']]['child'][]=$v;
+			}
+		}
+		return view('l/live',['cate'=>$cate,'arr'=>$arr]);
+
 	}
 }
 

@@ -117,7 +117,7 @@ var UDB_SDK_SWTICH = true;
         <span class="open-souhu clickstat" eid="click/zhibo/shouhu" eid_desc="点击/直播间/守护">守护主播</span>
             <span class="host-channel">
                 <i class="host-busstype-icon"></i>
-        <a class="host-spl clickstat" eid="click/zhibo/zbxx/pldj" eid_desc="点击/直播间/主播信息/品类" href="http://www.huya.com/g/100023" target="_blank"> 网游竞技</a> <span class="host-arrow"></span> <a target="_blank" href="http://www.huya.com/g/lol" class="host-spl clickstat" eid="click/zhibo/zbxx/yxdj" eid_desc="点击/直播间/主播信息/游戏"><h3 style="display: inline;">英雄联盟</h3></a>
+        <a class="host-spl clickstat" eid="click/zhibo/zbxx/pldj" eid_desc="点击/直播间/主播信息/品类" href="<?=url('/liit')?>?id={{ $data['id']}}" target="_blank"> {{$data['typename']}}</a> <span class="host-arrow"></span> <a target="_blank" href="http://www.huya.com/g/lol" class="host-spl clickstat" eid="click/zhibo/zbxx/yxdj" eid_desc="点击/直播间/主播信息/游戏"><h3 style="display: inline;">{{$arr['typename']}}</h3></a>
         </span>
                 <span class="host-spectator"><i class="g-icon icon-host"></i><em class="host-spl" id="live-count">1,188,079</em></span>
         </div>
@@ -359,21 +359,21 @@ var UDB_SDK_SWTICH = true;
         <div id="sidebar-scroll">
             <div class="sidebar-show-nav">
                 <a href="http://i.huya.com/index.php?m=Subscribe" class="clickstat sidebar-show-line js-sub" target="_blank" eid="click/navi/zuoce/sub" eid_desc="点击/导航/左侧导航/我的订阅"><i class="sidebar-icon-sub"></i>我的订阅<span class="subscribe-text"> (请登录)</span></a>
-                <a href="http://www.huya.com/l" class="clickstat sidebar-show-line" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播"><i class="sidebar-icon-live"></i> 全部直播</a>
+                <a href="<?=url('/l')?>" class="clickstat sidebar-show-line" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播"><i class="sidebar-icon-live"></i> 全部直播</a>
                 <a href="http://www.huya.com/g" class="clickstat sidebar-show-line" eid="click/navi/zuoce/gametype" eid_desc="点击/导航/左侧导航/全部游戏"><i class="sidebar-icon-type"></i>全部分类</a>
             </div>
 
 <div class="sidebar-recom">
 @foreach($cate as $val)
                     <div class="m sidebar-show-line ">
-                    <a class="m-title clickstat" href="http://www.huya.com/g/100023" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1">
+                    <a class="m-title clickstat" href="<?=url('/liit')?>?id={{ $val['val']['id'] }}" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1">
                         <i class="m-title-type" style="background-image: url('//huyaimg.msstatic.com/cdnimage/sidebarNavGroup/phpz3aAZJ1488336152.png');"></i>
                         <span class="m-title-span">{{$val['val']['typename']}}</span>
                     </a>
                     <div class="m-bd">
                         <div class="recomend-list clearfix">
                         @foreach($val['child'] as $v)
-                            <a class="recomend-item clickstat" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1" href="<?=url('/childcate')?>?id={{ $v['id'] }}" title="{{$v['typename']}}">{{$v['typename']}}</a>            
+                            <a class="recomend-item clickstat" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1" href="<?=url('/chliit')?>?id={{ $v['id'] }}" title="{{$v['typename']}}">{{$v['typename']}}</a>            
                         @endforeach
                         
                         </div>

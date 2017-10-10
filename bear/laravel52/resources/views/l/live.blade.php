@@ -92,21 +92,21 @@ var UDB_SDK_SWTICH = true;
         <div id="sidebar-scroll">
             <div class="sidebar-show-nav">
                 <a href="http://i.huya.com/index.php?m=Subscribe" class="clickstat sidebar-show-line js-sub" target="_blank" eid="click/navi/zuoce/sub" eid_desc="点击/导航/左侧导航/我的订阅"><i class="sidebar-icon-sub"></i>我的订阅<span class="subscribe-text"> (请登录)</span></a>
-                <a href="http://www.huya.com/l" class="clickstat sidebar-show-line" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播"><i class="sidebar-icon-live"></i> 全部直播</a>
+                <a href="<?=url('/l')?>" class="clickstat sidebar-show-line" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播"><i class="sidebar-icon-live"></i> 全部直播</a>
                 <a href="http://www.huya.com/g" class="clickstat sidebar-show-line" eid="click/navi/zuoce/gametype" eid_desc="点击/导航/左侧导航/全部游戏"><i class="sidebar-icon-type"></i>全部分类</a>
             </div>
 
 <div class="sidebar-recom">
 @foreach($cate as $val)
                     <div class="m sidebar-show-line ">
-                    <a class="m-title clickstat" href="http://www.huya.com/g/100023" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1">
+                    <a class="m-title clickstat" href="<?=url('/liit')?>?id={{ $val['val']['id'] }}" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1">
                         <i class="m-title-type" style="background-image: url('//huyaimg.msstatic.com/cdnimage/sidebarNavGroup/phpz3aAZJ1488336152.png');"></i>
                         <span class="m-title-span">{{$val['val']['typename']}}</span>
                     </a>
                     <div class="m-bd">
                         <div class="recomend-list clearfix">
                         @foreach($val['child'] as $v)
-                            <a class="recomend-item clickstat" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1" href="<?=url('/childcate')?>?id={{ $v['id'] }}" title="{{$v['typename']}}">{{$v['typename']}}</a>            
+                            <a class="recomend-item clickstat" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1" href="<?=url('/chliit')?>?id={{ $v['id'] }}" title="{{$v['typename']}}">{{$v['typename']}}</a>            
                         @endforeach
                         
                         </div>
