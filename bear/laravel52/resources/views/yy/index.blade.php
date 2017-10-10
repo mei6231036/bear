@@ -15,63 +15,52 @@
 </head>
 
 <body>
-</div>
-<div class="pbd pbd-SecCenter">
-	
-	<div class="part part-right" id="m_partRight">
-	    	<h2 class="m_verifyTitle">提交认证资料</h2>
-	    	<form action="<?=url('/yy')?>" method="post" enctype="multipart/form-data" target="postFrame" id="postForm">
+<center>
+            <h2 class="m_verifyTitle">提交认证资料</h2>
+	    	<form action="<?=url('/yy/ins')?>" method="POST" enctype="multipart/form-data">
 				<table>
-		    	<div class="m_verifyForm_step3">
+                    <tbody>
 		    		<tr>
-		    		<p class="form_item">真实姓名：<input id="step3_idname" type="text" placeholder="请填写你的真实姓名" class="grayinput textCon" name='name'></p>
+                            <td>
+		    		真实姓名：<input  type="text" placeholder="请填写你的真实姓名" class="grayinput textCon" name='name'>
+                            </td>
 		    		</tr>
 		    		<tr>
-		    		<p class="form_item">证件号码：<input id="step3_certId" type="text" placeholder="请填写身份证号码" class="grayinput textCon" name='number'></p>
+                        <td>
+		    		证件号码：<input  type="text" placeholder="请填写身份证号码" class="grayinput textCon" name='number'>
+                        </td>
 		    		</tr>
 		    		<tr>
+                         <td>
 		    		<h3 class="uploadTitle">上传正面照片：</h3>
 		    		<input type="file" name="b_img" id="b_img">
-		    		<div class="clearfix">
-		    			<div class="uploadArea upload" style="height:230px;width:300px">
-		    				<img class="uploadWrap-b"  style="height:230px;width:300px"/>
 
-		    			</div>
-		    			<div class="uploadArea">
-                        	<img id="frontUploadImg" class="example" src="images/verify03.jpg">
-		    			</div>
-		    		</div>
+		    				<img class="uploadWrap-b"  style="height:300px;width:500px"/>
+
+                        	<img id="frontUploadImg" class="example" src="images/verify03.jpg"  style="height:300px;width:500px">
+                         </td>
 		    		</tr>
 		    		<tr>
+                        <td>
 		    		<h3 class="uploadTitle" id="backUploadTit">上传背面照片：</h3>
 		    		<input type="file" name="l_img" id="l_img">
-		    		<div class="clearfix">
-		    			<div class="uploadArea upload" style="height:230px;width:300px">
-		    				<img class="uploadWrap-l" style="height:230px;width:300px"/>
-		    			</div>
-		    			<div class="uploadArea">
-		    				<img id="backUploadImg" class="example" src="images/verify04.jpg">
-                        </div>
-		    		</div>
+
+		    				<img class="uploadWrap-l" style="height:300px;width:500px"/>
+		    				<img id="backUploadImg" class="example" src="images/verify04.jpg"  style="height:300px;width:500px"/>
+                        </td>
 		    		</tr>
 		    		<tr>
-		    		<div class="err" id="step3_err">&nbsp;</div>
-			    	<div class="opra"><input type="submit" value="提交认证申请"></div>
+                        <td>
+                            <?php echo method_field('PUT'); ?>
+                            <?php echo csrf_field(); ?>
+			               <input type="submit" value="提交认证申请">
+                        </td>
 			    	</tr>
-		    	</div>
+                    </tbody>
 		    	</table>
 		    </form>
-	    </div>
-	   
-  
-        
-        </div>
-	 
-	    
-	</div>
-</div>
-
-
+</center>
+</body>
 <script id="_hiido_internal_script_id_" src="js/hiido_internal.js.下载"></script><script type="text/javascript" src="js/jquery-1.8.3.min.js.下载"></script>
 <script type="text/javascript" src="js/udb.sdk.rsa.js.下载"></script>
 <script type="text/javascript" src="js/lib.js.下载"></script>

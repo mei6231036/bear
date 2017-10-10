@@ -36,5 +36,6 @@ Route::any('/login_out',"login\LoginController@login_out");//zyk
 Route::any('/regin',"login\LoginController@regin");//zyk
 Route::any('/register',"IndexController@register");
 Route::resource('home',"home\HomeController");
-Route::resource('/yy',"YyController@index");
+Route::any('/yy',"YyController@index");
+Route::any('/yy/ins',"YyController@ins");
 Route::any('/article',"ArticleController@index");
