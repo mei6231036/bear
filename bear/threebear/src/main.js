@@ -6,6 +6,7 @@ import VueMoment from 'vue-moment';
 import $ from 'jquery'
 import Hello from './Hello.vue';
 import naodai from './naodai.vue';
+import left from './left.vue';
 import type from './type.vue';
 import gift from './gift.vue';
 import mess from './mess.vue';
@@ -17,7 +18,10 @@ import login from './login.vue';
 import giftrem from './giftrem.vue';
 import typerem from './typerem.vue';
 import messadd from './messadd.vue';
-
+import ucolumn from "./ucolumn.vue";
+import echarts from 'echarts';
+import uline from "./line.vue";
+Vue.prototype.$echarts = echarts 
 
 
 Vue.use(VueRouter);
@@ -74,8 +78,15 @@ var router = new VueRouter({
 	  {
 	    path: '/messadd',
 	    component: messadd,
+	  },
+	  {
+	  	path:'/ucolumn',
+	  	component: ucolumn,
+	  },
+	  {
+	  	path:'/uline',
+	  	component: uline,
 	  }
-	
 	 
 	]	
 })

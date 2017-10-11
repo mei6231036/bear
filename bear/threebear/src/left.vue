@@ -115,7 +115,34 @@
 						
 					</ul><!-- /.nav-list -->
 				
-
+				<ul class="nav nav-list">
+					<li>
+				
+							<router-link to="/ucolumn" class="dropdown-toggle">
+							<i class="icon-tag"></i>
+							<span class="menu-text"> 统计管理 </span>
+							
+							<b class="arrow icon-angle-down"></b>
+							</router-link>
+				
+						<ul class="submenu">
+							<li>
+								<router-link to="/ucolumn" >
+									<i class="icon-double-angle-right"></i>
+									用户柱形图统计
+								</router-link>
+							</li>
+							<li>
+								<router-link to="/uline" >
+									<i class="icon-double-angle-right"></i>
+									用户折线图统计
+								</router-link>
+							</li>
+						</ul>
+					</li>
+					
+				</ul><!-- /.nav-list -->
+				
 
 
 				</div>

@@ -44,7 +44,7 @@ export default {
 	    	//链式调用执行
 	      // 这里是处理正确的回调
 
-	 				this.aa=response.body
+	 		this.aa=response.body
 	 
 	    }, function(response) {
 	        // 这里是处理错误的回调
