@@ -1,6 +1,6 @@
 <?php
-use Symfony\Component\HttpFoundation\Session\Session;
-    //用户session
+        use Symfony\Component\HttpFoundation\Session\Session;
+        //用户session
         $session=new Session;
         $user=$session->get('user');
         if($user)

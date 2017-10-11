@@ -127,7 +127,10 @@ class MyuserController extends Controller
 		            }
         		}
 			}
-			
+			// 接过来的城市名换为id
+			$city=DB::table('city')->where("city",'=',$arr['sheng'])->first();
+			$arr['sheng'] = $city->id;
+			//修改
 			$re = DB::table('user_info')
 			      ->where('user_id','=',$id)
 			      ->update($arr);

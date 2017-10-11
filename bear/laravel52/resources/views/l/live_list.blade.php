@@ -44,8 +44,12 @@
         
     <!-- S 通用头部 -->
 @include('layouts.common.header')
-<script data-fixed="true">
-var UDB_SDK_SWTICH = true;
+<script src="js/jquery.1.10.1.min.js" type="text/javascript"></script>
+
+<script type="text/javascript" src="js/jquery.lib.min.js"></script>
+<script type="text/javascript" src="js/core.min.js"></script>
+<script >
+    
 </script>
     <!-- E 通用头部 -->
     
@@ -58,15 +62,15 @@ var UDB_SDK_SWTICH = true;
         <div class="room-hd-main-r">
             <div class="host-control">
                 <div class="btn-subscribe subscribe-entrance">
-    <div class="subscribe-control clickstat" id="yyliveRk_game_newsBut" eid="click/zhibo/book" eid_desc="点击/直播间/订阅"><em></em>订阅</div>
+    <div class="subscribe-control clickstat yue" id="yyliveRk_game_newsBut" eid="click/zhibo/book" eid_desc="点击/直播间/订阅"><em></em>订阅</div>
     <em class="sub-arrow"></em>
-    <div id="activityCount">6405907</div>
-    <div class="entrance-expand subscribe-expand" style="display:none">
-        <div class="entrance-expand-bor"></div>
-        <em class="arrow"></em>
-        <span class="entrance-expand-close" title="关闭"></span>
+    <div class="yue">6555</div>
+    <div class="entrance-expand subscribe-expand" style="display:block">
+        <div class="entrance-expand-bor">1111</div>
+        <em class="arrow">22222</em>
+        <span class="entrance-expand-close" title="关闭">4444</span>
         <div class="subscribe-layer-wrap">
-            
+            33333
         </div>
     </div>
 </div>
@@ -435,6 +439,14 @@ require.resourceMap({"res":{"qrcode":{"url":"//a.msstatic.com/huya/main/modules/
     <script type='text/javascript' src='//www.huya.com/base/js/push/push.func-min.js?t=20161207'></script><!-- E 后台推送消息 -->    <!-- E 页面公用功能 -->
     <!-- S 直播间异步加载模块 -->
     <script type="text/javascript" data-fixed="true"> 
+        $('.yue').click(function(){
+            alert(1)
+        })
+
+
+
+
+
     var _hmt = _hmt || [];
     /*播放器ready完后才去加载*/
     window.TTP && TTP.ready(function () {
@@ -482,6 +494,8 @@ require.resourceMap({"res":{"qrcode":{"url":"//a.msstatic.com/huya/main/modules/
         var s = document.getElementsByTagName("script")[0]; 
         s.parentNode.insertBefore(hm, s);
     });
+
+
 </script>    <!-- E 直播间异步加载模块 -->
 </body>
 </html>

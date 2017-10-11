@@ -33,6 +33,15 @@ class ZbController extends Controller
 	//主播详情页
 	public function li(Request $request)
 	{
+		//用户登录信息
+        //用户session
+        $session=new Session;
+        $user=$session->get('user');
+        if($user)
+        {
+            $user = DB::table('user_info')->select('*')->where('user_id',$user->user_id)->first();
+        }
+        // var_dump($user);die;
 		//类型
 		$data=DB::table('type')->get();
 		$data=json_decode(json_encode($data),true);
@@ -54,7 +63,7 @@ class ZbController extends Controller
 		$arr=json_decode(json_encode($arr),true);
 		$data = DB::table('anchor')->where('anchor.anchor_id','=',$anchor_id)->join('type','anchor.type_id','=','type.id')->first();
 		$data=json_decode(json_encode($data),true);
-		return view('l/live_list',['cate'=>$cate,'arr'=>$arr,'data'=>$data]);
+		return view('l/live_list',['cate'=>$cate,'arr'=>$arr,'data'=>$data,'user'=>$user]);
 	}
 	//筛选
 	public function liit(Request $request)
