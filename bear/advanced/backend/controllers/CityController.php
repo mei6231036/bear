@@ -21,9 +21,15 @@ class CityController extends Controller
 		//$time=Yii::$app->request->get('time');
 		//查询省份表
 		$a = $db->createCommand("select * from city ")->queryAll();
-		if($time)
+		if($etime&&$time)
 		{
 			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id where `user`.addtime >= $time and `user`.addtime <= $etime GROUP BY sheng")->queryAll();
+		}else if($time)
+		{
+			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id where `user`.addtime >= $time GROUP BY sheng")->queryAll();
+		}else if($etime)
+		{
+			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id where `user`.addtime <= $etime GROUP BY sheng")->queryAll();
 		}else
 		{
 			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id GROUP BY sheng")->queryAll();
@@ -47,7 +53,7 @@ class CityController extends Controller
 		}
 		echo $callback."(".json_encode($data).")";
 	}
-	public function actionLine()
+	public function actionShow()
 	{
 		$callback=Yii::$app->request->get('callback');
 		$city=Yii::$app->request->get('city',1);
@@ -65,8 +71,7 @@ class CityController extends Controller
 		$twelve=strtotime('2017-12-01');
 
 		$db = Yii::$app->db;
-		//接值
-		// $time=Yii::$app->request->get('time');
+		
 
 		//查询省份表
 		$a = $db->createCommand("select * from city ")->queryAll();
