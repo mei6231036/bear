@@ -18,15 +18,21 @@ import login from './login.vue';
 import giftrem from './giftrem.vue';
 import typerem from './typerem.vue';
 import messadd from './messadd.vue';
-import ucolumn from "./ucolumn.vue";
+import date from './date.vue';
+import city from './city.vue';
 import echarts from 'echarts';
-import uline from "./line.vue";
-Vue.prototype.$echarts = echarts 
+import ElementUI from 'element-ui';
+import VueDatepicker from 'vue-datepicker';
+
+
 
 
 Vue.use(VueRouter);
 Vue.use(VueResource);
 Vue.use(VueMoment);
+Vue.use(ElementUI);
+Vue.use(VueDatepicker);
+Vue.prototype.$echarts = echarts 
 
 
 var router = new VueRouter({
@@ -76,6 +82,14 @@ var router = new VueRouter({
 	    component: typerem,
 	  },
 	  {
+<<<<<<< HEAD
+	    path: '/city',
+	    component: city,
+	  },
+	  {
+	    path: '/date',
+	    component: date,
+=======
 	    path: '/messadd',
 	    component: messadd,
 	  },
@@ -86,6 +100,7 @@ var router = new VueRouter({
 	  {
 	  	path:'/uline',
 	  	component: uline,
+>>>>>>> 436b99cef0b9f42a07793463eac9dfce434aa068
 	  }
 	 
 	]	
@@ -93,7 +108,7 @@ var router = new VueRouter({
 new Vue({
   el: '#app',
   router:router,
-  render: h => h(App)
+  render: h => h(App),
 });
 Vue.filter('moment', function (value, formatString) {
     formatString = formatString || 'YYYY-MM-DD HH:mm:ss';
