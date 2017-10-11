@@ -10,8 +10,10 @@ class CityController extends Controller
 	{
 
 		$callback=Yii::$app->request->get('callback');
-		$month=Yii::$app->request->get('month');
-		$time=strtotime('2017-'.$month.'-24');
+		$aa=Yii::$app->request->get('a');
+		$bb=Yii::$app->request->get('b');
+		$time=strtotime($aa);
+		$etime=strtotime($bb);
 
 
 		$db = Yii::$app->db;
@@ -23,7 +25,7 @@ class CityController extends Controller
 
 		if($time)
 		{
-			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id where `user`.addtime >= $time GROUP BY sheng")->queryAll();
+			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id where `user`.addtime >= $time and `user`.addtime <= $etime GROUP BY sheng")->queryAll();
 		}else
 		{
 			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id GROUP BY sheng")->queryAll();
@@ -42,7 +44,6 @@ class CityController extends Controller
 		foreach ($a as $key => $val) {
 			$data['city'][]=$val['city'];
 			$data['num'][]=$val['num'];
-
 		}
 		echo $callback."(".json_encode($data).")";
 	}
