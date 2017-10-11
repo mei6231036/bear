@@ -6,6 +6,7 @@ import VueMoment from 'vue-moment';
 import $ from 'jquery'
 import Hello from './Hello.vue';
 import naodai from './naodai.vue';
+import left from './left.vue';
 import type from './type.vue';
 import gift from './gift.vue';
 import mess from './mess.vue';
@@ -22,6 +23,7 @@ import city from './city.vue';
 import echarts from 'echarts';
 import ElementUI from 'element-ui';
 import VueDatepicker from 'vue-datepicker';
+
 
 
 
@@ -80,14 +82,26 @@ var router = new VueRouter({
 	    component: typerem,
 	  },
 	  {
+<<<<<<< HEAD
 	    path: '/city',
 	    component: city,
 	  },
 	  {
 	    path: '/date',
 	    component: date,
+=======
+	    path: '/messadd',
+	    component: messadd,
+	  },
+	  {
+	  	path:'/ucolumn',
+	  	component: ucolumn,
+	  },
+	  {
+	  	path:'/uline',
+	  	component: uline,
+>>>>>>> 436b99cef0b9f42a07793463eac9dfce434aa068
 	  }
-	
 	 
 	]	
 })
