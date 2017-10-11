@@ -1,4 +1,4 @@
-# fourbears
+# threebear
 
 > A Vue.js project
 

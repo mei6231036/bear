@@ -1,16 +1,8 @@
 <template>
 	<div id="charts">
-		开始日期<date-picker field="myDate"
-				 placeholder="选择日期"
-				 v-model="date"
-				 format="yyyy-mm-dd" @click.native="aa">
-	</date-picker>
-	      结束日期<date-picker field="myDate"
-				 placeholder="选择日期"
-				 v-model="edate"
-				 format="yyyy-mm-dd" @click.native="aa">
-
-</date-picker>	
+		选择城市<select name="" id="" v-model="city" @change="aa">
+			<option :value="v.id" v-for="v in data">{{v.city}}</option>
+		</select>
 
     <div id="main"  :style="{width:'2000px',height:'500px'}"></div>
 </div>
@@ -24,8 +16,7 @@ import myDatepicker from 'vue-datepicker-simple/datepicker-2.vue';
         data (){
             return {
 				data:[],
-				 date:'',
-  				 edate:'',
+  				 city:1,
             }
         },
          components: {
@@ -33,14 +24,14 @@ import myDatepicker from 'vue-datepicker-simple/datepicker-2.vue';
 		 },
         mounted (){
         	
-        	this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=city/sel',{params:{a:this.date,b:this.edate}}, {
+        	this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=city/show',{}, {
 	        headers: {
 	 
 	        },
 	        emulateJSON: true
 	    }).then(function(response) { 
 	        console.log(response)
-	    	
+	    	this.data=response.body.city
 	    	//链式调用执行
 	      // 这里是处理正确的回调
 			var myChart =this.$echarts.init(document.getElementById('main'));
@@ -48,12 +39,12 @@ import myDatepicker from 'vue-datepicker-simple/datepicker-2.vue';
                 title: { text: 'SHOW YOU' },
                 tooltip: {},
                 xAxis: {
-                    data: response.body.city
+                    data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
                 },
                 yAxis: {},
                 series: [{
                     name: '注册量',
-                    type: 'bar',
+                    type: 'line',
                     data: response.body.num
                 }]
             });
@@ -72,7 +63,7 @@ import myDatepicker from 'vue-datepicker-simple/datepicker-2.vue';
 	   aa:function()
 	   {
 
-	   	this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=city/sel',{params:{a:this.date,b:this.edate}}, {
+	   	this.$http.jsonp('http://www.bear.com/advanced/backend/web/index.php?r=city/show',{params:{city:this.city}}, {
 	        headers: {
 	 
 	        },
@@ -87,12 +78,12 @@ import myDatepicker from 'vue-datepicker-simple/datepicker-2.vue';
                 title: { text: 'SHOW YOU' },
                 tooltip: {},
                 xAxis: {
-                    data: response.body.city
+                    data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
                 },
                 yAxis: {},
                 series: [{
                     name: '注册量',
-                    type: 'bar',
+                    type: 'line',
                     data: response.body.num
                 }]
             });
