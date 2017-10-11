@@ -8,8 +8,8 @@ class CityController extends Controller
 	//查询某一天各个省注册人数
 	public function actionSel()
 	{
-
 		$callback=Yii::$app->request->get('callback');
+
 		$aa=Yii::$app->request->get('a');
 		$bb=Yii::$app->request->get('b');
 		$time=strtotime($aa);
@@ -18,11 +18,9 @@ class CityController extends Controller
 
 		$db = Yii::$app->db;
 		//接值
-		// $time=Yii::$app->request->get('time');
-
+		//$time=Yii::$app->request->get('time');
 		//查询省份表
 		$a = $db->createCommand("select * from city ")->queryAll();
-
 		if($time)
 		{
 			$b = $db->createCommand("select count(*) as num,sheng from  user_info inner join user on user_info.user_id = user.user_id where `user`.addtime >= $time and `user`.addtime <= $etime GROUP BY sheng")->queryAll();
@@ -36,6 +34,7 @@ class CityController extends Controller
 			if($v['sheng']==$value['id'])
 			{
 				$value['num']=intval($v['num']);
+				
 			}
 		}
 		}
@@ -44,10 +43,11 @@ class CityController extends Controller
 		foreach ($a as $key => $val) {
 			$data['city'][]=$val['city'];
 			$data['num'][]=$val['num'];
+
 		}
 		echo $callback."(".json_encode($data).")";
 	}
-	public function actionShow()
+	public function actionLine()
 	{
 		$callback=Yii::$app->request->get('callback');
 		$city=Yii::$app->request->get('city',1);
@@ -89,5 +89,6 @@ class CityController extends Controller
 
 		echo $callback."(".json_encode($data).")";
 		
+
 	}
 }
