@@ -26,7 +26,8 @@ console.log(1);
 <script type="text/javascript" src="js/jquery.lib.min.js"></script>
 <script type="text/javascript" src="js/jquery-3.2.1.js"></script>
 <script type="text/javascript" src="js/core.min.js"></script>
-
+<script type="text/javascript" src="dist/jquery.validate.min.js"></script>
+<script type="text/javascript" src="dist/messages_zh.js"></script>
 
 <script type="text/javascript">
 var youdao_conv_id = 271546;
@@ -44,18 +45,18 @@ var youdao_conv_id = 271546;
 
     	<input type="hidden" id="resubmitToken" value="9b207beb1e014a93bc852b7ba450db27" />
 		<div class="login_box">
-        	<form id="loginForm">
+        	<form id="loginForm"  class="cmxform" action="">
 
             	<input type="text" id="email" name="email" tabindex="1" placeholder="请输入常用邮箱地址" />
-                <span class="error" style="display:none;" id="ar"></span>
+                <span class="error"  for="email"></span>
                 <input type="password" id="password" name="password" tabindex="2" placeholder="请输入密码" />
-                <span class="error" style="display:none;" id="br"></span>
-                <input type="password" id="password" class="t_password" name="password" tabindex="2" placeholder="再次输入密码" />
-                <span class="error" style="display:none;" id="cr"></span>
-            	<label class="fl registerJianJu" for="checkbox">
-            		<input type="checkbox" id="checkbox" name="checkbox"  class="checkbox valid" />我已阅读并同意<a href="h/privacy.html" target="_blank">《虎牙用户协议》</a>
-           		</label>
-                <input type="button" id="submitLogin" value="注 &nbsp; &nbsp; 册" />
+                <span class="error"  for="password"></span>
+                <input type="password" id="confirm_password" class="t_password" name="confirm_password"  placeholder="再次输入密码" />
+                <span class="error"  for="confirm_password"></span>
+            	
+            	<input type="checkbox" id="agree" name="agree"  class="checkbox valid" />我已阅读并同意<a href="h/privacy.html" target="_blank">《熊直播用户协议》</a>
+           		<span class="error"  for="agree"></span>
+                <input type="submit" class="submit" id="submitLogin" value="注 &nbsp; &nbsp; 册" />
 				
                 <input type="hidden" id="callback" name="callback" value=""/>
                 <input type="hidden" id="authType" name="authType" value=""/>
@@ -74,50 +75,133 @@ var youdao_conv_id = 271546;
     </div>
 
     <script type="text/javascript">
-    	$('#submitLogin').click(function(){
-    		var email = $('#email').val();
-    		var pwd = $('#password').val();
-    		var t_pwd = $('.t_password').val();
-    		var ret = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/;//邮箱正则
-			if(! ret.test(email)){
-				$('#ar').html('邮箱格式错误');
-				$('#ar').attr('style','display:true;')
-				return false;
-			}else{
-				$('#ar').attr('style','display:none;')
-			}
-			if(pwd =='')
-			{
-				$('#br').html('密码不能为空');
-				$('#br').attr('style','display:true;')
-				return false;
-			}else{
-				$('#br').attr('style','display:none;')
-			}
-			if(pwd != t_pwd){
-				$('#cr').html('两次输入密码不一致');
-				$('#cr').attr('style','display:true;')
-				return false;
-			}else{
-				$('#cr').attr('style','display:none;')
-			}
-		    $.ajax({
-			   type: "GET",
-			   url: "regin",
-			   data: "email="+email+"&password="+pwd,
-			   success: function(msg){
-			     if(msg == 1)
-			     {
-			     	$('#ar').html('邮箱已被注册过');
-					$('#ar').attr('style','display:true;')
-					return false;
-			     }else{
-			     	alert('注册成功,快去登陆吧');
-			     	 location.href = "login";//location.href实现客户端页面的跳转 
-			     }
-			   }
+    	$.validator.setDefaults({
+		    submitHandler: function() {
+		    	var email = $('#email').val();
+		    	var pwd = $('#password').val();
+		      	$.ajax({
+				   type: "GET",
+				   url: "regin",
+				   data: "email="+email+"&password="+pwd,
+				   success: function(msg){
+				     if(msg == 1)
+				     {
+				     	$('#ar').html('邮箱已被注册过');
+						$('#ar').attr('style','display:true;')
+						return false;
+				     }else{
+				     	alert('注册成功,快去登陆吧');
+				     	 location.href = "login";//location.href实现客户端页面的跳转 
+				     }
+				   }
+				});
+		    }
+		});
+		$().ready(function() {
+		// 在键盘按下并释放及提交后验证提交表单
+			 $("#loginForm").validate({
+			  errorPlacement: function(error, element) {
+				// Append error within linked label
+					$( element )
+						.closest( "form" )
+							.find( "span[for='" + element.attr( "id" ) + "']" )
+								.append( error );
+					},
+
+			    rules: {
+			      password: {
+			        required: true,
+			        minlength: 5
+			      },
+			      confirm_password: {
+			        required: true,
+			        minlength: 5,
+			        equalTo: "#password"
+			      },
+			      email: {
+			        required: true,
+			        email: true
+			      },
+			      agree: "required"
+			    },
+			    messages: {
+			      password: {
+			        required: "请输入密码",
+			        minlength: "密码长度不能小于 5 个字母"
+			      },
+			      confirm_password: {
+			        required: "请输入密码",
+			        minlength: "密码长度不能小于 5 个字母",
+			        equalTo: "两次密码输入不一致"
+			      },
+			      email: "请输入一个正确的邮箱",
+			      agree: "请接受我们的声明",
+			    }
 			});
-    	})
+		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   //  	$('#submitLogin').click(function(){
+   //  		var email = $('#email').val();
+   //  		var pwd = $('#password').val();
+   //  		var t_pwd = $('.t_password').val();
+   //  		var ret = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/;//邮箱正则
+			// if(! ret.test(email)){
+			// 	$('#ar').html('邮箱格式错误');
+			// 	$('#ar').attr('style','display:true;')
+			// 	return false;
+			// }else{
+			// 	$('#ar').attr('style','display:none;')
+			// }
+			// if(pwd =='')
+			// {
+			// 	$('#br').html('密码不能为空');
+			// 	$('#br').attr('style','display:true;')
+			// 	return false;
+			// }else{
+			// 	$('#br').attr('style','display:none;')
+			// }
+			// if(pwd != t_pwd){
+			// 	$('#cr').html('两次输入密码不一致');
+			// 	$('#cr').attr('style','display:true;')
+			// 	return false;
+			// }else{
+			// 	$('#cr').attr('style','display:none;')
+			// }
+		 //    $.ajax({
+			//    type: "GET",
+			//    url: "regin",
+			//    data: "email="+email+"&password="+pwd,
+			//    success: function(msg){
+			//      if(msg == 1)
+			//      {
+			//      	$('#ar').html('邮箱已被注册过');
+			// 		$('#ar').attr('style','display:true;')
+			// 		return false;
+			//      }else{
+			//      	alert('注册成功,快去登陆吧');
+			//      	 location.href = "login";//location.href实现客户端页面的跳转 
+			//      }
+			//    }
+			// });
+   //  	})
     
     </script>
 </body>

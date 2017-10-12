@@ -25,7 +25,8 @@ console.log(1);
 
 <script type="text/javascript" src="js/jquery.lib.min.js"></script>
 <script type="text/javascript" src="js/core.min.js"></script>
-
+<!-- <script type="text/javascript" src="dist/jquery.validate.min.js"></script>
+<script type="text/javascript" src="dist/messages_zh.js"></script> -->
 
 <script type="text/javascript">
 var youdao_conv_id = 271546; 
@@ -84,13 +85,6 @@ var youdao_conv_id = 271546;
     			remember = 0;
     		}
     		var ret = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/;//邮箱正则
-			// if(! ret.test(email)){
-			// 	$('#ar').html('邮箱格式错误');
-			// 	$('#ar').attr('style','display:true;')
-			// 	return false;
-			// }else{
-			// 	$('#ar').attr('style','display:none;')
-			// }
 			if(pwd =='')
 			{
 				$('#br').html('密码不能为空');
