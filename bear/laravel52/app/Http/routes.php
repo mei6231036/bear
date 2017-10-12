@@ -46,3 +46,12 @@ Route::any('/yy/ins',"YyController@ins");
 Route::any('/article',"ArticleController@index");
 Route::any('/myauth/check',"MyuserController@check");
 Route::any('/uploadify',"MyuserController@uploaddify");
+Route::any('/pubu',function ()
+{
+	return view('pubu/index');
+});
+Route::any('/data',function ()
+{
+	$res=DB::table('city')->get();
+	return view('data/index',['res'=>$res]);
+});
