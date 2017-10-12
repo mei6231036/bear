@@ -126,37 +126,35 @@ var UDB_SDK_SWTICH = true;
 
 </div>
 
-    <div class="js-responded-list narrow">
-        <div class="mod-list">
-<div class="box">
-                <div class="box-hd clearfix">
-                    <h2 class="title">
-                        全部分类                    </h2>
-                  <div class="filter">
-<dl>
-<dd bussType="0" ><a class="clickstat" href="<?=url('/cate')?>" eid="click/list/allgame/all"   eid_desc="点击/列表页/全部游戏/全部">全部分类</a></dd>
-@foreach($cate as $val)
-<dd bussType="0"><a class="clickstat" href="<?=url('/listcate')?>?id={{ $val['val']['id'] }}" eid="click/list/allgame/all"   eid_desc="点击/列表页/全部游戏/全部">{{ $val['val']['typename'] }}</a></dd>
-@endforeach
-</dl>
-</div>
+<div class="js-responded-list narrow">
+    <div class="mod-list">
+        <div class="box">
+            <div class="box-hd clearfix">
+                <h2 class="title">全部分类</h2>
+                <div class="filter">
+                    <dl>
+                    <dd bussType="0" ><a class="clickstat" href="<?=url('/cate')?>" eid="click/list/allgame/all"   eid_desc="点击/列表页/全部游戏/全部">全部分类</a></dd>
+                    @foreach($cate as $val)
+                    <dd bussType="0"><a class="clickstat" href="<?=url('/listcate')?>?id={{ $val['val']['id'] }}" eid="click/list/allgame/all"   eid_desc="点击/列表页/全部游戏/全部">{{ $val['val']['typename'] }}</a></dd>
+                    @endforeach
+                    </dl>
                 </div>
-<div class="box-bd">
-<ul class="game-list clearfix" id="js-game-list" style="visibility: visible;">
-@foreach($data as $val)    
-<li class="game-list-item" gid="1">
-        <a target="_blank" href="http://www.huya.com/g/lol" class="pic new-clickstat" report="{&quot;eid&quot;:&quot;click/postion&quot;,&quot;position&quot;:&quot;gameList/gameCard/1&quot;,&quot;game_id&quot;:&quot;1&quot;}">
-        <img class="pic-img"  src="//huyaimg.msstatic.com/cdnimage/game/2919-S.jpg?t=1507550400" alt="英雄联盟" title="英雄联盟">
-        <h3 class="title">{{$val['typename']}}</h3>
-    </a>
-</li>
-@endforeach
-                                                                               
-</ul>
-</div>
+            </div>
+            <div class="box-bd">
+                <ul class="game-list clearfix" id="js-game-list" style="visibility: visible;">
+                @foreach($data as $val)    
+                <li class="game-list-item" gid="1">
+                        <a target="_blank" href="http://www.huya.com/g/lol" class="pic new-clickstat" report="{&quot;eid&quot;:&quot;click/postion&quot;,&quot;position&quot;:&quot;gameList/gameCard/1&quot;,&quot;game_id&quot;:&quot;1&quot;}">
+                        <img class="pic-img lazy" src="images/240x360.jpg" data-src="http://huyaimg.msstatic.com/cdnimage/game/219-S.jpg"  alt="英雄联盟" title="英雄联盟">
+                        <h3 class="title">{{$val['typename']}}</h3>
+                    </a>
+                </li>
+                @endforeach
+                </ul>
             </div>
         </div>
     </div>
+</div>
 
     <script src="//a.msstatic.com/huya/main/lib/jq_ud_mod_4de7709.js" data-fixed="true"></script>
     <script src="//hd.huya.com/huya_err_monitor/huyahiidoweb_err_monitor-min.js" id="huyahiido_err_monitor" act="webhuyaerror" pageview="gamelist" data-fixed="true"></script>
@@ -213,16 +211,76 @@ var UDB_SDK_SWTICH = true;
 
         })(window); 
     </script>
-    <!-- S 通用底部 -->
-    <script data-fixed="true">
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?51700b6c722f5bb4cf39906a596ea41f";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+
+<!-- S 懒惰加载 -->
+<script type="text/javascript">
+
+var imgs = document.getElementsByClassName("lazy"); /*懒惰加载图片*/
+var imgsLen = imgs.length;
+var unloaded = imgsLen; /*标记还有多少个图片没有加载*/
+var clientHight = window.innerHeight || document.documentElement.clientHeight; /*浏览器用户可视窗口高度*/
+
+/*给图片设置真正的src*/
+function setImgSrc (index) {
+imgs[index].src = imgs[index].getAttribute("data-src"); /*取图片真正的地址*/
+--unloaded;
+}
+
+/*滚动事件处理*/
+function scrollHandler(index) {
+var scrollTop = document.body.scrollTop || document.documentElement.scrollTop; /*滚动离顶部距离*/
+for (var i = index; i < imgsLen; i++) {
+var offset = imgs[i].offsetTop; /*元素到顶部的偏移量*/
+if (scrollTop + clientHight > offset) {
+setImgSrc(i);
+} else {
+break;
+}
+}
+}
+
+/*监听滚动事件*/
+function myScrollListener() {
+var start = imgsLen-unloaded; /*查找第一个没有加载的图片的位置*/
+if (unloaded > 0) {
+scrollHandler(start);
+}
+}
+
+/*第一次加载加载页面的时候加载出现在用户视线里的图片*/
+function firstLoad() {
+    for (var i = 0; i < imgsLen; i++) {
+        var top = imgs[i].offsetTop;
+        if (top < clientHight) {/*图片到顶部的位置如果小于客户端可视窗口的高度，则说明图片显示出来了*/
+                setImgSrc(i);
+            }else{
+                break;
+        }
+    }
+}
+
+window.onscroll = myScrollListener;
+
+window.onload = firstLoad;
+
 </script>
-    <!-- E 通用底部 -->
+<!-- E 懒惰加载 -->
+
+
+<!-- S 通用底部 -->
+<script data-fixed="true">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?51700b6c722f5bb4cf39906a596ea41f";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+<!-- E 通用底部 -->
+
+
+
+
 </body>
 </html>
