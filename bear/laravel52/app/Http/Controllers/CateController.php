@@ -16,7 +16,7 @@ class CateController extends Controller
 					$cate[$v['parent_id']]['child'][]=$v;
 				}
 			}
-
+// print_r($data);die;
 		return view('cate/cate_list',['cate'=>$cate,'data'=>$data]);
 	}
 

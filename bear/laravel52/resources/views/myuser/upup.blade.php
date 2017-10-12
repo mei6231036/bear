@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
         <meta name="Keywords" content="lol直播,lol游戏直播,英雄联盟直播,dota2直播,dota直播,dnf直播,cf直播,游戏直播,赛事直播,YY直播,美女主播,虎牙,虎牙直播">
         <title>直播个人中心</title>
         <link rel="stylesheet" href="myuser_files/admin.css">
+        <link rel="stylesheet" type="text/css" href="asset/webuploader.css" />
+    	<link rel="stylesheet" type="text/css" href="asset/style.css" />
         <link type="text/css" rel="stylesheet" href="css/pages_modules_796de8d.css">
         <link type="text/css" rel="stylesheet" href="css/auto_combine_a7d45_999daed.css">
         <link rel="stylesheet" type="text/css" href="css/my_auth.css">
@@ -158,14 +160,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
                                 </span>
                             </a>
                         </li>
-                        <li>
-                            <a menu="auth" href="myfile">
-                                <span class="icon icon-auth"></span>
-                                <span class="title">
-                                    上传文件
-                                </span>
-                            </a>
-                        </li>
+                        
                        
                         <li>
                             <a menu="auth" href="myauth">
@@ -187,178 +182,29 @@ use Symfony\Component\HttpFoundation\Session\Session;
     </div>
 </div>
         <div class="main-col">
-            <div class="scroll-content">
-                <div class="mod mod-user-center">
-                        @if($user->heading == '')
-                        <img style="width:120px;height:120px;" class="user_icon" src="images/10001.jpg" alt="头像">
-                        @else
-                        <img style="width:120px;height:120px;" class="user_icon" src="{{$user->heading}}" alt="头像">
-                        @endif
-                    
+        	<div id="wrapper">
+        <div id="container">
+            <!--头部，相册选择和格式选择-->
 
-                    <img class="img_hover" src="myuser_files/header_hover.png" alt="上传图像">
-                                        <form id="img_submit" enctype="multipart/form-data" method="post" action="http://i.huya.com/index.php?m=Home&amp;do=ajaxUlogo">
-                        <div id="fileImg" class="uploadify" style="height: 120px; width: 120px;">
-                        <object id="SWFUpload_0" type="application/x-shockwave-flash" data="myuser_files/uploadify.swf" class="swfupload" style="position: absolute; z-index: 1;" width="120" height="120">
-                        <param name="wmode" value="transparent"><param name="movie" value="base/uploadify/uploadify.swf?preventswfcaching=1507519812755"><param name="quality" value="high"><param name="menu" value="false"><param name="allowScriptAccess" value="always"><param name="flashvars" value="movieName=SWFUpload_0&amp;uploadURL=%2Findex.php%3Fm%3DCaptcha%26do%3DsaveImg&amp;useQueryString=false&amp;requeueOnError=false&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=&amp;filePostName=avatar&amp;fileTypes=*.gif%3B%20*.jpg%3B%20*.png%3B*.jpeg&amp;fileTypesDescription=Image%20Files&amp;fileSizeLimit=1MB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2F&amp;buttonWidth=120&amp;buttonHeight=120&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2"></object><div id="fileImg-button" class="uploadify-button " style="height: 120px; line-height: 120px; width: 120px;"><span class="uploadify-button-text">上传图片</span></div></div><div id="fileImg-queue" class="uploadify-queue"></div>
-                        <input name="uid" value="1842036920" type="hidden">
-                        <input name="w" id="img_width" value="" type="hidden">
-                        <input name="h" id="img_height" value="" type="hidden">
-                        <input name="x1" id="x1" value="" type="hidden">
-                        <input name="y1" id="y1" value="" type="hidden">
-                        <input name="x2" id="x2" value="" type="hidden">
-                        <input name="y2" id="y2" value="" type="hidden">
-                    </form>
-                    <div class="user_info">
-                        <h2 style="font-size: 25px;" class="uesr_n">{{$user->nickname}}</h2>
-                                                    <span class="user_sex user_sex-female"></span>
-                                                
-                        <!-- <p class="yy_num"><span>YY:</span><span id="YY">2094659816</span></p> -->
-                                                <!-- 非第三方登陆，显示修改昵称、密码 -->
-                        <div class="change">
-                            <p class="change_top"><img src="myuser_files/warn.png" alt="">字段包含敏感字符，请重新输入</p>
-                            <input id="other_name" maxlength="20" type="text">
-                            <a href="javascript:void(0);" class="btn sure_change">确定</a>
-                            <a href="javascript:void(0);" class="btn quit_change">取消</a>
-                        </div>
-                        <a id="edit_nick" href="myren" class="change_n clickstat" eid="click/grzx/myinfo/edit" eid_desc="点击/个人中心/我的信息/编辑">编辑</a>
-                        <a href="javascript:void(0);" class="change_w"></a>
-                                                                        <p class="user_msg">
-                            <span class="user_age">
-                                {{$user->age}}岁</span>
-                            <span class="user_add">
-                                {{$user->shi}}                          </span>
-                            <span class="user_ps">
-                                @if($user->signature == '')
-                                    你还没有个性签名
-                                    @else
-                                    {{$user->signature}}
-                                    @endif
-                            </span>
-                        </p>
-                        <div class="detail table-badge" id="grow_level">
-                            <span>lv{{$user->level}}</span>
-                            <span class="contact">
-                                <span class="number">{{$user->integral}}/200</span>
-                                <span class="part" style="width:{{$user->integral/200*100}}%;"></span>
-                                <span class="grow_msg" style="top: -32px; left: 0px; display: none;">
-                                                                        <span class="grow_msg_span">今日获得<span class="num">0</span>点经验值，升级还需<span class="num">{{200-$user->integral}}</span>点</span>
-                                                                        <i class="up_arrows"></i>
-                                </span>
-                            </span>
-                            <span>LV{{$user->level+1}}</span>
-                            <a class="question" href="http://i.huya.com/?m=UserLevel">查看等级成长&gt;</a>
-                        </div>
-                        <ul id="my_estate">
-                                                            <li>
-                                    <span class="tool">
-                                        <i class="icon icon-gold"></i>
-                                    </span>
-                                    <span class="tool-info">
-                                        <i class="num" style="min-width:28px;">{{$user->jindou}}</i>
-                                                                                    <span class="tool_msg hidden">
-                                                <i class="up_arrows"></i>
-                                                <span class="tool_msg_span">金豆：{{$user->jindou}}</span>
-                                            </span>
-                                                                                <i class="line"></i>
-                                    </span>
-                                </li>
-                                                            <li>
-                                    <span class="tool">
-                                        <i class="icon icon-coupon"></i>
-                                    </span>
-                                    <span class="tool-info">
-                                        <i class="num" style="min-width:28px;">{{$user->jin_quan}}</i>
-                                                                                    <span class="tool_msg hidden">
-                                                <i class="up_arrows"></i>
-                                                <span class="tool_msg_span">金豆券：{{$user->jin_quan}}</span>
-                                            </span>
-                                                                                <i class="line"></i>
-                                    </span>
-                                </li>
-                                                            <li>
-                                    <span class="tool">
-                                        <i class="icon icon-silver"></i>
-                                    </span>
-                                    <span class="tool-info">
-                                        <i class="num" style="min-width:28px;">{{$user->yindou}}</i>
-                                                                                    <span class="tool_msg hidden">
-                                                <i class="up_arrows"></i>
-                                                <span class="tool_msg_span">银豆：{{$user->yindou}}</span>
-                                            </span>
-                                                                                <i class="line"></i>
-                                    </span>
-                                </li>
-                                                        <li>
-                                <span>
-                                    <a href="http://i.huya.com/index.php?m=MyAccount&amp;do=myAccount" class="money_detail">资产明细</a>
-                                </span>
-                            </li>
-                            <li>
-                                <span>
-                                    <a class="btn" id="jdRechargeBtn" href="javascript:void(0);">充值</a>
-                                </span>
-                            </li>
-                        </ul>
+            <div id="uploader">
+                <div class="queueList">
+                    <div id="dndArea" class="placeholder">
+                        <div id="filePicker"></div>
+                        <p>或将照片拖到这里，单次最多可选300张</p>
+                    </div>
+                </div>
+                <div class="statusBar" style="display:none;">
+                    <div class="progress">
+                        <span class="text">0%</span>
+                        <span class="percentage"></span>
+                    </div><div class="info"></div>
+                    <div class="btns">
+                        <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
                     </div>
                 </div>
             </div>
-            <!-- 账号管理 -->
-            <div class="mod mod-basic" id="account_num">
-                <div class="mod-hd">
-                    <h4>账号管理</h4>
-                    <em></em>
-                    <!-- <span class="line line-income"></span> -->
-                </div>
-                <!-- 手机未认证 -->
-                <div class="account_num_list hidden" id="no_phone">
-                    <div class="no_phone"></div>
-                    <div class="msg">
-                        <p class="msg_1">绑定手机</p>
-                        <p class="msg_2">绑定密保手机保障您的账号安全</p>
-                    </div>
-                    <a class="result" id="bindMobile" data-is-thirduser="0" href="javascript:void(0);" target="_blank"></a>
-                </div>
-                <!-- 手机已认证 -->
-                <div class="account_num_list" id="phone">
-                    <div class="phone"></div>
-                    <div class="msg">
-                        <p class="msg_1">修改绑定手机</p>
-                        <p class="msg_2">已绑定：<span class="mobile num">176******21</span></p>
-                    </div>
-                                            <a class="result" href="https://aq.yy.com/mb/mob/index.do" target="_blank"></a>
-                                    </div>
-                
-                <div class="account_num_list">
-                    <div class="password"></div>
-                    <div class="msg">
-                        <p class="msg_1">修改密码</p>
-                        <p class="msg_2">建议定期修改密码，保证账号安全</p>
-                    </div>
-                <!-- 非第三方登陆，显示修改密码 -->
-                    <a class="result" href="https://aq.yy.com/pwd/chg/index.do" target="_blank"></a>
-                                </div>
-                <div style="clear:both;"></div>
-                                    <!-- 非第三方登陆，显示实名认证 -->
-                                        <!-- 已实名认证 -->
-                    <div class="account_num_list">
-                        <div class="approve"></div>
-                        <div class="msg">
-                            <p class="msg_1">虎牙认证(已完成)</p>
-                            <p class="msg_2">已完成实名认证，可申请开播</p>
-                        </div>
-                        <a class="result" target="_blank" href="http://www.huya.com/e/zhubo"></a>
-                    </div>
-                                                                    <!-- 是主播 -->
-                <div class="account_num_list">
-                    <div class="anchor"></div>
-                    <div class="msg">
-                        <p class="msg_1">查看主播信息</p>
-                        <p class="msg_2">我已是主播，可查看自己的信息</p>
-                    </div>
-                    <a class="result" href="http://i.huya.com//index.php?m=ProfileInfo"></a>
-                </div>
-                            </div>
+        </div>
+    </div>
         </div>
 
     </div>
@@ -1614,4 +1460,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 <script src="js/jquery.lazyload_769f44a.js" data-fixed="true"></script>
 
 <script type="text/javascript" charset="utf-8" src="js/auto_combine_d17e3_b03328c.js"></script>
-<script src="js/jquery.js">   </script>
+	<script type="text/javascript" src="asset/jquery.js"></script>
+    <script type="text/javascript" src="asset/webuploader.js"></script>
+    <script type="text/javascript" src="asset/upload.js"></script>
