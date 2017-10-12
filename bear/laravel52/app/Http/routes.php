@@ -16,6 +16,8 @@
 Route::any('/home',"home\HomeController@index");
 // 个人中心
 Route::any('/myuser',"MyuserController@index");
+Route::any('/upup',"MyuserController@upup");
+Route::any('/uped',"MyuserController@uped");
 Route::any('/myauth',"MyuserController@myauth");
 Route::any('/myaccount',"MyuserController@myaccount");
 Route::any('/mylevel',"MyuserController@mylevel");
