@@ -144,5 +144,32 @@ class MyuserController extends Controller
 
 		
 	}    
+	public function check()
+	{
+		$targetFolder = '/uploads'; // Relative to the root and should match the upload folder in the uploader script
+
+		if (file_exists($targetFolder)) {
+			echo 1;
+		} else {
+			echo 0;
+		}
+	}
+	public function uploaddify()
+	{
+		if(!empty($_FILES))
+		{
+			// Validate the file type
+			$fileTypes = array('jpg','jpeg','gif','png','mp4','wmv'); // File extensions
+
+			$fileParts = pathinfo($_FILES['filedata']['name']);
+			$realPath=$_FILES['filedata']['tmp_name'];
+			if (in_array($fileParts['extension'],$fileTypes)) {
+            $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $fileParts['extension']; 
+            // 使用我们新建的uploads本地存储空间（目录）
+            $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+			var_dump($bool);
+				}
+			}
+	}
 	 
 }
