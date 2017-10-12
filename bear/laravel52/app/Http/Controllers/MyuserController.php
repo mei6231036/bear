@@ -98,6 +98,37 @@ class MyuserController extends Controller
 	{
 		return  view('myuser.myren');
 	}    
+	public	function myfile()
+	{
+		return  view('myuser.myfile');
+	}  
+	public	function myfile_do(Request $request)
+	{
+		$dir=$_POST['filename'];
+
+		$dir="uploads/".md5($dir);
+		file_exists($dir) or mkdir($dir,0777,true);//创建目录
+
+
+		$path=$dir."/".$_POST['blobname'];
+
+		//print_r($_FILES["file"]);
+		move_uploaded_file($_FILES["file"]["tmp_name"],$path);//第二个参数就是包含有路径的新的文件名。如："upload/1.jpg";
+
+		if(isset($_POST['lastone'])){
+			echo $_POST['lastone'];
+			$count=$_POST['lastone'];
+			
+			$fp   = fopen('uploads/'.$_POST['filename'],"abw");
+			for($i=0;$i<=$count;$i++){
+				$handle = fopen($dir."/".$i,"rb");  
+				fwrite($fp,fread($handle,filesize($dir."/".$i)));  
+				fclose($handle);  	
+		}
+		fclose($fp);
+		}
+				
+	}  
 	//修改资料
 	public	function myren_do(Request $request)
 	{
