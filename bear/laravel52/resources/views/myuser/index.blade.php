@@ -158,7 +158,14 @@ use Symfony\Component\HttpFoundation\Session\Session;
                                 </span>
                             </a>
                         </li>
-                        
+                        <li>
+                            <a menu="auth" href="myfile">
+                                <span class="icon icon-auth"></span>
+                                <span class="title">
+                                    上传文件
+                                </span>
+                            </a>
+                        </li>
                        
                         <li>
                             <a menu="auth" href="myauth">

@@ -21,6 +21,8 @@ Route::any('/uped',"MyuserController@uped");
 Route::any('/myauth',"MyuserController@myauth");
 Route::any('/myaccount',"MyuserController@myaccount");
 Route::any('/mylevel',"MyuserController@mylevel");
+Route::any('/myfile',"MyuserController@myfile");
+Route::any('/myfile_do',"MyuserController@myfile_do");
 Route::any('/mylist',"MyuserController@mylist");
 Route::any('/mysubscribe',"MyuserController@mysubscribe");
 Route::any('/myren',"MyuserController@myren");//资料修改
