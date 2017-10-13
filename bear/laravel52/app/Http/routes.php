@@ -57,3 +57,8 @@ Route::any('/data',function ()
 	$res=DB::table('city')->get();
 	return view('data/index',['res'=>$res]);
 });
+
+Route::any('/masonry',function ()
+{
+	return view('data/masonry');
+});

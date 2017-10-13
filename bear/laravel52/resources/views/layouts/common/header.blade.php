@@ -47,6 +47,7 @@
                 <span class="hy-nav-link"><a href="<?=url('/') ?>" class="hy-nav-title clickstat" eid="click/navi/home" eid_desc="点击/导航/首页">首页</a></span>
 
                 <span class="hy-nav-link"><a href="<?=url('/data')?>" class="hy-nav-title hiido_stat clickstat"  hiido_code="10004221" eid="click/navi/zhibo" eid_desc="点击/导航/直播">datatable</a></span>
+                <span class="hy-nav-link"><a href="<?=url('/masonry')?>" class="hy-nav-title hiido_stat clickstat"  hiido_code="10004221" eid="click/navi/zhibo" eid_desc="点击/导航/直播">masonry</a></span>
 
                 <span class="hy-nav-link"><a href="<?=url('/l')?>" class="hy-nav-title hiido_stat clickstat"  hiido_code="10004221" eid="click/navi/zhibo" eid_desc="点击/导航/直播">直播</a></span>
 
