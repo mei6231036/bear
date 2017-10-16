@@ -1,4 +1,14 @@
+<?php
+use Symfony\Component\HttpFoundation\Session\Session;
+        //用户session
+        $session=new Session;
+        $user=$session->get('user');
+        if($user)
+        {
+            $user = DB::table('user_info')->select('*')->where('user_id',$user->user_id)->first();
+        }
 
+?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="ie6" lang="zh-cmn-Hans"> <![endif]-->
 <!--[if IE 7]>         <html class="ie7" lang="zh-cmn-Hans"> <![endif]-->
@@ -11,15 +21,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <meta name="description" content="虎牙卡尔lol最强王者，资深的国服lol解说人士，虎牙卡尔直播与您分享游戏乐趣。"/>
-    <meta name="Keywords" content="卡尔直播,虎牙卡尔直播间,英雄联盟主播_虎牙tv,卡尔直播地址"/>
-    <title>卡尔直播 卡尔课堂开讲_虎牙直播</title>
-    <link rel='canonical' href='http://www.huya.com/kaerlol'>
-    <link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/pages_modules_33264e9.css">
-<link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/auto_combine_cab27_fac414c.css">
+        <meta name="description" content="虎牙16岁的少年只会玩游戏自由之战2直播，16岁的少年只会玩游戏与您分享自由之战2游戏乐趣。"/>
+    <meta name="Keywords" content="16岁的少年只会玩游戏,自由之战2直播"/>
+    <title>16岁的少年只会玩游戏自由之战2直播_16岁的少年只会玩游戏视频直播 - 虎牙直播</title>
+    <link rel='canonical' href='http://www.huya.com/2086295479'>
+    <link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/pages_modules_796de8d.css">
+<link type="text/css" rel="stylesheet" href="//a.msstatic.com/huya/main/pkg/auto_combine_7dcee_c9f25b0.css">
 <!--HEAD_END-->
     <script data-fixed="true">
-        var TT_ROOM_DATA = {"type":"NORMAL","state":"ON","isOn":true,"isOff":false,"isReplay":false,"id":"77259038","sid":"2622305980","channel":"77259038","liveChannel":"2622305980","shortChannel":"90001","isBluRay":"1","gameFullName":"\u82f1\u96c4\u8054\u76df","gameHostName":"lol","screenType":"0","startTime":"1507599791","totalCount":"1188079","cameraOpen":"0","liveCompatibleFlag":"0","bussType":"1","isPlatinum":"1","screenshot":"http:\/\/screenshot.msstatic.com\/yysnapshot\/171069adc19f1ba7e9b79ad551e693875d89494804d9","previewUrl":"null","gameId":"0","liveSourceType":"0","privateHost":"kaerlol","recommendStatus":"4","popular":"0","gid":"1","introduction":"\u5361\u5c14\uff1a\u5361\u4e00\u5f71\uff01700\u653b\u5f71\u6d41\u4e4b\u4e3b"};var TT_PROFILE_INFO = {"sex":"1","lv":"29","lp":"367138632","aid":8372415,"yyid":"280114420","nick":"\u5361\u5c14","avatar":"http:\/\/huyaimg.msstatic.com\/avatar\/1084\/b7\/896bc815db9560eabbcb4a227f62ba_180_135.jpg","fans":6405907,"host":"kaerlol"};var TT_PLAYER_CFG = {"flashVersion":"v3.2_17092601","useflash":"00","deleteOriginalPainting":"78941969_2559461593","homePageH5Ver":"1703151108","h5homeSdk":"1703061730","h5Advance":"68109060","homePagePlayerIncludeSDK":"1709011019","h5gopChannel":"78941969_2558924260,78941969_2592787562,90341987_2604539114,72858027,67547117_2579323162","h5PlayerP2PChannel":"30765679_2523417522,30765679_2523417353,94525224_2460685313,90883382_2475865192,95431869_2376594057,95431869_2588764962,99425467_2419243719,49077963_2467572720,77259038_2583762288","h5sdk":"\/\/a.msstatic.com\/huya\/h5player\/sdk\/","defaultFlashPlayer":"false","h5domain":"\/\/a.msstatic.com\/huya\/h5player\/room\/","flashAdvance":"30765679,10559898_2226043697,13510649_2507512826","h5PlayerP2PVersion":"1710101146","h5ver":"1709301409","h5hlssdkver":"hlssdk1709271819","h5PlayerIncludeSDK":"1709271719","flashDomain":"\/\/hyplayer.msstatic.com\/","h5PlayerAndHuyaSDKChannel":"15485075,30765679,94525224,49077963,20820993,1428945,58544517,48998726,52835508,73721406,66333161,1416268,12560616,68165505,61409448,77690206,22808102,73712507,34018787,27899470,16790087,77226790,50471404,88217434,82519582,92208917,69361899,95431869,99173389,90883382,65196990,95431869,81632069,36568194,78941969,57895512_2635055804","flashAdvanceVersion":"v3.2_17092601","homepage":"hp_58","replayUseH5":"true","homePageH5":"true","advanceChannel":"10559898_2226043697,13510649_2507512826,40898516_2636492130","h5AdvanceVersion":"1704281623","homePageH5Domain":"\/\/a.msstatic.com\/huya\/h5player\/home\/","h5PlayerAndHuyaSDKVersion":"1709281042","h5sdkver":"1706131454"};
+        var TT_ROOM_DATA = {"type":"NORMAL","state":"ON","isOn":true,"isOff":false,"isReplay":false,"id":"37443540","sid":"37443540","channel":"37443540","liveChannel":"37443540","shortChannel":"37443540","isBluRay":"0","gameFullName":"\u81ea\u7531\u4e4b\u62182","gameHostName":"2830","screenType":"1","startTime":"1508151610","totalCount":"296","cameraOpen":"0","liveCompatibleFlag":"0","bussType":"3","isPlatinum":"0","screenshot":"http:\/\/screenshot.msstatic.com\/yysnapshot\/171045e8515891a1bb46d67b14a93424d7193335509d","previewUrl":"null","gameId":"0","liveSourceType":"6","privateHost":"2086295479","recommendStatus":"0","popular":"0","gid":"2830","introduction":"\u4eca\u5929\u514d\u8d39\u53d1\u8d44\u683c\uff0c\u6ca1\u8d76\u7d27\u5b98\u65b9\u8981\u8d44\u683c"};var TT_PROFILE_INFO = {"sex":"1","lv":"7","lp":"1833665033","aid":42628332,"yyid":"2086295479","nick":"16\u5c81\u7684\u5c11\u5e74\u53ea\u4f1a\u73a9\u6e38\u620f","avatar":"http:\/\/huyaimg.msstatic.com\/avatar\/1055\/ce\/ba1578db4061bc8bc9971c2a384a62_180_135.jpg","fans":14,"host":"2086295479"};var TT_PLAYER_CFG = {"h5outstationDomain":"\/\/a.msstatic.com\/huya\/h5player\/outstation","flashVersion":"v3.2_17101602","useflash":"00","deleteOriginalPainting":"-1","homePageH5Ver":"1703151108","h5homeSdk":"1703061730","h5Advance":"68109060","homePagePlayerIncludeSDK":"1709011019","h5gopChannel":"78941969_2558924260,78941969_2592787562,90341987_2604539114,72858027,67547117_2579323162","h5outstationVer":"1709281040","h5PlayerP2PChannel":"90883382_2475865192,91689021_2551023555,99425467_2398843726,49104985_2482509468,16790087_2599307000,90883382_2573198696,45074242_2558167301,95431869_2376594057,99425467_2419243719,49077963_2467572720,77259038_2583762288,94525224,30765679","h5sdk":"\/\/a.msstatic.com\/huya\/h5player\/sdk\/","defaultFlashPlayer":"false","h5domain":"\/\/a.msstatic.com\/huya\/h5player\/room\/","flashAdvance":"30765679,10559898_2226043697,13510649_2507512826","h5PlayerP2PVersion":"1710161606","h5ver":"1710161007","h5hlssdkver":"hlssdk1709271819","h5PlayerIncludeSDK":"1710161007","flashDomain":"\/\/hyplayer.msstatic.com\/","h5PlayerAndHuyaSDKChannel":"15485075,30765679,94525224,49077963,20820993,1428945,58544517,48998726,52835508,73721406,66333161,1416268,12560616,68165505,61409448,77690206,22808102,73712507,34018787,27899470,16790087,77226790,50471404,88217434,82519582,92208917,69361899,95431869,99173389,90883382,65196990,95431869,81632069,36568194,78941969,57895512_2635055804,84165905,81475638,98157552,53699733","flashAdvanceVersion":"v3.2_17101602","h5ShareEntry":"\/\/a.msstatic.com\/huya\/h5player\/outstation\/guide.js","homepage":"hp_58","replayUseH5":"true","homePageH5":"true","advanceChannel":"10559898_2226043697,13510649_2507512826,40898516_2636492130","h5AdvanceVersion":"1704281623","homePageH5Domain":"\/\/a.msstatic.com\/huya\/h5player\/home\/","h5PlayerAndHuyaSDKVersion":"1710161023","h5sdkver":"1706131454"};
         var indexUrl = "http://www.huya.com/";
         var APP_URL = "http://www.huya.com/";
         var flashTime = new Date().getTime();
@@ -44,12 +54,8 @@
         
     <!-- S 通用头部 -->
 @include('layouts.common.header')
-<script src="js/jquery.1.10.1.min.js" type="text/javascript"></script>
-
-<script type="text/javascript" src="js/jquery.lib.min.js"></script>
-<script type="text/javascript" src="js/core.min.js"></script>
-<script >
-    
+<script data-fixed="true">
+var UDB_SDK_SWTICH = true;
 </script>
     <!-- E 通用头部 -->
     
@@ -62,14 +68,15 @@
         <div class="room-hd-main-r">
             <div class="host-control">
                 <div class="btn-subscribe subscribe-entrance">
-    <div class="subscribe-control clickstat yue" id="yyliveRk_game_newsBut" eid="click/zhibo/book" eid_desc="点击/直播间/订阅"><em></em>订阅</div>
+    <div class="subscribe-control clickstat" id="yyliveRk_game_newsBut" eid="click/zhibo/book" eid_desc="点击/直播间/订阅"><em></em>订阅</div>
     <em class="sub-arrow"></em>
-    <div class="yue">6555</div>
-    <div class="entrance-expand subscribe-expand" style="display:block">
+    <div id="activityCount">14</div>
+    <div class="entrance-expand subscribe-expand" style="display:none">
         <div class="entrance-expand-bor"></div>
         <em class="arrow"></em>
         <span class="entrance-expand-close" title="关闭"></span>
         <div class="subscribe-layer-wrap">
+            
         </div>
     </div>
 </div>
@@ -110,10 +117,10 @@
         <div class="room-hd-main-l">
             
 <div class="host-pic">
-    <img id="avatar-img" src="{{$arr['img']}}" alt="卡尔">
+    <img id="avatar-img" src="//huyaimg.msstatic.com/avatar/1055/ce/ba1578db4061bc8bc9971c2a384a62_180_135.jpg?418932" alt="16岁的少年只会玩游戏">
 </div>
 <div class="host-info">
-    <h1 class="host-title">{{$arr['anchor_name']}}</h1>
+   <h1 class="host-title">{{$arr['anchor_name']}}</h1>
     <div class="host-detail J_roomHdDetail">
             <span class="host-level" style="background-position:0 -551px"></span>
             <h3 class="host-name" title="{{$arr['name']}}">{{$arr['name']}}</h3>
@@ -180,8 +187,7 @@
             </div>
             <div class="chat-room__wrap" id="chat-room__wrap">
                 <ul class="chat-room__list" id="chat-room__list">
-                    <li class="J_msg" data-id="1">
-                        <div class="msg-normal"><span class="msg-hd"><span class="labels"></span><span class="name-wrap"><span class="name J_userMenu" title="点击查看个人信息">不二臣</span> : </span></span><span class="text-content">1</span></div></li>
+                    
                 </ul>
             </div>
         </div>
@@ -219,12 +225,7 @@
         <div class="room-panel-bd">
             <ul class="color-list clearfix" id="J-color-list-fans"></ul>
         </div>
-        <div class="room-panel-hd">
-            <h2 class="room-panel-title">普通弹幕</h2>
-        </div>
-        <div class="room-panel-bd">
-            <ul class="color-list clearfix" id="J-color-list-level"></ul>
-        </div>
+        <p class="color-des">成为主播粉丝，独享彩色弹幕</p>
     </div>
 
     <div class="room-panel room-speaking-box" id="J-room-speaking-box">
@@ -255,7 +256,7 @@
         <div class="room-chat-tools">
             <i class="room-chat-tool room-chat-tool-smile" id="J_inputEmot"></i>
             <i class="room-chat-tool room-chat-tool-color" id="J-room-chat-color"></i>
-            <i class="room-chat-tool room-chat-tool-font" id="J-room-chat-font"></i>
+            <i class="room-chat-tool room-chat-tool-font" id="J-room-chat-font" style="display: none;"></i>
         </div>
         <span class="msg-input-num">0/30</span>  
     </div>
@@ -270,11 +271,11 @@
             <div class="fansBadge-list" id="J_fansBadgeList"></div>
             <div class="fansBadge-tip" id="J_fansBadgeTip"></div>
         </div>
+        <input type="hidden" id='hidden' name="" value="{{$user->nickname}}">
         <div class="chat-room__input">
             <div class="msg-input">
                 <textarea rows="2" id="pub_msg_input"></textarea>
             </div>
-            <!-- <div class="no-login-tip" style="display:none"><span>登录</span>发弹幕，免费领银豆！</div> -->
             <span class="btn-sendMsg hiido_stat" id="msg_send_bt" hiido_code="10004279">发送</span>
         </div>
     </div>
@@ -316,7 +317,7 @@
                 </a>
             </li>
             <li class="sidebar-icon-item">
-                <a class="sidebar-icon-link clickstat" href="l" title="直播" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播">
+                <a class="sidebar-icon-link clickstat" href="http://www.huya.com/l" title="直播" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播">
                     <i class="sidebar-icon-live"></i>
                     <span class="sidebar-title">直播</span>
                 </a>
@@ -363,12 +364,12 @@
         <div id="sidebar-scroll">
             <div class="sidebar-show-nav">
                 <a href="http://i.huya.com/index.php?m=Subscribe" class="clickstat sidebar-show-line js-sub" target="_blank" eid="click/navi/zuoce/sub" eid_desc="点击/导航/左侧导航/我的订阅"><i class="sidebar-icon-sub"></i>我的订阅<span class="subscribe-text"> (请登录)</span></a>
-                <a href="<?=url('/l')?>" class="clickstat sidebar-show-line" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播"><i class="sidebar-icon-live"></i> 全部直播</a>
+                <a href="http://www.huya.com/l" class="clickstat sidebar-show-line" eid="click/navi/zuoce/live" eid_desc="点击/导航/左侧导航/全部直播"><i class="sidebar-icon-live"></i> 全部直播</a>
                 <a href="http://www.huya.com/g" class="clickstat sidebar-show-line" eid="click/navi/zuoce/gametype" eid_desc="点击/导航/左侧导航/全部游戏"><i class="sidebar-icon-type"></i>全部分类</a>
             </div>
 
-<div class="sidebar-recom">
-@foreach($cate as $val)
+            <div class="sidebar-recom">
+                     @foreach($cate as $val)
                     <div class="m sidebar-show-line ">
                     <a class="m-title clickstat" href="<?=url('/liit')?>?id={{ $val['val']['id'] }}" eid="click/navi/zuoce/remen1" eid_desc="点击/导航/左侧导航/热门1">
                         <i class="m-title-type" style="background-image: url('//huyaimg.msstatic.com/cdnimage/sidebarNavGroup/phpz3aAZJ1488336152.png');"></i>
@@ -384,7 +385,7 @@
                     </div>
                 </div>
                 @endforeach
-</div>
+                                            </div>
             <div class="sidebar-banner" style="display:none">
                 <a target="_blank" class="sidebar-banner-link clickstat third-clickstat" id="sidebarBanner" eid="click/push/leftnaviad" eid_desc="点击/推荐/左侧导航推荐图">
                 </a>
@@ -402,12 +403,14 @@
 </div>
     
     <script src="//a.msstatic.com/huya/main/lib/jq_ud_mod_4de7709.js" data-fixed="true"></script>
-    <script src="//a.msstatic.com/huya/main/js/headerFunction_c0fe602.js" data-fixed="true"></script>
+    <script src="//a.msstatic.com/huya/main/js/headerFunction_27495c9.js" data-fixed="true"></script>
     <script src="//a.msstatic.com/huya/main/lib/scrollpane_51f7a10.js" data-fixed="true"></script>
     <script src="//a.msstatic.com/huya/main/lib/jquery.lazyload_769f44a.js" data-fixed="true"></script>
-    <script type="text/javascript" charset="utf-8" src="//a.msstatic.com/huya/main/pkg/room_common_9c6aac0.js"></script>
-<script type="text/javascript" charset="utf-8" src="//a.msstatic.com/huya/main/pkg/auto_combine_b5f7e_16cdd3f.js"></script>
-
+    <script type="text/javascript" charset="utf-8" src="//a.msstatic.com/huya/main/pkg/room_common_ffb884f.js"></script>
+<script type="text/javascript" charset="utf-8" src="//a.msstatic.com/huya/main/pkg/auto_combine_fc0d0_d980d71.js"></script>
+<script type="text/javascript" >
+require.resourceMap({"res":{"qrcode":{"url":"//a.msstatic.com/huya/main/modules/qrcode/qrcode_957981e.js"},"widget/salt_rank":{"url":"//a.msstatic.com/huya/main/widget/salt_rank/salt_rank_be249e8.js"},"widget/illegalReport":{"url":"//a.msstatic.com/huya/main/widget/illegalReport/illegalReport_823f04b.js"},"jumpToPhone":{"url":"//a.msstatic.com/huya/main/modules/jumpToPhone/jumpToPhone_3bc2064.js"},"processor":{"url":"//a.msstatic.com/huya/main/modules/processor/processor_074b4df.js"},"animation":{"url":"//a.msstatic.com/huya/main/modules/animation/animation_80f6f2d.js"},"gift":{"deps":["processor","animation"],"url":"//a.msstatic.com/huya/main/modules/gift/gift_ca76765.js"},"TextAreaHelper":{"url":"//a.msstatic.com/huya/main/modules/TextAreaHelper/TextAreaHelper_bedc489.js"},"chatEmot":{"deps":["TextAreaHelper"],"url":"//a.msstatic.com/huya/main/modules/chatEmot/chatEmot_329cb98.js"},"activity":{"url":"//a.msstatic.com/huya/main/modules/activity/activity_4657300.js"},"widget/userUpgradeTips":{"url":"//a.msstatic.com/huya/main/widget/userUpgradeTips/userUpgradeTips_5132f9b.js"},"widget/weekStar":{"url":"//a.msstatic.com/huya/main/widget/weekStar/weekStar_6998420.js"},"guessReport":{"url":"//a.msstatic.com/huya/main/modules/guessReport/guessReport_f1bd987.js"},"getPrize":{"url":"//a.msstatic.com/huya/main/modules/getPrize/getPrize_47539cd.js"},"postMessageEvent":{"url":"//a.msstatic.com/huya/main/modules/postMessageEvent/postMessageEvent_9983224.js"},"widget/recharge/payUtil.js":{"url":"//a.msstatic.com/huya/main/widget/recharge/payUtil_3bf10d0.js"},"widget/recharge":{"deps":["postMessageEvent","widget/recharge/payUtil.js"],"url":"//a.msstatic.com/huya/main/widget/recharge/recharge_705ccaa.js"},"topUpPayment":{"deps":["postMessageEvent"],"url":"//a.msstatic.com/huya/main/modules/topUpPayment/topUpPayment_28a01ff.js"},"firstRecharge":{"deps":["postMessageEvent"],"url":"//a.msstatic.com/huya/main/modules/firstRecharge/firstRecharge_bea6870.js"},"crossStorage":{"url":"//a.msstatic.com/huya/main/modules/crossStorage/crossStorage_cee61ff.js"},"watchHistory":{"deps":["crossStorage"],"url":"//a.msstatic.com/huya/main/modules/watchHistory/watchHistory_5dbfbbe.js"},"roomMakeMoney":{"url":"//a.msstatic.com/huya/main/modules/roomMakeMoney/roomMakeMoney_d0f527e.js"}},"pkg":{}});
+</script>
 <!--BODY_END-->
     <script data-fixed="true">
                 var reportDescObj = {
@@ -437,12 +440,6 @@
     <script type='text/javascript' src='//www.huya.com/base/js/push/push.func-min.js?t=20161207'></script><!-- E 后台推送消息 -->    <!-- E 页面公用功能 -->
     <!-- S 直播间异步加载模块 -->
     <script type="text/javascript" data-fixed="true"> 
-
-
-
-
-
-
     var _hmt = _hmt || [];
     /*播放器ready完后才去加载*/
     window.TTP && TTP.ready(function () {
@@ -494,12 +491,16 @@
 
 
 
-        window.onload = function () {  
+
+
+    window.onload = function () {  
         var ws = new WebSocket("ws://127.0.0.1:1234");  
   
         document.getElementById("msg_send_bt").onclick = function () {  
+
             var msg = document.getElementById("pub_msg_input").value;  
-            var data='{"type":"message","msg":"'+msg+'"}';
+            var name = document.getElementById("hidden").value;  
+            var data='{"name":"'+name+'","msg":"'+msg+'"}';
             ws.send(data);  
         };  
   
@@ -513,7 +514,6 @@
   
   
     };  
-
 </script>    <!-- E 直播间异步加载模块 -->
 </body>
 </html>

@@ -62,3 +62,5 @@ Route::any('/masonry',function ()
 {
 	return view('data/masonry');
 });
+
+Route::any('/lives',"ZbController@lives");//直播详情页

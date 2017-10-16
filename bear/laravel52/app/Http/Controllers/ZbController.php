@@ -63,7 +63,7 @@ class ZbController extends Controller
 		$arr=json_decode(json_encode($arr),true);
 		$data = DB::table('anchor')->where('anchor.anchor_id','=',$anchor_id)->join('type','anchor.type_id','=','type.id')->first();
 		$data=json_decode(json_encode($data),true);
-		return view('l/live_list',['cate'=>$cate,'arr'=>$arr,'data'=>$data,'user'=>$user]);
+		return view('l/lives',['cate'=>$cate,'arr'=>$arr,'data'=>$data,'user'=>$user]);
 	}
 	//筛选
 	public function liit(Request $request)
