@@ -89,7 +89,13 @@ class LoginController extends Controller
 	    return $ip[$type];
 	}
 
-
+	public function weibo() {
+	    return \Socialite::with('weibo')->redirect(); 
+	}
 	
-    
+	public function callback() {
+	    $oauthUser = \Socialite::with('weibo')->user();
+	    print_r($oauthUser);
+	}
+   
 }

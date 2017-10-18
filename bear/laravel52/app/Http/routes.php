@@ -64,3 +64,8 @@ Route::any('/masonry',function ()
 });
 
 Route::any('/lives',"ZbController@lives");//直播详情页
+
+// 引导用户到新浪微博的登录授权页面
+Route::get('login/weibo', 'Login\LoginController@weibo');
+// 用户授权后新浪微博回调的页面
+Route::get('login/callback', 'Login\LoginController@callback');

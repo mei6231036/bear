@@ -494,7 +494,7 @@ require.resourceMap({"res":{"qrcode":{"url":"//a.msstatic.com/huya/main/modules/
 
 
     window.onload = function () {  
-        var ws = new WebSocket("ws://127.0.0.1:1234");  
+        var ws = new WebSocket("ws://47.93.191.33:8008");  
   
         document.getElementById("msg_send_bt").onclick = function () {  
 

@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class Hcc extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         $this->call(GoodsTableSeeder::class);
+        DB::table('hcc')->insert([
+            'name' => '胡聪聪',
+        ]);
     }
 }
